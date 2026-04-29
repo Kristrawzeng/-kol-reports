@@ -132,6 +132,82 @@ def parse_feed(f: dict) -> dict:
         "is_trade":         bool(imgs),
     }
 
+# ── 拉取用户主页粉丝数 ────────────────────────────────────────
+_FANS_CACHE: dict = {}   # user_id → fans_num
+
+def fetch_fans_num(user_id: str, cookie_str: str) -> int:
+    """
+    访问 q.futunn.com/profile/{user_id} 提取真实粉丝数。
+    feed API 的 user_info 不含粉丝数，需单独请求主页。
+    """
+    if not user_id:
+        return 0
+    if user_id in _FANS_CACHE:
+        return _FANS_CACHE[user_id]
+    try:
+        url = f"https://q.futunn.com/profile/{user_id}"
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Cookie":     cookie_str,
+            "Referer":    "https://q.futunn.com/",
+            "Accept":     "text/html,*/*",
+        })
+        with urllib.request.urlopen(req, timeout=12) as r:
+            html = r.read().decode("utf-8", errors="replace")
+        # 找内嵌 JSON: window.__INITIAL_STATE__ = {...};
+        m = re.search(r'window\.__INITIAL_STATE__\s*=\s*(\{.*?\})\s*;', html, re.S)
+        if m:
+            # 只截取前 4000 字符（粉丝数在开头）
+            chunk = m.group(1)[:4000]
+            fn = re.search(r'"followerNum"\s*:\s*(\d+)', chunk)
+            if fn:
+                fans = int(fn.group(1))
+                _FANS_CACHE[user_id] = fans
+                return fans
+    except Exception:
+        pass
+    _FANS_CACHE[user_id] = 0
+    return 0
+
+
+def batch_fetch_fans(posts: list, cookie_str: str, limit: int = 80) -> None:
+    """
+    批量拉取帖子列表中唯一作者的粉丝数（最多 limit 个），
+    结果直接写回 post["fans_num"]。
+    """
+    seen_authors: dict = {}   # author_id → None
+    to_fetch = []
+    for p in posts:
+        aid = p.get("author_id", "")
+        if aid and aid not in seen_authors and aid not in _FANS_CACHE:
+            seen_authors[aid] = None
+            to_fetch.append(aid)
+            if len(to_fetch) >= limit:
+                break
+
+    if not to_fetch:
+        # 直接用缓存写回
+        for p in posts:
+            aid = p.get("author_id", "")
+            if aid in _FANS_CACHE:
+                p["fans_num"] = _FANS_CACHE[aid]
+        return
+
+    print(f"  👥 拉取粉丝数：{len(to_fetch)} 位作者（主页抓取，每位约0.5s）...")
+    for i, aid in enumerate(to_fetch, 1):
+        fans = fetch_fans_num(aid, cookie_str)
+        if (i % 10 == 0) or i == len(to_fetch):
+            print(f"    [{i}/{len(to_fetch)}] 已完成", end="\r")
+        time.sleep(0.5)   # 避免触发限速
+    print()
+
+    # 把缓存结果写回所有帖子
+    for p in posts:
+        aid = p.get("author_id", "")
+        if aid in _FANS_CACHE:
+            p["fans_num"] = _FANS_CACHE[aid]
+
+
 # ── 拉取帖子 ─────────────────────────────────────────────────
 def fetch_feeds(cookie_str: str, max_posts: int = 1000) -> list:
     posts = []
@@ -420,7 +496,8 @@ def calc_potential_score(post: dict) -> int:
     identity=4(KOL)/1(认证) 加分；原创性通过文本特征检测
     含AI套话（总而言之/综上所述等）、过度结构化 → 减分
     """
-    browse   = post.get("browse_count", 0)
+    fans     = post.get("fans_num", 0)       # 真实粉丝数（主页抓取，优先）
+    browse   = post.get("browse_count", 0)  # 帖子阅读量（备用）
     identity = post.get("identity", 0)
     cc     = post.get("char_count", 0)
     likes  = post.get("likes", 0)
@@ -429,14 +506,26 @@ def calc_potential_score(post: dict) -> int:
     eng    = likes + cmts + shares
     text   = post.get("text", "") or ""
 
-    # 1. 阅读影响力 (0-20) 用帖子阅读量代替粉丝数（API不返回粉丝数）
-    if   browse >= 500000: fans_s = 20
-    elif browse >= 200000: fans_s = 16
-    elif browse >= 100000: fans_s = 12
-    elif browse >= 50000:  fans_s = 9
-    elif browse >= 20000:  fans_s = 6
-    elif browse >= 5000:   fans_s = 3
-    else:                  fans_s = 1
+    # 1. 影响力 (0-20)：优先用真实粉丝数，否则用帖子阅读量
+    if fans > 0:
+        # 用真实粉丝数
+        if   fans >= 100000: fans_s = 20
+        elif fans >= 50000:  fans_s = 16
+        elif fans >= 10000:  fans_s = 12
+        elif fans >= 5000:   fans_s = 9
+        elif fans >= 1000:   fans_s = 6
+        elif fans >= 500:    fans_s = 4
+        elif fans >= 100:    fans_s = 2
+        else:                fans_s = 1
+    else:
+        # 回退到帖子阅读量
+        if   browse >= 500000: fans_s = 20
+        elif browse >= 200000: fans_s = 16
+        elif browse >= 100000: fans_s = 12
+        elif browse >= 50000:  fans_s = 9
+        elif browse >= 20000:  fans_s = 6
+        elif browse >= 5000:   fans_s = 3
+        else:                  fans_s = 1
     # 认证/KOL 账号加分
     if   identity == 4: fans_s = min(20, fans_s + 3)   # KOL/媒体
     elif identity == 1: fans_s = min(20, fans_s + 2)   # 认证个人
@@ -689,7 +778,8 @@ def build_report(koc_list, trades, signal_charts, week_start, week_end, total_sc
         for p in posts[:100]:
             auth     = p.get("author", "") or "未知"
             date     = p.get("date", "")
-            browse   = p.get("browse_count", 0)
+            fans     = p.get("fans_num", 0)      # 真实粉丝数（从主页抓取）
+            browse   = p.get("browse_count", 0)  # 帖子阅读量
             identity = p.get("identity", 0)
             text   = p.get("text", "")
             cc     = p.get("char_count", 0)
@@ -707,8 +797,12 @@ def build_report(koc_list, trades, signal_charts, week_start, week_end, total_sc
                 tag_badges += '<span style="background:#ede9fe;color:#7c3aed;border:1px solid #ddd6fe;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">长文</span>'
             if eng >= 100:
                 tag_badges += '<span style="background:#fef3c7;color:#d97706;border:1px solid #fde68a;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">高互动</span>'
+            if fans >= 10000:
+                tag_badges += '<span style="background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">万粉</span>'
+            elif fans > 0 and fans < 500:
+                tag_badges += '<span style="background:#fef9c3;color:#ca8a04;border:1px solid #fde68a;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">新人</span>'
             if browse >= 100000:
-                tag_badges += '<span style="background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">高阅读</span>'
+                tag_badges += '<span style="background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">高阅读</span>'
             if identity == 4:
                 tag_badges += '<span style="background:#fef3c7;color:#d97706;border:1px solid #fde68a;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">KOL</span>'
             elif identity == 1:
@@ -729,7 +823,7 @@ def build_report(koc_list, trades, signal_charts, week_start, week_end, total_sc
                       <span style="color:#1e293b;font-weight:700;font-size:13px">{auth}</span>
                       {potential_badge(sc)}
                     </div>
-                    <div style="color:#94a3b8;font-size:11px;margin-top:2px">阅读 {browse_fmt(browse)} · {cc} 字</div>
+                    <div style="color:#94a3b8;font-size:11px;margin-top:2px">粉丝 {browse_fmt(fans) if fans > 0 else "—"} · 阅读 {browse_fmt(browse)} · {cc} 字</div>
                   </div>
                 </div>
                 <div style="text-align:right;flex-shrink:0">
@@ -1078,7 +1172,16 @@ def main():
         and not is_official_account(p["author"], p.get("identity", 0))
         and p["feed_id"] not in koc_feed_ids
     ]
-    # 计算每篇潜力评分（粉丝+内容深度+互动质量+原创性）
+    # 访问用户主页拉取真实粉丝数（最多80位唯一作者）
+    if not args.skip_vision:
+        batch_fetch_fans(potential_posts, cookie_str, limit=80)
+        # 同步给 koc_list 中相同作者
+        for p in koc_list:
+            aid = p.get("author_id", "")
+            if aid in _FANS_CACHE:
+                p["fans_num"] = _FANS_CACHE[aid]
+
+    # 计算每篇潜力评分（阅读量+内容深度+互动质量+原创性，粉丝数已更新）
     for p in potential_posts:
         p["potential_score"] = calc_potential_score(p)
     # 按总互动降序排列（同等互动时评分高的优先）
