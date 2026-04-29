@@ -38,10 +38,18 @@ def setup_repo():
         run('git pull origin main --rebase', cwd=PUBLISH_DIR)
 
 def copy_reports():
-    """把报告文件复制到发布目录"""
+    """把报告文件和源码备份复制到发布目录"""
     # 复制所有报告 HTML
     for f in REPORTS_DIR.glob("koc_monitor_*.html"):
         shutil.copy2(f, PUBLISH_DIR / f.name)
+    # 同步源码到 src/ 子目录（代码备份，不影响 GitHub Pages）
+    src_dir = PUBLISH_DIR / "src"
+    src_dir.mkdir(exist_ok=True)
+    for py in ["koc_monitor.py", "koc_weekly_run.py", "koc_dashboard.py",
+               "koc_publish.py", "koc_potential.py"]:
+        src = BASE_DIR / py
+        if src.exists():
+            shutil.copy2(src, src_dir / py)
 
     # 生成首页 index.html（自动跳转到最新报告）
     reports = sorted((PUBLISH_DIR).glob("koc_monitor_*.html"), reverse=True)
