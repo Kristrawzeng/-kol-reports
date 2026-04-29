@@ -410,6 +410,80 @@ def calc_koc_score(post: dict, vision: dict = None) -> int:
 
     return min(100, score)
 
+# ── 潜力长文作者评分（维度四专用）────────────────────────────────
+def calc_potential_score(post: dict) -> int:
+    """
+    高优潜力长文作者综合评分 (0-100)
+    = 粉丝影响力(20) + 内容深度(25) + 互动质量(25) + 原创性(30)
+    原创性通过文本特征检测：含具体价格/数字/第一人称/股票代码/情感词 → 加分
+    含AI套话（总而言之/综上所述等）、过度结构化 → 减分
+    """
+    fans   = post.get("fans_num", 0)
+    cc     = post.get("char_count", 0)
+    likes  = post.get("likes", 0)
+    cmts   = post.get("comments", 0)
+    shares = post.get("shares", 0)
+    eng    = likes + cmts + shares
+    text   = post.get("text", "") or ""
+
+    # 1. 粉丝影响力 (0-20)
+    if   fans >= 100000: fans_s = 20
+    elif fans >= 50000:  fans_s = 16
+    elif fans >= 10000:  fans_s = 12
+    elif fans >= 5000:   fans_s = 9
+    elif fans >= 1000:   fans_s = 6
+    elif fans >= 500:    fans_s = 4
+    elif fans >= 100:    fans_s = 2
+    else:                fans_s = 1
+
+    # 2. 内容深度 (0-25) 字数越长越深度
+    if   cc >= 1000: depth_s = 25
+    elif cc >= 700:  depth_s = 20
+    elif cc >= 500:  depth_s = 15
+    elif cc >= 350:  depth_s = 10
+    else:            depth_s = 5
+
+    # 3. 互动质量 (0-25) 高评论比例说明内容有讨论价值
+    if   eng >= 500: eng_s = 25
+    elif eng >= 200: eng_s = 20
+    elif eng >= 100: eng_s = 15
+    elif eng >= 50:  eng_s = 10
+    elif eng >= 20:  eng_s = 6
+    elif eng >= 10:  eng_s = 3
+    else:            eng_s = 1
+    # 评论占比加权：评论/总互动 >= 30% 说明引发真实讨论
+    if eng > 0 and cmts / eng >= 0.3:
+        eng_s = min(25, eng_s + 3)
+
+    # 4. 原创性 (0-30) — 文本特征打分
+    orig_s = 12  # 基础分
+
+    # ── 加分：具体/个人/原创特征 ──
+    if re.search(r'\d+\.\d{2,}', text):                    orig_s += 5   # 含小数价格（具体分析）
+    if re.search(r'(?<!\d)[1-9]\d{4,}(?!\d)', text):       orig_s += 3   # 含大数字（金额/股份数）
+    if re.search(r'[我](?:认为|觉得|看|持仓|买|卖|今天|昨)', text): orig_s += 5  # 第一人称主动观点
+    elif '我' in text:                                      orig_s += 2   # 第一人称出现
+    if re.search(r'[0-9]{5}\.HK|(?:^|[\s（(])[A-Z]{2,5}(?:[\s）)。，]|$)', text, re.M): orig_s += 3  # 股票代码
+    if re.search(r'[？！😅😂🤔💰📈📉🚀]', text):           orig_s += 2   # 情感/口语
+    if re.search(r'(?:今[天日]|昨[天日]|本周|上周|\d月\d+日)', text): orig_s += 2  # 即时日期
+    if cmts >= 15:                                          orig_s += 3   # 高评论（引发真实讨论）
+
+    # ── 减分：AI套话特征 ──
+    ai_phrases = ['总而言之', '综上所述', '总的来说', '由此可见', '不难发现',
+                  '值得注意的是', '综合来看', '可以看出', '显而易见', '总体而言',
+                  '需要指出的是', '不可否认', '毋庸置疑']
+    ai_hits = sum(1 for p in ai_phrases if p in text)
+    if   ai_hits >= 3: orig_s -= 10
+    elif ai_hits >= 2: orig_s -= 6
+    elif ai_hits >= 1: orig_s -= 2
+
+    # 过度结构化列表（连续5个以上数字/序号段落 → 疑似AI生成）
+    list_cnt = len(re.findall(r'(?:^|[\n\r])[\s]*(?:\d+[.、。]|[①②③④⑤⑥⑦⑧⑨])', text, re.M))
+    if list_cnt >= 5: orig_s -= 5
+
+    orig_s = max(0, min(30, orig_s))
+    return min(100, fans_s + depth_s + eng_s + orig_s)
+
 # ── HTML 报告 ─────────────────────────────────────────────────
 def build_report(koc_list, trades, signal_charts, week_start, week_end, total_scanned, potential_posts=None):
     gen_time   = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -571,7 +645,6 @@ def build_report(koc_list, trades, signal_charts, week_start, week_end, total_sc
         posts = potential_posts or []
         if not posts:
             return '<div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:12px;padding:40px;text-align:center;color:#94a3b8;font-size:14px">本周暂未发现字数≥200的优质内容</div>'
-        html = ""
 
         def eng_color(eng):
             if eng >= 200: return "#d97706"
@@ -581,53 +654,90 @@ def build_report(koc_list, trades, signal_charts, week_start, week_end, total_sc
         def fans_fmt(n):
             if n >= 10000: return f"{n/10000:.1f}万"
             if n >= 1000:  return f"{n/1000:.1f}k"
-            return str(n)
+            return str(n) if n > 0 else "—"
+
+        def potential_badge(sc):
+            if sc >= 75:   return f'<span style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;margin-left:6px">🌟 高优潜力 {sc}</span>'
+            elif sc >= 55: return f'<span style="background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:10px;margin-left:6px">⭐ 优质作者 {sc}</span>'
+            elif sc >= 35: return f'<span style="background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px">📝 潜力新人 {sc}</span>'
+            return f'<span style="background:#f1f5f9;color:#94a3b8;font-size:9px;padding:2px 7px;border-radius:10px;margin-left:6px">{sc}</span>'
+
+        # 统计高优作者数
+        top_cnt  = sum(1 for p in posts if p.get("potential_score", 0) >= 75)
+        good_cnt = sum(1 for p in posts if 55 <= p.get("potential_score", 0) < 75)
+
+        html = f'''<div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+          <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:8px 14px;font-size:11px">
+            <span style="font-size:16px;font-weight:700;color:#d97706">{top_cnt}</span>
+            <span style="color:#92400e;margin-left:4px">🌟 高优潜力作者 (≥75分)</span>
+          </div>
+          <div style="background:#dbeafe;border:1px solid #bfdbfe;border-radius:8px;padding:8px 14px;font-size:11px">
+            <span style="font-size:16px;font-weight:700;color:#2563eb">{good_cnt}</span>
+            <span style="color:#1e40af;margin-left:4px">⭐ 优质作者 (55-74分)</span>
+          </div>
+          <div style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:11px;color:#64748b">
+            评分维度：粉丝影响力+内容深度+互动质量+原创性<br>
+            <span style="font-size:10px">原创性：含具体价格/第一人称/情感词加分；AI套话减分</span>
+          </div>
+        </div>'''
 
         for p in posts[:100]:
-            auth     = p.get("author", "") or "未知"
-            date     = p.get("date", "")
-            fans     = p.get("fans_num", 0)
-            text     = p.get("text", "")
-            cc       = p.get("char_count", 0)
-            likes    = p.get("likes", 0)
-            cmts     = p.get("comments", 0)
-            shares   = p.get("shares", 0)
-            eng      = likes + cmts + shares
-            url      = p.get("url", "#")
-            preview  = text[:400] + ("…" if len(text) > 400 else "")
+            auth   = p.get("author", "") or "未知"
+            date   = p.get("date", "")
+            fans   = p.get("fans_num", 0)
+            text   = p.get("text", "")
+            cc     = p.get("char_count", 0)
+            likes  = p.get("likes", 0)
+            cmts   = p.get("comments", 0)
+            shares = p.get("shares", 0)
+            eng    = likes + cmts + shares
+            url    = p.get("url", "#")
+            sc     = p.get("potential_score", 0)
+            preview = text[:400] + ("…" if len(text) > 400 else "")
 
+            # 标签
             tag_badges = ""
             if cc >= 500:
-                tag_badges += '<span style="background:#ede9fe;color:#7c3aed;border:1px solid #ddd6fe;border-radius:10px;padding:1px 8px;font-size:10px;font-weight:600;margin-right:3px">长文</span>'
+                tag_badges += '<span style="background:#ede9fe;color:#7c3aed;border:1px solid #ddd6fe;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">长文</span>'
             if eng >= 100:
-                tag_badges += '<span style="background:#fef3c7;color:#d97706;border:1px solid #fde68a;border-radius:10px;padding:1px 8px;font-size:10px;font-weight:600;margin-right:3px">高互动</span>'
+                tag_badges += '<span style="background:#fef3c7;color:#d97706;border:1px solid #fde68a;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">高互动</span>'
             if fans >= 10000:
-                tag_badges += '<span style="background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;padding:1px 8px;font-size:10px;font-weight:600">万粉</span>'
+                tag_badges += '<span style="background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">万粉</span>'
+            if fans == 0:
+                tag_badges += '<span style="background:#fef9c3;color:#ca8a04;border:1px solid #fde68a;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">新人</span>'
+
+            # 高优作者卡片左边框颜色
+            if   sc >= 75: border_left = "4px solid #f59e0b"
+            elif sc >= 55: border_left = "4px solid #3b82f6"
+            else:          border_left = "4px solid #e2e8f0"
 
             html += f"""
-            <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:10px;transition:.18s;box-shadow:0 1px 4px #0000000a" onmouseover="this.style.borderColor='#93c5fd';this.style.boxShadow='0 4px 12px #2563eb18'" onmouseout="this.style.borderColor='#e2e8f0';this.style.boxShadow='0 1px 4px #0000000a'">
+            <div style="background:#ffffff;border:1px solid #e2e8f0;border-left:{border_left};border-radius:12px;padding:16px;margin-bottom:10px;transition:.18s;box-shadow:0 1px 4px #0000000a" onmouseover="this.style.boxShadow='0 4px 12px #2563eb18'" onmouseout="this.style.boxShadow='0 1px 4px #0000000a'">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;flex-wrap:wrap;gap:6px">
                 <div style="display:flex;align-items:center;gap:8px">
-                  <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0">{auth[:1] if auth else "?"}</div>
+                  <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0">{auth[:1] if auth else "?"}</div>
                   <div>
-                    <div style="color:#1e293b;font-weight:600;font-size:13px">{auth}</div>
-                    <div style="color:#94a3b8;font-size:11px">粉丝 {fans_fmt(fans)} · {cc} 字</div>
+                    <div style="display:flex;align-items:center;flex-wrap:wrap">
+                      <span style="color:#1e293b;font-weight:700;font-size:13px">{auth}</span>
+                      {potential_badge(sc)}
+                    </div>
+                    <div style="color:#94a3b8;font-size:11px;margin-top:2px">粉丝 {fans_fmt(fans)} · {cc} 字</div>
                   </div>
                 </div>
-                <div style="text-align:right">
+                <div style="text-align:right;flex-shrink:0">
                   <div style="color:#94a3b8;font-size:11px">{date}</div>
                   <div style="margin-top:3px">{tag_badges}</div>
                 </div>
               </div>
               <div style="color:#334155;font-size:13px;line-height:1.75;margin-bottom:10px;white-space:pre-wrap">{preview}</div>
               <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #f1f5f9;padding-top:8px">
-                <div style="display:flex;gap:14px;font-size:11px">
+                <div style="display:flex;gap:14px;font-size:11px;font-weight:600">
                   <span style="color:#ef4444">♥ {likes}</span>
-                  <span style="color:#64748b">💬 {cmts}</span>
-                  <span style="color:#64748b">↗ {shares}</span>
-                  <span style="color:{eng_color(eng)};font-weight:600">互动 {eng}</span>
+                  <span style="color:#3b82f6">💬 {cmts}</span>
+                  <span style="color:#7c3aed">↗ {shares}</span>
+                  <span style="color:{eng_color(eng)}">互动 {eng}</span>
                 </div>
-                <a href="{url}" target="_blank" style="font-size:11px;color:#2563eb;font-weight:500;padding:3px 10px;border:1px solid #bfdbfe;border-radius:6px;background:#eff6ff">查看原帖 →</a>
+                <a href="{url}" target="_blank" style="font-size:11px;color:#2563eb;font-weight:600;padding:3px 10px;border:1px solid #bfdbfe;border-radius:6px;background:#eff6ff">查看原帖 →</a>
               </div>
             </div>"""
         return html
@@ -734,7 +844,7 @@ a{{text-decoration:none;color:inherit}}
     <span class="badge" style="background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd">已排除官方账号</span>
     <span class="badge" style="background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe">{len(potential_posts or [])} 篇</span>
   </div>
-  <p style="color:#64748b;font-size:12px;margin-bottom:16px">近7天（{week_label}）正文字数≥200字的非官方内容，按发布时间倒序，适合挖掘潜力创作者</p>
+  <p style="color:#64748b;font-size:12px;margin-bottom:16px">近7天（{week_label}）正文字数≥200字的非官方内容，按总互动量降序 · 评分=粉丝力+内容深度+互动质量+原创性(减AI套话) · 🌟≥75 高优潜力</p>
   <div style="max-width:860px">{potential_cards()}</div>
 </div>
 </div>
@@ -960,8 +1070,13 @@ def main():
         and not is_official_account(p["author"], p.get("identity", 0))
         and p["feed_id"] not in koc_feed_ids
     ]
-    potential_posts.sort(key=lambda x: x["ts"], reverse=True)
-    print(f"✍️  字数≥200 优质内容（已去重）：{len(potential_posts)} 篇")
+    # 计算每篇潜力评分（粉丝+内容深度+互动质量+原创性）
+    for p in potential_posts:
+        p["potential_score"] = calc_potential_score(p)
+    # 按总互动降序排列（同等互动时评分高的优先）
+    potential_posts.sort(key=lambda x: (x.get("total_engagement", 0), x.get("potential_score", 0)), reverse=True)
+    top_potential = sum(1 for p in potential_posts if p.get("potential_score", 0) >= 70)
+    print(f"✍️  字数≥200 优质内容（已去重）：{len(potential_posts)} 篇  🌟 高优潜力作者：{top_potential} 位")
 
     # 5. 生成周报（防覆盖保护）
     html = build_report(koc_list, large_trades, signal_charts, WEEK_START, WEEK_END, len(all_posts), potential_posts)
