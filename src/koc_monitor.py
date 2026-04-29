@@ -119,7 +119,8 @@ def parse_feed(f: dict) -> dict:
         "author":           user.get("nick_name", ""),
         "author_id":        str(user.get("user_id", "")),
         "identity":         int(user.get("identity", 0)),
-        "fans_num":         int(user.get("fans_num", 0) or 0),
+        "fans_num":         int(user.get("fans_num", 0) or 0),   # NOTE: always 0, API不返回粉丝数
+        "browse_count":     int(common.get("browse_count", 0) or 0),  # 阅读量（可用）
         "follow_num":       int(user.get("follow_num", 0) or 0),
         "likes":            likes,
         "comments":         cmts,
@@ -414,11 +415,13 @@ def calc_koc_score(post: dict, vision: dict = None) -> int:
 def calc_potential_score(post: dict) -> int:
     """
     高优潜力长文作者综合评分 (0-100)
-    = 粉丝影响力(20) + 内容深度(25) + 互动质量(25) + 原创性(30)
-    原创性通过文本特征检测：含具体价格/数字/第一人称/股票代码/情感词 → 加分
+    = 阅读影响力(20) + 内容深度(25) + 互动质量(25) + 原创性(30)
+    注：Futu API 不返回粉丝数，改用帖子阅读量(browse_count)作为影响力代理指标
+    identity=4(KOL)/1(认证) 加分；原创性通过文本特征检测
     含AI套话（总而言之/综上所述等）、过度结构化 → 减分
     """
-    fans   = post.get("fans_num", 0)
+    browse   = post.get("browse_count", 0)
+    identity = post.get("identity", 0)
     cc     = post.get("char_count", 0)
     likes  = post.get("likes", 0)
     cmts   = post.get("comments", 0)
@@ -426,15 +429,17 @@ def calc_potential_score(post: dict) -> int:
     eng    = likes + cmts + shares
     text   = post.get("text", "") or ""
 
-    # 1. 粉丝影响力 (0-20)
-    if   fans >= 100000: fans_s = 20
-    elif fans >= 50000:  fans_s = 16
-    elif fans >= 10000:  fans_s = 12
-    elif fans >= 5000:   fans_s = 9
-    elif fans >= 1000:   fans_s = 6
-    elif fans >= 500:    fans_s = 4
-    elif fans >= 100:    fans_s = 2
-    else:                fans_s = 1
+    # 1. 阅读影响力 (0-20) 用帖子阅读量代替粉丝数（API不返回粉丝数）
+    if   browse >= 500000: fans_s = 20
+    elif browse >= 200000: fans_s = 16
+    elif browse >= 100000: fans_s = 12
+    elif browse >= 50000:  fans_s = 9
+    elif browse >= 20000:  fans_s = 6
+    elif browse >= 5000:   fans_s = 3
+    else:                  fans_s = 1
+    # 认证/KOL 账号加分
+    if   identity == 4: fans_s = min(20, fans_s + 3)   # KOL/媒体
+    elif identity == 1: fans_s = min(20, fans_s + 2)   # 认证个人
 
     # 2. 内容深度 (0-25) 字数越长越深度
     if   cc >= 1000: depth_s = 25
@@ -651,7 +656,7 @@ def build_report(koc_list, trades, signal_charts, week_start, week_end, total_sc
             if eng >= 50:  return "#16a34a"
             return "#94a3b8"
 
-        def fans_fmt(n):
+        def browse_fmt(n):
             if n >= 10000: return f"{n/10000:.1f}万"
             if n >= 1000:  return f"{n/1000:.1f}k"
             return str(n) if n > 0 else "—"
@@ -676,15 +681,16 @@ def build_report(koc_list, trades, signal_charts, week_start, week_end, total_sc
             <span style="color:#1e40af;margin-left:4px">⭐ 优质作者 (55-74分)</span>
           </div>
           <div style="background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:8px 14px;font-size:11px;color:#64748b">
-            评分维度：粉丝影响力+内容深度+互动质量+原创性<br>
-            <span style="font-size:10px">原创性：含具体价格/第一人称/情感词加分；AI套话减分</span>
+            评分维度：阅读影响力+内容深度+互动质量+原创性<br>
+            <span style="font-size:10px">阅读影响力用帖子阅读量代替粉丝数（API不提供粉丝数）；KOL/认证账号额外加分；AI套话减分</span>
           </div>
         </div>'''
 
         for p in posts[:100]:
-            auth   = p.get("author", "") or "未知"
-            date   = p.get("date", "")
-            fans   = p.get("fans_num", 0)
+            auth     = p.get("author", "") or "未知"
+            date     = p.get("date", "")
+            browse   = p.get("browse_count", 0)
+            identity = p.get("identity", 0)
             text   = p.get("text", "")
             cc     = p.get("char_count", 0)
             likes  = p.get("likes", 0)
@@ -701,10 +707,12 @@ def build_report(koc_list, trades, signal_charts, week_start, week_end, total_sc
                 tag_badges += '<span style="background:#ede9fe;color:#7c3aed;border:1px solid #ddd6fe;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">长文</span>'
             if eng >= 100:
                 tag_badges += '<span style="background:#fef3c7;color:#d97706;border:1px solid #fde68a;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">高互动</span>'
-            if fans >= 10000:
-                tag_badges += '<span style="background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">万粉</span>'
-            if fans == 0:
-                tag_badges += '<span style="background:#fef9c3;color:#ca8a04;border:1px solid #fde68a;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">新人</span>'
+            if browse >= 100000:
+                tag_badges += '<span style="background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">高阅读</span>'
+            if identity == 4:
+                tag_badges += '<span style="background:#fef3c7;color:#d97706;border:1px solid #fde68a;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">KOL</span>'
+            elif identity == 1:
+                tag_badges += '<span style="background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:600;margin-right:3px">认证</span>'
 
             # 高优作者卡片左边框颜色
             if   sc >= 75: border_left = "4px solid #f59e0b"
@@ -721,7 +729,7 @@ def build_report(koc_list, trades, signal_charts, week_start, week_end, total_sc
                       <span style="color:#1e293b;font-weight:700;font-size:13px">{auth}</span>
                       {potential_badge(sc)}
                     </div>
-                    <div style="color:#94a3b8;font-size:11px;margin-top:2px">粉丝 {fans_fmt(fans)} · {cc} 字</div>
+                    <div style="color:#94a3b8;font-size:11px;margin-top:2px">阅读 {browse_fmt(browse)} · {cc} 字</div>
                   </div>
                 </div>
                 <div style="text-align:right;flex-shrink:0">
