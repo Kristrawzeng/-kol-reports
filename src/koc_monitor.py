@@ -154,16 +154,12 @@ def fetch_fans_num(user_id: str, cookie_str: str) -> int:
         })
         with urllib.request.urlopen(req, timeout=12) as r:
             html = r.read().decode("utf-8", errors="replace")
-        # 找内嵌 JSON: window.__INITIAL_STATE__ = {...};
-        m = re.search(r'window\.__INITIAL_STATE__\s*=\s*(\{.*?\})\s*;', html, re.S)
-        if m:
-            # 只截取前 4000 字符（粉丝数在开头）
-            chunk = m.group(1)[:4000]
-            fn = re.search(r'"followerNum"\s*:\s*(\d+)', chunk)
-            if fn:
-                fans = int(fn.group(1))
-                _FANS_CACHE[user_id] = fans
-                return fans
+        # 直接在整页 HTML 里搜 followerNum，不依赖 JSON 截取范围
+        fn = re.search(r'"followerNum"\s*:\s*(\d+)', html)
+        if fn:
+            fans = int(fn.group(1))
+            _FANS_CACHE[user_id] = fans
+            return fans
     except Exception:
         pass
     _FANS_CACHE[user_id] = 0
@@ -193,7 +189,7 @@ def batch_fetch_fans(posts: list, cookie_str: str, limit: int = 80) -> None:
                 p["fans_num"] = _FANS_CACHE[aid]
         return
 
-    print(f"  👥 拉取粉丝数：{len(to_fetch)} 位作者（主页抓取，每位约0.5s）...")
+    print(f"  👥 拉取粉丝数：{len(to_fetch)} 位作者（主页抓取）...")
     for i, aid in enumerate(to_fetch, 1):
         fans = fetch_fans_num(aid, cookie_str)
         if (i % 10 == 0) or i == len(to_fetch):
@@ -1172,9 +1168,9 @@ def main():
         and not is_official_account(p["author"], p.get("identity", 0))
         and p["feed_id"] not in koc_feed_ids
     ]
-    # 访问用户主页拉取真实粉丝数（最多80位唯一作者）
+    # 访问用户主页拉取真实粉丝数（覆盖所有唯一作者，无人数上限）
     if not args.skip_vision:
-        batch_fetch_fans(potential_posts, cookie_str, limit=80)
+        batch_fetch_fans(potential_posts, cookie_str, limit=500)
         # 同步给 koc_list 中相同作者
         for p in koc_list:
             aid = p.get("author_id", "")
