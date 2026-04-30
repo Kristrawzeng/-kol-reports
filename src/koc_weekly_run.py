@@ -99,37 +99,51 @@ def main():
     if not ok:
         print("⚠️  监测脚本运行遇到问题，但继续更新仪表盘...")
 
-    # 自检：报告质量不达标时自动重试一次
+    # 自检：无晒单/打点图则循环重试，直到有内容为止（最多5次，每次等5分钟）
+    import time
     report_dir = BASE_DIR / "reports"
-    chk = self_check(report_dir)
-    print(f"\n【自检】帖数={chk['posts']} | KOC={chk.get('koc_cnt',0)} | 晒单={chk['trades']} | 打点={chk['signals']} | 大小={chk['size_kb']}KB", end="")
-    if not chk["ok"]:
-        if chk["posts"] == 0:
-            reason = "报告未生成"
-        elif chk["trades"] + chk["signals"] == 0:
-            reason = "大额晒单+打点图均为0（Vision分析未命中或图片下载失败）"
-        else:
-            reason = f"帖数={chk['posts']}<100 或 大小={chk['size_kb']}KB<500"
-        print(f" ⚠️  {reason}，30秒后自动重试...")
-        import time; time.sleep(30)
-        # 删掉不合格报告，用整周全量重跑
-        p = Path(chk["path"])
-        if p.exists(): p.unlink()
-        retry_cmd = monitor_cmd + ["--vision-days", "7"]  # 确保全周视觉分析
-        run(retry_cmd, cwd=str(BASE_DIR))
+    MAX_RETRIES = 5
+    RETRY_WAIT  = 300   # 5分钟
+    retry_cmd   = [
+        PYTHON, str(MONITOR),
+        "--max",         str(max(args.max, 1000)),
+        "--vision-days", "7",
+        "--vision-cap",  str(max(args.vision_cap, 120)),
+    ]
+
+    for attempt in range(MAX_RETRIES + 1):
         chk = self_check(report_dir)
-        print(f"\n【重试后自检】帖数={chk['posts']} | KOC={chk.get('koc_cnt',0)} | 晒单={chk['trades']} | 打点={chk['signals']} | 大小={chk['size_kb']}KB", end="")
+        hits = chk["trades"] + chk["signals"]
+        label = "【自检】" if attempt == 0 else f"【第{attempt}次重试后自检】"
+        print(f"\n{label}帖数={chk['posts']} | KOC={chk.get('koc_cnt',0)} | 晒单={chk['trades']} | 打点={chk['signals']} | 大小={chk['size_kb']}KB", end="")
+
         if chk["ok"]:
             print(" ✅")
+            break
+
+        # 分析不达标原因
+        if chk["posts"] == 0:
+            reason = "报告未生成"
+        elif hits == 0:
+            reason = "大额晒单+打点图均为0（Vision未识别或图片下载失败）"
         else:
-            print(" ❌ 重试后仍不达标")
-            if chk["trades"] + chk["signals"] == 0:
-                print("  ⚠️  大额晒单和打点图为0，可能原因：")
-                print("     1. Cookie 已过期，请重新运行 futu_login.py")
-                print("     2. 本周图片帖子偏少，Vision 未识别到晒单/打点图")
-                print("     3. 可手动运行: python koc_monitor.py --all-trades")
-    else:
-        print(" ✅")
+            reason = f"帖数={chk['posts']}<100 或 大小={chk['size_kb']}KB<500"
+
+        if attempt == MAX_RETRIES:
+            print(f" ❌ 已重试{MAX_RETRIES}次仍不达标：{reason}")
+            print("  建议：1. Cookie可能过期，请重新运行 futu_login.py")
+            print("        2. 可手动运行: python koc_monitor.py --all-trades")
+            break
+
+        wait_min = RETRY_WAIT // 60
+        print(f" ⚠️  {reason}，{wait_min}分钟后第{attempt+1}次重试...")
+        # 删掉不合格报告，确保下次能重新生成
+        p = Path(chk["path"])
+        if p.exists() and hits == 0:
+            p.unlink()
+            print(f"  已删除不合格报告，重新爬取...")
+        time.sleep(RETRY_WAIT)
+        run(retry_cmd, cwd=str(BASE_DIR))
 
     # Step 2: 潜力挖掘
     print("\n【Step 2/3】运行潜力 KOC 挖掘...")
