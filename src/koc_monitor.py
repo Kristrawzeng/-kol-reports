@@ -1106,27 +1106,40 @@ def main():
         print(f"💰 大额晒单：0 张  📍 买卖打点图：0 张")
     else:
         print(f"🔍 含图候选：{len(trade_posts)} 条，开始 Claude Vision 分析...")
-        seen_posts = set()
-        analyzed   = 0
-        dl_fail    = 0
+        seen_posts   = set()
+        analyzed     = 0
+        dl_fail      = 0
+        failed_imgs  = []   # (post, img_url, save_path) — for second-pass retry
 
-        for p in trade_posts:
-            for img_url in p["imgs"][:2]:
-                fname     = re.sub(r"[^\w]", "_", img_url[-40:]) + ".jpg"
-                save_path = str(IMG_DIR / fname)
-                if not download_img(img_url, save_path, verbose=True):
+        def _run_vision_pass(candidates, pass_label="第一轮"):
+            """Run Vision analysis on a list of (post, img_url, save_path).
+            Returns (new_large_trades, new_signal_charts, failed_list)."""
+            pass_trades   = []
+            pass_signals  = []
+            pass_fails    = []
+            pass_analyzed = 0
+            nonlocal analyzed, dl_fail
+
+            for p, img_url, save_path in candidates:
+                fname = re.sub(r"[^\w]", "_", img_url[-40:]) + ".jpg"
+                actual_path = save_path or str(IMG_DIR / fname)
+
+                if not download_img(img_url, actual_path, verbose=True):
                     dl_fail += 1
+                    pass_fails.append((p, img_url, actual_path))
                     continue
-                analyzed += 1
-                print(f"  [{analyzed}] 分析: {img_url[-50:]}", end=" ")
-                vision = analyze_trade_image(save_path)
+
+                analyzed     += 1
+                pass_analyzed += 1
+                print(f"  [{pass_label} {pass_analyzed}] 分析: {img_url[-50:]}", end=" ")
+                vision  = analyze_trade_image(actual_path)
                 print(f"→ {vision.get('summary','')}")
 
-                tags  = infer_tags(p.get("text", ""), vision)
-                score = calc_koc_score(p, vision)
+                tags    = infer_tags(p.get("text", ""), vision)
+                score   = calc_koc_score(p, vision)
                 feed_id = p["feed_id"]
 
-                with open(save_path, "rb") as fh:
+                with open(actual_path, "rb") as fh:
                     raw_bytes = fh.read()
                 b64   = base64.b64encode(raw_bytes).decode()
                 media = detect_media_type(raw_bytes)
@@ -1138,23 +1151,67 @@ def main():
                 qualify = is_large_trade(vision) or (args.all_trades and vision.get("is_trade"))
                 if qualify:
                     if feed_id not in seen_posts:
-                        large_trades.append(enriched)
+                        pass_trades.append(enriched)
                         seen_posts.add(feed_id)
                         print(f"  ✅ 晒单！{vision.get('market')} {vision.get('amount')} {vision.get('currency')} rr={vision.get('return_rate')}%")
-                    break
                 elif vision.get("is_signal_chart") and feed_id not in seen_posts:
-                    signal_charts.append(enriched)
+                    pass_signals.append(enriched)
                     seen_posts.add(feed_id)
                     print(f"  📍 买卖打点图")
 
-            if analyzed >= args.vision_cap:
-                print(f"  (Vision 分析上限{args.vision_cap}次，已停止)")
+                if analyzed >= args.vision_cap:
+                    print(f"  ({pass_label} Vision 分析上限{args.vision_cap}次，已停止)")
+                    break
+
+            return pass_trades, pass_signals, pass_fails
+
+        # ── 第一轮 Vision 分析 ─────────────────────────────────
+        first_candidates = [
+            (p, img_url, str(IMG_DIR / (re.sub(r"[^\w]", "_", img_url[-40:]) + ".jpg")))
+            for p in trade_posts
+            for img_url in p["imgs"][:2]
+        ]
+        pt, ps, failed_imgs = _run_vision_pass(first_candidates, "第一轮")
+        large_trades.extend(pt)
+        signal_charts.extend(ps)
+
+        # ── 双重复审：若第一轮 0 结果且有下载失败，最多再试 2 次 ──
+        MAX_RETRIES = 2
+        for retry_num in range(1, MAX_RETRIES + 1):
+            new_hits = len(large_trades) + len(signal_charts)
+            if new_hits > 0:
+                break
+            if not failed_imgs:
+                if analyzed == 0:
+                    print(f"  ⚠️  第一轮无候选帖可分析，跳过复审")
                 break
 
-        if dl_fail or analyzed == 0:
-            print(f"  ⚠️  图片下载失败 {dl_fail} 次（成功 {analyzed} 次）")
-            if analyzed == 0 and dl_fail > 0:
-                print(f"  ⚠️  所有图片均下载失败！Cookie 可能已过期，请重新运行 futu_login.py")
+            wait_secs = retry_num * 20
+            print(f"\n🔄 双重复审第{retry_num}次：{len(failed_imgs)} 张下载失败，{wait_secs}秒后重试...")
+            time.sleep(wait_secs)
+
+            # 清除失败缓存（允许重新下载）
+            for _, img_url, save_path in failed_imgs:
+                try:
+                    if Path(save_path).exists() and Path(save_path).stat().st_size < 500:
+                        Path(save_path).unlink()
+                except Exception:
+                    pass
+
+            pt2, ps2, failed_imgs = _run_vision_pass(
+                failed_imgs, f"复审第{retry_num}次"
+            )
+            large_trades.extend(pt2)
+            signal_charts.extend(ps2)
+
+            if not pt2 and not ps2 and not failed_imgs:
+                print(f"  复审第{retry_num}次：下载已全部成功但未发现晒单/打点图")
+                break
+
+        if dl_fail and analyzed == 0:
+            print(f"  ⚠️  图片下载失败 {dl_fail} 次，所有图片均失败！Cookie 可能已过期，请重新运行 futu_login.py")
+        elif dl_fail:
+            print(f"  ℹ️  图片下载失败 {dl_fail} 次（成功分析 {analyzed} 次）")
 
     large_trades.sort(key=lambda x: x["ts"],  reverse=True)
     signal_charts.sort(key=lambda x: x["ts"], reverse=True)
