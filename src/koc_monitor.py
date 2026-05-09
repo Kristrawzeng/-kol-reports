@@ -230,12 +230,18 @@ def fetch_feeds(cookie_str: str, max_posts: int = 1000) -> list:
             print(f"\n  [API 请求失败 page={page}: {e}]")
             break
 
+        # 检测未登录状态（Cookie 过期时返回 code=10888）
+        if data.get("code") == 10888 or data.get("message") == "Not Login":
+            print(f"\n❌ Cookie 已过期（Not Login），请运行 futu_login.py 重新登录后再执行")
+            return []
+
         feeds_raw = data.get("feed", [])
         if not feeds_raw:
             stop_reason = "no more feeds"
             break
 
         out_of_week = 0
+        new_in_page = 0
         for f in feeds_raw:
             item = parse_feed(f)
             ts   = item["ts"]
@@ -248,15 +254,27 @@ def fetch_feeds(cookie_str: str, max_posts: int = 1000) -> list:
                 if fid and fid not in seen_ids:
                     seen_ids.add(fid)
                     posts.append(item)
+                    new_in_page += 1
 
-        print(f"  Page {page}: +{len(feeds_raw)} 条 (本周累计 {len(posts)}, 超出本周 {out_of_week})", end="\r")
+        print(f"  Page {page}: +{len(feeds_raw)} 条 (本周新增 {new_in_page}, 累计 {len(posts)}, 超出本周 {out_of_week})", end="\r")
+
+        # 连续多页无新帖（more_mark 卡住），提前退出
+        if new_in_page == 0 and page > 1:
+            stop_reason = "no new posts (more_mark stuck)"
+            break
 
         if out_of_week >= len(feeds_raw) * 0.8:
             stop_reason = "mostly out of week range"
             break
 
         has_more = data.get("has_more", 0)
-        more_mark = data.get("more_mark", "")
+        new_mark = data.get("more_mark", "")
+        # 如果 more_mark 没变，尝试用最后一条 feed_id 构造游标（API 兼容）
+        if new_mark and new_mark == more_mark and feeds_raw:
+            last_id = feeds_raw[-1].get("common", {}).get("feed_id", "")
+            if last_id:
+                new_mark = str(last_id)
+        more_mark = new_mark
         if not has_more or not more_mark:
             stop_reason = "no more pages"
             break
