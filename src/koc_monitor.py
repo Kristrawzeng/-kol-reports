@@ -1183,12 +1183,21 @@ def main():
 
             return pass_trades, pass_signals, pass_fails
 
-        # ── 第一轮 Vision 分析 ─────────────────────────────────
-        first_candidates = [
-            (p, img_url, str(IMG_DIR / (re.sub(r"[^\w]", "_", img_url[-40:]) + ".jpg")))
-            for p in trade_posts
-            for img_url in p["imgs"][:2]
-        ]
+        # ── 第一轮 Vision 分析（去重：相同图片 URL 只分析一次）──────
+        seen_img_urls: set = set()
+        first_candidates = []
+        total_raw = 0
+        for p in trade_posts:
+            for img_url in p["imgs"][:2]:
+                total_raw += 1
+                if img_url not in seen_img_urls:
+                    seen_img_urls.add(img_url)
+                    first_candidates.append(
+                        (p, img_url, str(IMG_DIR / (re.sub(r"[^\w]", "_", img_url[-40:]) + ".jpg")))
+                    )
+        dedup_saved = total_raw - len(first_candidates)
+        if dedup_saved > 0:
+            print(f"  🔄 图片去重：跳过 {dedup_saved} 张重复图片，实际分析 {len(first_candidates)} 张")
         pt, ps, failed_imgs = _run_vision_pass(first_candidates, "第一轮")
         large_trades.extend(pt)
         signal_charts.extend(ps)
