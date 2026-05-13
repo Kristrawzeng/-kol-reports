@@ -1052,7 +1052,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--max",         type=int,  default=1000, help="最多扫描条数（默认1000）")
     parser.add_argument("--all-trades",  action="store_true",     help="收录所有晒单（不限金额门槛）")
-    parser.add_argument("--vision-cap",  type=int,  default=120,  help="最多Vision分析次数（默认120，约30分钟）")
+    parser.add_argument("--vision-cap",  type=int,  default=200,  help="最多Vision分析次数（默认200，约50分钟）")
     parser.add_argument("--skip-vision", action="store_true",     help="跳过Vision分析（仅更新KOC/互动排行，不检测晒单）")
     parser.add_argument("--vision-days", type=int,  default=7,    help="仅对最近N天的帖子做Vision分析（默认7，设1仅今日）")
     parser.add_argument("--headless",    action="store_true",     help="无头模式（忽略，仅兼容旧脚本）")
