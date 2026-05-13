@@ -1183,15 +1183,25 @@ def main():
 
             return pass_trades, pass_signals, pass_fails
 
-        # ── 第一轮 Vision 分析（去重：相同图片 URL 只分析一次）──────
-        seen_img_urls: set = set()
+        # ── 第一轮 Vision 分析（去重：相同文件名只分析一次）──────────
+        def _img_filename(url: str) -> str:
+            """从 CDN URL 提取文件名用于去重，忽略域名/路径差异。
+            例：https://cdn1.../33045859-android-org.png/big?area=1 → 33045859-android-org.png"""
+            path = url.split("?")[0].rstrip("/")
+            for part in reversed(path.split("/")):
+                if "." in part:
+                    return part
+            return path.split("/")[-1] if "/" in path else url
+
+        seen_img_names: set = set()
         first_candidates = []
         total_raw = 0
         for p in trade_posts:
             for img_url in p["imgs"][:2]:
                 total_raw += 1
-                if img_url not in seen_img_urls:
-                    seen_img_urls.add(img_url)
+                fname = _img_filename(img_url)
+                if fname not in seen_img_names:
+                    seen_img_names.add(fname)
                     first_candidates.append(
                         (p, img_url, str(IMG_DIR / (re.sub(r"[^\w]", "_", img_url[-40:]) + ".jpg")))
                     )
