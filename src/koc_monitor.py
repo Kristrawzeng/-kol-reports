@@ -11,7 +11,7 @@
   python koc_monitor.py            # 抓近7天数据
   python koc_monitor.py --max 1000 # 最多抓1000条（默认1000）
 """
-import argparse, base64, json, os, re, sys, time, urllib.request, urllib.parse
+import argparse, base64, json, os, re, subprocess, sys, time, urllib.request, urllib.parse
 import webbrowser
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -35,6 +35,57 @@ OFFICIAL_KEYWORDS = [
     "牛牛打新", "富途打新", "新股情报",
     "牛牛团队", "富途团队", "futu team", "moomoo team",
 ]
+
+# ── Windows 通知（无需额外依赖）────────────────────────────────
+def _xml_escape(s: str) -> str:
+    return (s.replace("&", "&amp;").replace("<", "&lt;")
+             .replace(">", "&gt;").replace('"', "&quot;").replace("'", "&apos;"))
+
+def notify_windows(title: str, body: str) -> None:
+    """非阻塞 Windows toast 通知（Win8+，无需额外包）"""
+    try:
+        t, b = _xml_escape(title), _xml_escape(body)
+        ps = (
+            "[Windows.UI.Notifications.ToastNotificationManager,"
+            " Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null;"
+            "[Windows.Data.Xml.Dom.XmlDocument,"
+            " Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null;"
+            f"$x='<toast><visual><binding template=\"ToastGeneric\">"
+            f"<text>{t}</text><text>{b}</text>"
+            f"</binding></visual></toast>';"
+            "$d=New-Object Windows.Data.Xml.Dom.XmlDocument;$d.LoadXml($x);"
+            "$n=[Windows.UI.Notifications.ToastNotification]::new($d);"
+            "[Windows.UI.Notifications.ToastNotificationManager]"
+            "::CreateToastNotifier('KOC\u76d1\u6d4b\u4e2d\u5fc3').Show($n)"
+        )
+        subprocess.Popen(
+            ["powershell", "-WindowStyle", "Hidden", "-NonInteractive", "-Command", ps],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            creationflags=0x08000000,  # CREATE_NO_WINDOW
+        )
+    except Exception:
+        pass
+
+def write_run_status(status: str, koc_cnt: int = 0, trade_cnt: int = 0,
+                     signal_cnt: int = 0, potential_cnt: int = 0,
+                     scanned: int = 0) -> None:
+    """写入 reports/last_run.json 供重试脚本判断"""
+    record = {
+        "date":          datetime.now().strftime("%Y-%m-%d"),
+        "timestamp":     datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "status":        status,          # ok / cookie_expired / vision_fail / protected
+        "koc_cnt":       koc_cnt,
+        "trade_cnt":     trade_cnt,
+        "signal_cnt":    signal_cnt,
+        "potential_cnt": potential_cnt,
+        "scanned":       scanned,
+    }
+    try:
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
+        (OUT_DIR / "last_run.json").write_text(
+            json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
 
 def is_official_account(author: str, identity: int = 0) -> bool:
     if identity == 3:
@@ -1077,6 +1128,8 @@ def main():
         print(f"✅ Cookie 已加载（{cookie_str.count(';')+1} 个）")
     except FileNotFoundError as e:
         print(f"❌ {e}")
+        notify_windows("❌ KOC监测无法启动", "Cookie 文件不存在，请先运行 futu_login.py 登录")
+        write_run_status("cookie_missing")
         return
 
     # 2. 拉取帖子（API 偶发返回少量数据时自动重试，最多3次）
