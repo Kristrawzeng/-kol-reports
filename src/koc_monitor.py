@@ -1399,5 +1399,13 @@ def main():
     print(f"✅ 已在浏览器打开")
     print(f"\n{'='*60}\n")
 
+    # 写入状态 + 发送完成通知
+    write_run_status("ok", len(koc_list), len(large_trades), len(signal_charts),
+                     len(potential_posts), len(all_posts))
+    notify_windows(
+        "✅ KOC监测完成",
+        f"KOC {len(koc_list)} · 晒单 {len(large_trades)} · 打点 {len(signal_charts)} · 长文 {len(potential_posts)}",
+    )
+
 if __name__ == "__main__":
     main()
