@@ -1300,6 +1300,8 @@ def main():
 
         if dl_fail and analyzed == 0:
             print(f"  ⚠️  图片下载失败 {dl_fail} 次，所有图片均失败！Cookie 可能已过期，请重新运行 futu_login.py")
+            notify_windows("⚠️ KOC监测·图片全部失败", f"共 {dl_fail} 张图下载失败，Cookie 可能已过期，请运行 futu_login.py")
+            write_run_status("vision_fail", len(koc_list), 0, 0, 0, len(all_posts))
         elif dl_fail:
             print(f"  ℹ️  图片下载失败 {dl_fail} 次（成功分析 {analyzed} 次）")
 
@@ -1350,9 +1352,14 @@ def main():
         if ex_hits > 0 and new_hits == 0:
             print(f"\n⚠️  已有报告含 {ex_trades} 晒单 + {ex_signals} 打点图，本次 Vision 结果为 0，保留已有报告不覆盖")
             print(f"   （原因可能是 Cookie 失效或图片下载失败，请检查后重试）")
+            notify_windows("⚠️ KOC监测·晒单为0已保护",
+                           f"昨日 {ex_trades} 晒单+{ex_signals} 打点，今日 Vision=0，保留旧报告。15:00 将自动重试")
+            write_run_status("protected", len(koc_list), 0, 0, len(potential_posts), len(all_posts))
         # b. 帖子数明显少于已有报告（不足一半）
         elif ex_posts > 0 and len(all_posts) < ex_posts * 0.5 and new_hits < ex_hits:
             print(f"\n⚠️  本次抓到 {len(all_posts)} 条（已有报告 {ex_posts} 条且晒单更多），跳过覆盖保留好报告")
+            write_run_status("protected", len(koc_list), len(large_trades), len(signal_charts),
+                             len(potential_posts), len(all_posts))
         else:
             out.write_text(html, encoding="utf-8")
             print(f"\n✅ 周报已生成：{out}")
