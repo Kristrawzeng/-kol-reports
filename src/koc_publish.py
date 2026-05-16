@@ -45,8 +45,9 @@ def copy_reports():
     # 同步源码到 src/ 子目录（代码备份，不影响 GitHub Pages）
     src_dir = PUBLISH_DIR / "src"
     src_dir.mkdir(exist_ok=True)
-    for py in ["koc_monitor.py", "koc_weekly_run.py", "koc_dashboard.py",
-               "koc_publish.py", "koc_potential.py"]:
+    for py in ["koc_monitor.py", "koc_dashboard.py", "koc_publish.py",
+               "koc_potential.py", "koc_retry.py", "koc_scheduler.py",
+               "koc_weekly_run.py"]:
         src = BASE_DIR / py
         if src.exists():
             shutil.copy2(src, src_dir / py)

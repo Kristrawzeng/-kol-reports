@@ -485,5 +485,24 @@ function showToast(msg) {{
     return str(OUT_FILE)
 
 if __name__ == "__main__":
-    path = build_dashboard()
-    webbrowser.open(f"file:///{path.replace(chr(92), '/')}")
+    build_dashboard()
+    # 走 HTTP 服务器打开，避免 Chrome/Edge file:// iframe 安全限制
+    import socket as _sock, subprocess, time
+    try:
+        s = _sock.socket(_sock.AF_INET, _sock.SOCK_STREAM)
+        s.settimeout(1)
+        alive = s.connect_ex(("127.0.0.1", 8080)) == 0
+        s.close()
+    except Exception:
+        alive = False
+    if not alive:
+        try:
+            subprocess.Popen(
+                [sys.executable, str(Path(__file__).parent / "koc_server.py")],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                creationflags=0x08000000,
+            )
+            time.sleep(2)
+        except Exception:
+            pass
+    webbrowser.open("http://localhost:8080/reports/koc_dashboard.html")

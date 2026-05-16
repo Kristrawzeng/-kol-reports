@@ -66,6 +66,29 @@ def notify_windows(title: str, body: str) -> None:
     except Exception:
         pass
 
+def ensure_server() -> bool:
+    """确保 HTTP 服务在 8080 端口运行，若未启动则后台拉起 koc_server.py"""
+    import socket as _sock
+    try:
+        s = _sock.socket(_sock.AF_INET, _sock.SOCK_STREAM)
+        s.settimeout(1)
+        alive = s.connect_ex(("127.0.0.1", 8080)) == 0
+        s.close()
+        if alive:
+            return True
+    except Exception:
+        pass
+    try:
+        subprocess.Popen(
+            [sys.executable, str(Path(__file__).parent / "koc_server.py")],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            creationflags=0x08000000,  # CREATE_NO_WINDOW
+        )
+        time.sleep(2)
+        return True
+    except Exception:
+        return False
+
 def write_run_status(status: str, koc_cnt: int = 0, trade_cnt: int = 0,
                      signal_cnt: int = 0, potential_cnt: int = 0,
                      scanned: int = 0) -> None:
@@ -1120,6 +1143,8 @@ def main():
     print(f"  牛牛圈 KOC 周度监测  |  {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     print(f"{'='*60}\n")
 
+    _run_status = "ok"  # 追踪最终运行状态，避免被 ok 覆盖
+
     # 1. 加载 Cookie
     try:
         cookie_str = load_cookies()
@@ -1301,7 +1326,7 @@ def main():
         if dl_fail and analyzed == 0:
             print(f"  ⚠️  图片下载失败 {dl_fail} 次，所有图片均失败！Cookie 可能已过期，请重新运行 futu_login.py")
             notify_windows("⚠️ KOC监测·图片全部失败", f"共 {dl_fail} 张图下载失败，Cookie 可能已过期，请运行 futu_login.py")
-            write_run_status("vision_fail", len(koc_list), 0, 0, 0, len(all_posts))
+            _run_status = "vision_fail"
         elif dl_fail:
             print(f"  ℹ️  图片下载失败 {dl_fail} 次（成功分析 {analyzed} 次）")
 
@@ -1354,12 +1379,13 @@ def main():
             print(f"   （原因可能是 Cookie 失效或图片下载失败，请检查后重试）")
             notify_windows("⚠️ KOC监测·晒单为0已保护",
                            f"昨日 {ex_trades} 晒单+{ex_signals} 打点，今日 Vision=0，保留旧报告。15:00 将自动重试")
-            write_run_status("protected", len(koc_list), 0, 0, len(potential_posts), len(all_posts))
-        # b. 帖子数明显少于已有报告（不足一半）
+            _run_status = "protected"
+        # b. 帖子数明显少于已有报告（不足一半）且晒单更少
         elif ex_posts > 0 and len(all_posts) < ex_posts * 0.5 and new_hits < ex_hits:
             print(f"\n⚠️  本次抓到 {len(all_posts)} 条（已有报告 {ex_posts} 条且晒单更多），跳过覆盖保留好报告")
-            write_run_status("protected", len(koc_list), len(large_trades), len(signal_charts),
-                             len(potential_posts), len(all_posts))
+            notify_windows("⚠️ KOC监测·数据量少已保护",
+                           f"本次 {len(all_posts)} 条 < 历史 {ex_posts} 条，保留好报告。15:00 将自动重试")
+            _run_status = "protected"
         else:
             out.write_text(html, encoding="utf-8")
             print(f"\n✅ 周报已生成：{out}")
@@ -1392,20 +1418,24 @@ def main():
     except Exception as e:
         print(f"  [GitHub Pages 发布: {e}]")
 
-    # 9. 打开仪表盘
-    dash = OUT_DIR / "koc_dashboard.html"
-    open_path = dash if dash.exists() else out
-    webbrowser.open(f"file:///{str(open_path).replace(chr(92), '/')}")
+    # 9. 打开仪表盘（走 HTTP 服务器，避免浏览器 file:// iframe 安全限制）
+    if ensure_server():
+        webbrowser.open("http://localhost:8080/reports/koc_dashboard.html")
+    else:
+        dash = OUT_DIR / "koc_dashboard.html"
+        open_path = dash if dash.exists() else out
+        webbrowser.open(f"file:///{str(open_path).replace(chr(92), '/')}")
     print(f"✅ 已在浏览器打开")
     print(f"\n{'='*60}\n")
 
-    # 写入状态 + 发送完成通知
-    write_run_status("ok", len(koc_list), len(large_trades), len(signal_charts),
+    # 写入最终状态（用 _run_status，避免 protected/vision_fail 被 ok 覆盖）
+    write_run_status(_run_status, len(koc_list), len(large_trades), len(signal_charts),
                      len(potential_posts), len(all_posts))
-    notify_windows(
-        "✅ KOC监测完成",
-        f"KOC {len(koc_list)} · 晒单 {len(large_trades)} · 打点 {len(signal_charts)} · 长文 {len(potential_posts)}",
-    )
+    if _run_status == "ok":
+        notify_windows(
+            "✅ KOC监测完成",
+            f"KOC {len(koc_list)} · 晒单 {len(large_trades)} · 打点 {len(signal_charts)} · 长文 {len(potential_posts)}",
+        )
 
 if __name__ == "__main__":
     main()
