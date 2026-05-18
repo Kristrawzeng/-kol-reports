@@ -431,6 +431,60 @@ def download_img(url: str, path: str, verbose: bool = False) -> bool:
         print(f"    ⚠️  下载失败: {url[-60:]} | {last_err}")
     return False
 
+# ── 图片压缩（超过 3.5MB 或 GIF 时压缩成 JPEG）─────────────
+def _compress_for_vision(img_path: str) -> tuple:
+    """返回 (bytes, media_type)，确保 < 3.5MB 且格式兼容 Vision API"""
+    MAX_BYTES = 3_500_000
+    try:
+        raw = open(img_path, "rb").read()
+    except Exception:
+        return b"", "image/jpeg"
+
+    media = detect_media_type(raw)
+    # GIF（含动图）或超大图 → 转 JPEG 压缩
+    need_compress = (len(raw) > MAX_BYTES) or (media == "image/gif")
+    if not need_compress:
+        return raw, media
+
+    try:
+        from PIL import Image
+        import io
+        img = Image.open(img_path)
+        # 只取第一帧（动图兼容）
+        try:
+            img.seek(0)
+        except Exception:
+            pass
+        if img.mode in ("RGBA", "P", "LA"):
+            img = img.convert("RGB")
+        w, h = img.size
+        # 先限制最长边 ≤ 7500px（Claude API 限制 8000px）
+        MAX_DIM = 7500
+        if max(w, h) > MAX_DIM:
+            scale = MAX_DIM / max(w, h)
+            img = img.resize((max(1, int(w * scale)), max(1, int(h * scale))), Image.LANCZOS)
+            w, h = img.size
+        # 再按文件大小缩比例
+        if len(raw) > MAX_BYTES:
+            scale = ((MAX_BYTES / len(raw)) ** 0.5) * 0.85
+            img = img.resize((max(1, int(w * scale)), max(1, int(h * scale))), Image.LANCZOS)
+        # 迭代压缩质量直到达标
+        for quality in [85, 70, 55, 40, 30]:
+            buf = io.BytesIO()
+            img.save(buf, format="JPEG", quality=quality, optimize=True)
+            compressed = buf.getvalue()
+            if len(compressed) <= MAX_BYTES:
+                return compressed, "image/jpeg"
+        # 还不行就再缩一半
+        w2, h2 = img.size
+        img = img.resize((w2 // 2, h2 // 2), Image.LANCZOS)
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=40)
+        return buf.getvalue(), "image/jpeg"
+    except Exception as e:
+        print(f"    [压缩失败: {e}]")
+        return raw[:MAX_BYTES], media  # 截断兜底（不理想但不会崩）
+
 # ── Claude Vision 晒单分析 ───────────────────────────────────
 def analyze_trade_image(img_path: str) -> dict:
     _FALLBACK = {
@@ -440,10 +494,10 @@ def analyze_trade_image(img_path: str) -> dict:
     }
     try:
         import anthropic
-        with open(img_path, "rb") as f:
-            raw = f.read()
-        b64   = base64.standard_b64encode(raw).decode()
-        media = detect_media_type(raw)
+        raw, media = _compress_for_vision(img_path)
+        if not raw:
+            return _FALLBACK
+        b64 = base64.standard_b64encode(raw).decode()
 
         client = anthropic.Anthropic(api_key=API_KEY)
         msg = client.messages.create(
@@ -1235,10 +1289,8 @@ def main():
                 score   = calc_koc_score(p, vision)
                 feed_id = p["feed_id"]
 
-                with open(actual_path, "rb") as fh:
-                    raw_bytes = fh.read()
-                b64   = base64.b64encode(raw_bytes).decode()
-                media = detect_media_type(raw_bytes)
+                raw_bytes, media = _compress_for_vision(actual_path)
+                b64 = base64.b64encode(raw_bytes).decode()
 
                 enriched = {**p, "img_url": img_url, "img_b64": b64,
                             "img_media": media, "vision": vision,
