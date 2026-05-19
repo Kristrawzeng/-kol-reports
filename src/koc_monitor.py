@@ -508,19 +508,26 @@ def analyze_trade_image(img_path: str) -> dict:
                 {"type": "text", "text": """分析这张图片，判断属于以下哪种类型：
 
 A. 【持仓/盈亏晒单】：显示个人账户的当前持仓市值、持仓盈亏金额、当日/当月盈亏金额。
-   注意：仅限"我今天赚了多少"/"我持仓盈亏多少"类截图。
-   以下不算A类：累计历史交易额/成交量里程碑（如"累计成交额6800万"）、单笔买卖委托通知（无盈亏显示）
-B. 【买卖打点图】：K线图上标注了个人买入(B/买/↑)或卖出(S/卖/↓)的打点记录，有或没有金额均可
-C. 【非晒单】：纯行情K线图、市场指数走势、股票市值、ETF市场成交额、技术分析图表、新闻资讯、公司公告、累计交易额勋章等
+   也包括：大额新股申购记录（申购金额≥10万港元或1万美元的申购成功/扣款截图）
+   注意：仅限"我今天赚了多少"/"我持仓盈亏多少"/"我申购了多少钱"类截图。
+   以下不算A类：累计历史交易额/成交量里程碑（如"累计成交额6800万"）、小额委托通知
+
+B. 【买卖打点图】：K线图上标注了个人买卖记录的打点图。
+   关键识别特征：K线图上出现带圈或带标签的 B（买入）/ S（卖出）标记，颜色通常为绿色(B)和红色(S)，
+   标注在具体的K线蜡烛柱旁边或顶部。即使图中有大量技术指标（MA/MACD/成交量等），只要K线上有B/S标记就算B类。
+   富途牛牛APP中：绿色圆圈"B"=买入打点，红色圆圈"S"=卖出打点，这是用户的个人交易记录。
+
+C. 【非晒单】：纯行情K线图（无B/S个人交易标记）、市场指数走势、技术分析图表（含趋势线/斐波那契但无B/S标记）、
+   新闻资讯、公司公告、累计交易额勋章、ETF市场成交额等
 
 提取字段：
 - is_trade: A或B为true，C为false
 - is_signal_chart: B类打点图为true，其他为false
 - market: HK / US / OTHER（无法判断填OTHER）
-- amount: 仅A类，个人持仓市值或盈亏金额（纯数字，换算好，"20万"→200000，必须是盈亏/持仓值而非成交额）；B/C类填null
+- amount: A类填金额（纯数字，换算好，"20万"→200000；申购记录填申购金额；盈亏晒单填持仓市值或盈亏金额）；B/C类填null
 - currency: HKD / USD / null
 - return_rate: 个人收益率/持仓盈亏比例的百分比数字（含"未实现盈亏比例"、"持仓盈亏比例"、"收益率"，如+98.73%填98.73），无则null
-- summary: 一句话描述
+- summary: 一句话描述（如是B类，注明看到B/S标记）
 
 只返回JSON：
 {"is_trade":true/false,"is_signal_chart":true/false,"market":"HK/US/OTHER","amount":数字或null,"currency":"HKD/USD/null","return_rate":数字或null,"summary":"一句话"}"""}
@@ -1259,6 +1266,7 @@ def main():
         seen_posts   = set()
         analyzed     = 0
         dl_fail      = 0
+        vision_fail_cnt = 0   # Vision API 静默失败计数（返回"分析失败"）
         failed_imgs  = []   # (post, img_url, save_path) — for second-pass retry
 
         def _run_vision_pass(candidates, pass_label="第一轮"):
@@ -1268,7 +1276,7 @@ def main():
             pass_signals  = []
             pass_fails    = []
             pass_analyzed = 0
-            nonlocal analyzed, dl_fail
+            nonlocal analyzed, dl_fail, vision_fail_cnt
 
             for p, img_url, save_path in candidates:
                 fname = re.sub(r"[^\w]", "_", img_url[-40:]) + ".jpg"
@@ -1284,6 +1292,8 @@ def main():
                 print(f"  [{pass_label} {pass_analyzed}] 分析: {img_url[-50:]}", end=" ")
                 vision  = analyze_trade_image(actual_path)
                 print(f"→ {vision.get('summary','')}")
+                if vision.get("summary") == "分析失败":
+                    vision_fail_cnt += 1
 
                 tags    = infer_tags(p.get("text", ""), vision)
                 score   = calc_koc_score(p, vision)
@@ -1381,6 +1391,15 @@ def main():
             _run_status = "vision_fail"
         elif dl_fail:
             print(f"  ℹ️  图片下载失败 {dl_fail} 次（成功分析 {analyzed} 次）")
+
+        # Vision 静默失败检测：若分析失败率 >40% 且无任何晒单，标记为 vision_fail
+        if analyzed > 0 and vision_fail_cnt > 0:
+            fail_rate = vision_fail_cnt / analyzed
+            print(f"  ℹ️  Vision API 失败率：{vision_fail_cnt}/{analyzed} ({fail_rate:.0%})")
+            if fail_rate > 0.4 and len(large_trades) + len(signal_charts) == 0:
+                print(f"  ⚠️  Vision 失败率过高（{fail_rate:.0%}），标记为 vision_fail 触发下午重试")
+                notify_windows("⚠️ KOC监测·Vision失败率高", f"失败率 {fail_rate:.0%}（{vision_fail_cnt}/{analyzed}），下午将重试")
+                _run_status = "vision_fail"
 
     large_trades.sort(key=lambda x: x["ts"],  reverse=True)
     signal_charts.sort(key=lambda x: x["ts"], reverse=True)

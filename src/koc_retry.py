@@ -83,7 +83,7 @@ def main():
         notify_windows("❌ KOC监测重试跳过", f"{reason}\n请手动运行 futu_login.py")
         return
     elif status == "vision_fail":
-        reason = f"上午图片下载全部失败（Vision=0），重试中..."
+        reason = f"上午 Vision 分析异常（图片全失败或失败率过高），重试中..."
     elif status == "protected":
         reason = f"上午被保护策略跳过（晒单 {trade_cnt}+打点 {signal_cnt}=0），重试中..."
     else:
