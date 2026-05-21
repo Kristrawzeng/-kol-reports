@@ -32,19 +32,22 @@ def get_local_ip():
         return "127.0.0.1"
 
 def create_monitor_task():
-    """每天 08:30 自动跑监测"""
+    """每天 08:30 自动跑监测（输出写入 morning_run.log 供排错）"""
+    LOG = BASE_DIR / "morning_run.log"
     subprocess.run(["schtasks", "/delete", "/tn", TASK_MONITOR, "/f"], capture_output=True)
+    # 用 cmd /c 包一层，把 stdout+stderr 重定向到日志文件
+    tr = f'cmd /c ""{PYTHON}" "{MONITOR}" --max 1000 >> "{LOG}" 2>&1"'
     cmd = [
         "schtasks", "/create",
         "/tn",  TASK_MONITOR,
-        "/tr",  f'"{PYTHON}" "{MONITOR}" --max 1000',
+        "/tr",  tr,
         "/sc",  "DAILY",
         "/st",  "08:30",
         "/f"
     ]
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode == 0:
-        print(f"✅ 监测任务：每天 08:30 自动运行")
+        print(f"✅ 监测任务：每天 08:30 自动运行，日志 → {LOG}")
     else:
         print(f"❌ 监测任务创建失败：{result.stderr or result.stdout}")
 
