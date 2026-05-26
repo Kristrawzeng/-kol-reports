@@ -22,7 +22,8 @@ COOKIE_FILE = Path(__file__).parent / ".futu_cookies.json"
 OUT_DIR     = Path(__file__).parent / "reports"
 IMG_DIR     = OUT_DIR / "trade_imgs"
 DB_FILE     = OUT_DIR / "creator_db.json"
-API_KEY     = os.environ.get("ANTHROPIC_API_KEY", "user-key-5kAHiMi7WOwvsoBb")
+API_KEY     = os.environ.get("ANTHROPIC_API_KEY", "app-key-mtx9wxWUGDpQLjF4")
+FUTU_BASE_URL = "https://api.futuoa.com/ai/v1"
 
 FEED_API    = "https://q.futunn.com/nnq/feed-list"
 
@@ -499,7 +500,11 @@ def analyze_trade_image(img_path: str) -> dict:
             return _FALLBACK
         b64 = base64.standard_b64encode(raw).decode()
 
-        client = anthropic.Anthropic(api_key=API_KEY)
+        client = anthropic.Anthropic(
+                api_key="dummy",
+                base_url=FUTU_BASE_URL,
+                default_headers={"X-FUTU-OA-AI-ACCESS-TOKEN": API_KEY},
+            )
         msg = client.messages.create(
             model="claude-sonnet-4-6",
             max_tokens=300,
