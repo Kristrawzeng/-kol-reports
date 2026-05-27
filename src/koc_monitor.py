@@ -23,7 +23,7 @@ OUT_DIR     = Path(__file__).parent / "reports"
 IMG_DIR     = OUT_DIR / "trade_imgs"
 DB_FILE     = OUT_DIR / "creator_db.json"
 API_KEY     = os.environ.get("ANTHROPIC_API_KEY", "app-key-mtx9wxWUGDpQLjF4")
-FUTU_BASE_URL = "https://api.futuoa.com/ai/v1"
+FUTU_BASE_URL = "https://llm-proxy.futuoa.com/v1"
 
 FEED_API    = "https://q.futunn.com/nnq/feed-list"
 
@@ -494,22 +494,18 @@ def analyze_trade_image(img_path: str) -> dict:
         "currency": None, "return_rate": None, "summary": "分析失败",
     }
     try:
-        import anthropic
+        import openai
         raw, media = _compress_for_vision(img_path)
         if not raw:
             return _FALLBACK
         b64 = base64.standard_b64encode(raw).decode()
 
-        client = anthropic.Anthropic(
-                api_key="dummy",
-                base_url=FUTU_BASE_URL,
-                default_headers={"X-FUTU-OA-AI-ACCESS-TOKEN": API_KEY},
-            )
-        msg = client.messages.create(
+        client = openai.OpenAI(api_key=API_KEY, base_url=FUTU_BASE_URL)
+        msg = client.chat.completions.create(
             model="claude-sonnet-4-6",
             max_tokens=300,
             messages=[{"role": "user", "content": [
-                {"type": "image", "source": {"type": "base64", "media_type": media, "data": b64}},
+                {"type": "image_url", "image_url": {"url": f"data:{media};base64,{b64}"}},
                 {"type": "text", "text": """分析这张图片，判断属于以下哪种类型：
 
 A. 【持仓/盈亏晒单】：显示个人账户的当前持仓市值、持仓盈亏金额、当日/当月盈亏金额。
@@ -538,7 +534,7 @@ C. 【非晒单】：纯行情K线图（无B/S个人交易标记）、市场指�
 {"is_trade":true/false,"is_signal_chart":true/false,"market":"HK/US/OTHER","amount":数字或null,"currency":"HKD/USD/null","return_rate":数字或null,"summary":"一句话"}"""}
             ]}]
         )
-        text = msg.content[0].text.strip()
+        text = msg.choices[0].message.content.strip()
         s, e = text.find("{"), text.rfind("}") + 1
         if s >= 0 and e > s:
             result = json.loads(text[s:e])
