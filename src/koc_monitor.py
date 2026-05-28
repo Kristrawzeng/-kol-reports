@@ -22,7 +22,7 @@ COOKIE_FILE = Path(__file__).parent / ".futu_cookies.json"
 OUT_DIR     = Path(__file__).parent / "reports"
 IMG_DIR     = OUT_DIR / "trade_imgs"
 DB_FILE     = OUT_DIR / "creator_db.json"
-API_KEY     = os.environ.get("ANTHROPIC_API_KEY", "app-key-mtx9wxWUGDpQLjF4")
+API_KEY     = "app-key-mtx9wxWUGDpQLjF4"
 FUTU_BASE_URL = "https://llm-proxy.futuoa.com/v1"
 
 FEED_API    = "https://q.futunn.com/nnq/feed-list"
