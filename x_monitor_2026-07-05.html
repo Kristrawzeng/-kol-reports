@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-07-05</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-07-05 · 更新于 08:54</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-07-05.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-07-05.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<p class="empty">未生成观点（Claude 不可用或无数据）</p>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 美股投资 <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="883" data-time="1783172293">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>CatNarratives老三</b>
+            <a href="https://x.com/laosanhemao" target="_blank" class="handle">@laosanhemao</a>
+            <span class="kw-score">活跃度 883 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>CatNarratives老三</b>
+        <a href="https://x.com/laosanhemao" target="_blank" class="handle">@laosanhemao</a>
+        <span class="score">热度 316</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-03 21:57 · 1天前</b></div>
+      <div class="tw-text">这个技巧真的非常好用，安利一波
+
+最近推文流量上来了，屏蔽我的账号数量也跟着上来了，有的还是我很敬仰的币圈前辈，曾经还发过帖推荐对方
+
+我写的美股内容，没有针对过任何人。
+21年，那个时候炒的是NFT、元宇宙房产，是新能源未来，是白酒的大革命</div>
+      <div class="tw-stats">❤️ 70 &nbsp; 🔁 10 &nbsp;
+        💬 84 &nbsp; 🔖 11 &nbsp; 👁 8.7K
+        <a href="https://x.com/laosanhemao/status/2073043394839069081" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>CatNarratives老三</b>
+        <a href="https://x.com/laosanhemao" target="_blank" class="handle">@laosanhemao</a>
+        <span class="score">热度 217</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 21:38 · 11小时前</b></div>
+      <div class="tw-text">国内现在最火的两家公司，马上都要IPO了。
+一家是宇树科技，就是春晚上那个机器人。
+另一家是长鑫科技，国产存储龙头。
+
+这两家公司，是这几年来整个A股讨论度最高的IPO之一，市场都在等着它们上市。
+
+为什么这么多人盯着它们？
+因为大家都想拿到它们的股票。
+但真正聪明的人，不会等上市以后再去抢。</div>
+      <div class="tw-stats">❤️ 32 &nbsp; 🔁 1 &nbsp;
+        💬 49 &nbsp; 🔖 4 &nbsp; 👁 10.1K
+        <a href="https://x.com/laosanhemao/status/2073400993988145232" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="604" data-time="1783197444">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>Herbert Ong</b>
+            <a href="https://x.com/herbertong" target="_blank" class="handle">@herbertong</a>
+            <span class="kw-score">活跃度 604 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Herbert Ong</b>
+        <a href="https://x.com/herbertong" target="_blank" class="handle">@herbertong</a>
+        <span class="score">热度 604</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 04:37 · 4小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073506485125161066" onclick="tg('2073506485125161066')">🌐 翻译</button></div><div class="tw-text" id="o2073506485125161066">Tesla&#x27;s Q2 may have been more important than many people realize!
+
+@CernBasher says it wasn&#x27;t just about beating delivery expectations with 480,126 vehicles. Tesla also deployed 13.5 GWh of energy storage, saw strong growth in China, and continued its recovery in Europe.
+
+The</div><div class="tw-text tw-trans" id="t2073506485125161066" style="display:none">特斯拉二季度的重要性可能超出很多人的预期！@CernBasher表示，这不仅仅是交付量以480,126辆超预期，特斯拉还部署了13.5 GWh的储能，在中国实现强劲增长，并在欧洲持续复苏。</div>
+      <div class="tw-stats">❤️ 332 &nbsp; 🔁 31 &nbsp;
+        💬 8 &nbsp; 🔖 11 &nbsp; 👁 18.3K
+        <a href="https://x.com/herbertong/status/2073506485125161066" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 社会时事 <span>· 3 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="6616" data-time="1783179338">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>Ron DeSantis</b>
+            <a href="https://x.com/RonDeSantis" target="_blank" class="handle">@RonDeSantis</a>
+            <span class="kw-score">活跃度 6.6K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Ron DeSantis</b>
+        <a href="https://x.com/RonDeSantis" target="_blank" class="handle">@RonDeSantis</a>
+        <span class="score">热度 6.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 23:35 · 9小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073430542532444383" onclick="tg('2073430542532444383')">🌐 翻译</button></div><div class="tw-text" id="o2073430542532444383">No doubt.
+
+If we save on fuel costs, reduce mishaps through FSD and get lower insurance rates, that could be some real benefits for taxpayers when applied across the fleet.  
+
+And from a law enforcement/performance perspective, the Teslas are very fast and powerful.  I’d imagine</div><div class="tw-text tw-trans" id="t2073430542532444383" style="display:none">毫无疑问。如果能节省燃料成本、通过FSD减少事故并获得更低的保险费率，这对整个车队来说将为纳税人带来切实的收益。而从执法和性能角度来看，特斯拉车速极快、动力强劲。我能想象……</div>
+      <div class="tw-stats">❤️ 4.0K &nbsp; 🔁 288 &nbsp;
+        💬 167 &nbsp; 🔖 89 &nbsp; 👁 169.9K
+        <a href="https://x.com/RonDeSantis/status/2073430542532444383" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="305" data-time="1783160896">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>悉尼閑人</b>
+            <a href="https://x.com/ChinaTruth" target="_blank" class="handle">@ChinaTruth</a>
+            <span class="kw-score">活跃度 305 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>悉尼閑人</b>
+        <a href="https://x.com/ChinaTruth" target="_blank" class="handle">@ChinaTruth</a>
+        <span class="score">热度 305</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 18:28 · 14小时前</b></div>
+      <div class="tw-text">1987年7月15日经国先生发布“总统令”：
+
+宣布台湾自1987年7月15日零时起，解除戒严！解除报禁、
+党禁！
+
+并留下不朽的一句话：
+没有永远的执政党，只有永远的人民！
+
+网友：习近平你敢吗？</div>
+      <div class="tw-stats">❤️ 111 &nbsp; 🔁 23 &nbsp;
+        💬 34 &nbsp; 🔖 16 &nbsp; 👁 7.5K
+        <a href="https://x.com/ChinaTruth/status/2073353192096895438" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="186" data-time="1783056243">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>Nikkei Asia</b>
+            <a href="https://x.com/NikkeiAsia" target="_blank" class="handle">@NikkeiAsia</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲6%</span>
+            <span class="kw-score">活跃度 186 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Nikkei Asia</b>
+        <a href="https://x.com/NikkeiAsia" target="_blank" class="handle">@NikkeiAsia</a>
+        <span class="score">热度 186</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-03 13:24 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2072914246535430389" onclick="tg('2072914246535430389')">🌐 翻译</button></div><div class="tw-text" id="o2072914246535430389">Hong Kong bookseller Lam Wing-kee, once detained by China, dies in Taipei</div><div class="tw-text tw-trans" id="t2072914246535430389" style="display:none">曾遭中国拘押的香港铜锣湾书店书商林荣基在台北离世。</div>
+      <div class="tw-stats">❤️ 17 &nbsp; 🔁 7 &nbsp;
+        💬 4 &nbsp; 🔖 3 &nbsp; 👁 14.2K
+        <a href="https://x.com/NikkeiAsia/status/2072914246535430389" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 宏观财经 <span>· 3 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="3151" data-time="1783194921">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>The Kobeissi Letter</b>
+            <a href="https://x.com/KobeissiLetter" target="_blank" class="handle">@KobeissiLetter</a>
+            <span class="kw-score">活跃度 3.2K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>The Kobeissi Letter</b>
+        <a href="https://x.com/KobeissiLetter" target="_blank" class="handle">@KobeissiLetter</a>
+        <span class="score">热度 3.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 03:55 · 4小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073495901411144059" onclick="tg('2073495901411144059')">🌐 翻译</button></div><div class="tw-text" id="o2073495901411144059">Leverage in South Korean chip stocks is out of control:
+
+Single-stock leveraged and inverse ETFs tracking SK Hynix now hold ~$19 billion in total assets, more than 4 times the stock&#x27;s average daily trading volume this year of ~$4.5 billion.
+
+At the same time, Samsung has ~$12.4</div><div class="tw-text tw-trans" id="t2073495901411144059" style="display:none">韩国芯片股的杠杆产品已经失控：追踪SK海力士的单股杠杆和反向ETF目前总资产规模约190亿美元，超过该股今年日均成交量约45亿美元的四倍。与此同时，三星约有124亿……</div>
+      <div class="tw-stats">❤️ 769 &nbsp; 🔁 114 &nbsp;
+        💬 64 &nbsp; 🔖 161 &nbsp; 👁 183.1K
+        <a href="https://x.com/KobeissiLetter/status/2073495901411144059" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="3119" data-time="1783062900">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>株するうんた🔰</b>
+            <a href="https://x.com/kabuntnk" target="_blank" class="handle">@kabuntnk</a>
+            <span class="kw-score">活跃度 3.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>株するうんた🔰</b>
+        <a href="https://x.com/kabuntnk" target="_blank" class="handle">@kabuntnk</a>
+        <span class="score">热度 3.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-03 15:15 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2072942165857333737" onclick="tg('2072942165857333737')">🌐 翻译</button></div><div class="tw-text" id="o2072942165857333737">レバ商品の怖さ</div><div class="tw-text tw-trans" id="t2072942165857333737" style="display:none">杠杆产品的可怕之处</div>
+      <div class="tw-stats">❤️ 490 &nbsp; 🔁 52 &nbsp;
+        💬 9 &nbsp; 🔖 138 &nbsp; 👁 229.7K
+        <a href="https://x.com/kabuntnk/status/2072942165857333737" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="394" data-time="1783163243">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>华尔街观察 Xtrader</b>
+            <a href="https://x.com/cnfinancewatch" target="_blank" class="handle">@cnfinancewatch</a>
+            <span class="kw-score">活跃度 394 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>华尔街观察 Xtrader</b>
+        <a href="https://x.com/cnfinancewatch" target="_blank" class="handle">@cnfinancewatch</a>
+        <span class="score">热度 103</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 12:37 · 20小时前</b></div>
+      <div class="tw-text">日本、韩国、是这一轮AI牛市的最大受益国，我们的观察和预见有错吗？没有。一个月前我们就呼吁看多日经和韩国指数：
+
+日经225指数今年以来上涨35%，大幅跑赢标普500指数（9.1%）和纳斯达克100指数（16.3%）。
+
+今年的上涨主要由AI硬件股带动，包括：
+
+Advantest（6857 TYO）+38.58%
+Tokyo</div>
+      <div class="tw-stats">❤️ 6 &nbsp; 🔁 0 &nbsp;
+        💬 6 &nbsp; 🔖 3 &nbsp; 👁 8.5K
+        <a href="https://x.com/cnfinancewatch/status/2073264958348120472" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>华尔街观察 Xtrader</b>
+        <a href="https://x.com/cnfinancewatch" target="_blank" class="handle">@cnfinancewatch</a>
+        <span class="score">热度 102</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 19:07 · 13小时前</b></div>
+      <div class="tw-text">DeepSeek融资上市
+Minimax港股之后是A股
+长鑫、长存上市
+
+谁最获益？他们圈的钱给谁？AI芯片、半导体设备，上下游企业！例如长鑫：</div>
+      <div class="tw-stats">❤️ 9 &nbsp; 🔁 3 &nbsp;
+        💬 6 &nbsp; 🔖 16 &nbsp; 👁 6.2K
+        <a href="https://x.com/cnfinancewatch/status/2073363033255219462" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 10 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="1503" data-time="1783185750">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>Kripto Zenci 🤵🏿🦅</b>
+            <a href="https://x.com/kriptozenciii" target="_blank" class="handle">@kriptozenciii</a>
+            <span class="kw-score">活跃度 1.5K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Kripto Zenci 🤵🏿🦅</b>
+        <a href="https://x.com/kriptozenciii" target="_blank" class="handle">@kriptozenciii</a>
+        <span class="score">热度 1.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 01:22 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073457436644556854" onclick="tg('2073457436644556854')">🌐 翻译</button></div><div class="tw-text" id="o2073457436644556854">Son Dakika : Herkesin adından söz ettiği Japon yatırımcı 🇯🇵, ETH&#x27;nin 2028&#x27;de 1.260 dolara ulaşacağını ve ardından 7.000 dolara kadar güçlü bir yükseliş göstereceğini tahmin ediyor.
+
+Önceki döngüde, ETH&#x27;yi 90 dolardan alıp 4.000 dolardan satarak ciddi bir kar elde etti.
+
+#Altın,</div><div class="tw-text tw-trans" id="t2073457436644556854" style="display:none">最新消息：广受关注的日本投资者🇯🇵预测ETH将在2028年触及1260美元，随后强劲上涨至7000美元。上一轮周期中，他以90美元买入ETH，4000美元卖出，斩获丰厚利润。#黄金</div>
+      <div class="tw-stats">❤️ 395 &nbsp; 🔁 49 &nbsp;
+        💬 63 &nbsp; 🔖 92 &nbsp; 👁 82.2K
+        <a href="https://x.com/kriptozenciii/status/2073457436644556854" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="567" data-time="1783184407">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>CoinGecko</b>
+            <a href="https://x.com/coingecko" target="_blank" class="handle">@coingecko</a>
+            <span class="kw-score">活跃度 567 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>CoinGecko</b>
+        <a href="https://x.com/coingecko" target="_blank" class="handle">@coingecko</a>
+        <span class="score">热度 567</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 01:00 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073451804583506322" onclick="tg('2073451804583506322')">🌐 翻译</button></div><div class="tw-text" id="o2073451804583506322">INSIGHT: $MU, $NVDA, and $CRCL lead as the most traded tokenized stocks, with Micron hitting a peak of $13.16B in trading volume in May.</div><div class="tw-text tw-trans" id="t2073451804583506322" style="display:none">要闻：$MU、$NVDA和$CRCL是交易量最大的代币化股票，美光5月交易量峰值达131.6亿美元。</div>
+      <div class="tw-stats">❤️ 118 &nbsp; 🔁 35 &nbsp;
+        💬 40 &nbsp; 🔖 6 &nbsp; 👁 30.9K
+        <a href="https://x.com/coingecko/status/2073451804583506322" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="273" data-time="1783212028">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>余烬</b>
+            <a href="https://x.com/EmberCN" target="_blank" class="handle">@EmberCN</a>
+            <span class="kw-score">活跃度 273 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>余烬</b>
+        <a href="https://x.com/EmberCN" target="_blank" class="handle">@EmberCN</a>
+        <span class="score">热度 221</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 08:44 · 1天前</b></div>
+      <div class="tw-text">这个从 1 号开始不断从 Binance 提出 ETH 的鲸鱼，他的 ETH 已经浮盈 $330 万了。而今天在 4 小时前他又从 Binance 提出了 100 枚 WBTC ($624 万)。
+
+他抄底就开始反弹：3 天时间他一共囤积了 19,752 枚 ETH ($3143 万) + 100 枚 WBTC ($624 万)，ETH 价格 $1,591、BTC 价格 $62,390。</div>
+      <div class="tw-stats">❤️ 25 &nbsp; 🔁 0 &nbsp;
+        💬 21 &nbsp; 🔖 2 &nbsp; 👁 16.1K
+        <a href="https://x.com/EmberCN/status/2073206319163826423" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>余烬</b>
+        <a href="https://x.com/EmberCN" target="_blank" class="handle">@EmberCN</a>
+        <span class="score">热度 16</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 08:40 · 14分钟前</b></div>
+      <div class="tw-text">1 号以来持续买入的鲸鱼，今天继续从 Binance 提出 4,942 枚 ETH ($883 万) + 111.5 枚 WBTC ($701 万)。
+
+4 天时间他一共囤积了 24,694 枚 ETH ($4026 万) + 211.5 枚 WBTC ($1325 万)，现在已经浮盈了 $361 万。
+
+地址：</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 2 &nbsp; 🔖 0 &nbsp; 👁 1.2K
+        <a href="https://x.com/EmberCN/status/2073567654867296487" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="215" data-time="1783163040">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>空空｜预测世界杯就在Gate</b>
+            <a href="https://x.com/btcoindown" target="_blank" class="handle">@btcoindown</a>
+            <span class="kw-score">活跃度 215 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>空空｜预测世界杯就在Gate</b>
+        <a href="https://x.com/btcoindown" target="_blank" class="handle">@btcoindown</a>
+        <span class="score">热度 215</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 19:04 · 13小时前</b></div>
+      <div class="tw-text">周末和几个好久没见的大学同学吃饭。
+
+聊着聊着，话题就到了投资。
+
+一个朋友说自己去年开始研究美股，开户、换汇、跨境汇款折腾了半个月，现在终于能交易了。
+
+另一个人马上接话：
+
+&quot;美股这东西门槛还是高，普通人哪有那么容易玩。&quot;
+
+大家都点头。
+
+这时候，旁边一直没怎么说话的人笑了一下。
+
+他说：</div>
+      <div class="tw-stats">❤️ 42 &nbsp; 🔁 0 &nbsp;
+        💬 53 &nbsp; 🔖 0 &nbsp; 👁 9.4K
+        <a href="https://x.com/btcoindown/status/2073362183472451832" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="206" data-time="1783167087">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>37度</b>
+            <a href="https://x.com/hibtc37" target="_blank" class="handle">@hibtc37</a>
+            <span class="kw-score">活跃度 206 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>37度</b>
+        <a href="https://x.com/hibtc37" target="_blank" class="handle">@hibtc37</a>
+        <span class="score">热度 206</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 20:11 · 12小时前</b></div>
+      <div class="tw-text">市场逻辑变了，ETF如果转大额净流入，这波反弹的高度可能会大概率超过我的认知，所以，要坚决止损。此前，逻辑没变，我一定会拿到59k以下</div>
+      <div class="tw-stats">❤️ 32 &nbsp; 🔁 3 &nbsp;
+        💬 9 &nbsp; 🔖 4 &nbsp; 👁 15.0K
+        <a href="https://x.com/hibtc37/status/2073379159414624692" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="192" data-time="1783191469">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>77.eth</b>
+            <a href="https://x.com/Crypto77qi" target="_blank" class="handle">@Crypto77qi</a>
+            <span class="kw-score">活跃度 192 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>77.eth</b>
+        <a href="https://x.com/Crypto77qi" target="_blank" class="handle">@Crypto77qi</a>
+        <span class="score">热度 192</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 02:57 · 5小时前</b></div>
+      <div class="tw-text">最近美股真的火出圈，AI、芯片、科技股轮番拉升，各类ETF也是轮动走强。
+
+很多币圈朋友都想进场蹭行情，但我发现，大家缺的从来不是看盘的能力，而是简单便捷的进场渠道。</div>
+      <div class="tw-stats">❤️ 20 &nbsp; 🔁 2 &nbsp;
+        💬 42 &nbsp; 🔖 0 &nbsp; 👁 10.3K
+        <a href="https://x.com/Crypto77qi/status/2073481422061650025" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="181" data-time="1783155106">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>阿毛</b>
+            <a href="https://x.com/LmhdbAi" target="_blank" class="handle">@LmhdbAi</a>
+            <span class="kw-score">活跃度 181 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>阿毛</b>
+        <a href="https://x.com/LmhdbAi" target="_blank" class="handle">@LmhdbAi</a>
+        <span class="score">热度 181</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 16:51 · 16小时前</b></div>
+      <div class="tw-text">今天又是马斯克发工资的日子，阿毛2周领了$717 ，熊市推特就是最大的项目方，一起来撸起来
+
+最近不少推友为了领 X 的工资，申请 Wise 却一直审核不通过。
+
+推荐你们试试新加坡的 Starryblu卡，用大陆身份信息即可直接开通，不用做假地址证明，不用担心被风控。</div>
+      <div class="tw-stats">❤️ 43 &nbsp; 🔁 0 &nbsp;
+        💬 46 &nbsp; 🔖 11 &nbsp; 👁 5.6K
+        <a href="https://x.com/LmhdbAi/status/2073328907131253007" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="158" data-time="1783154473">
+          <div class="kol-head"><span class="rank">#18</span>
+            <b>汤老湿</b>
+            <a href="https://x.com/tangls717" target="_blank" class="handle">@tangls717</a>
+            <span class="kw-score">活跃度 158 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>汤老湿</b>
+        <a href="https://x.com/tangls717" target="_blank" class="handle">@tangls717</a>
+        <span class="score">热度 158</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 16:41 · 16小时前</b></div>
+      <div class="tw-text">有U的人，跨境资产配置真的方便很多
+
+最近又研究了一下 BiyaPay，最大感受还是那句话：对手里有 USDT 的人来说，它确实把很多流程做简单了。
+
+以前想参与美股、港股，最麻烦的往往不是看标的，而是开户、换汇、入金、跨境转账这些前置动作。流程一多，很多人还没开始交易，耐心就先被磨没了。
+
+BiyaPay</div>
+      <div class="tw-stats">❤️ 24 &nbsp; 🔁 1 &nbsp;
+        💬 38 &nbsp; 🔖 0 &nbsp; 👁 7.5K
+        <a href="https://x.com/tangls717/status/2073326249733394842" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="156" data-time="1783165269">
+          <div class="kol-head"><span class="rank">#19</span>
+            <b>追梦人</b>
+            <a href="https://x.com/yzh20220814" target="_blank" class="handle">@yzh20220814</a>
+            <span class="kw-score">活跃度 156 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>追梦人</b>
+        <a href="https://x.com/yzh20220814" target="_blank" class="handle">@yzh20220814</a>
+        <span class="score">热度 156</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 19:41 · 13小时前</b></div>
+      <div class="tw-text">@hibtc37 还是你止损果断</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 0 &nbsp; 👁 15.2K
+        <a href="https://x.com/yzh20220814/status/2073371533452734702" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="150" data-time="1783155546">
+          <div class="kol-head"><span class="rank">#20</span>
+            <b>Web3刀哥|上Deepcoin预测世界杯⚽️</b>
+            <a href="https://x.com/Mrbrothergay_" target="_blank" class="handle">@Mrbrothergay_</a>
+            <span class="kw-score">活跃度 150 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Web3刀哥|上Deepcoin预测世界杯⚽️</b>
+        <a href="https://x.com/Mrbrothergay_" target="_blank" class="handle">@Mrbrothergay_</a>
+        <span class="score">热度 150</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 16:59 · 15小时前</b></div>
+      <div class="tw-text">从币圈出发，但不止于币圈
+
+很多加密工具做着做着，最后都会遇到一个问题：用户的需求不可能永远只停在币圈里。
+
+用户会看美股，会看港股，会有跨境转账，也会想把资金从一个市场搬到另一个市场。尤其是手里长期持有 USDT 的人，资产路径越顺，机会就越多。
+
+BiyaPay</div>
+      <div class="tw-stats">❤️ 22 &nbsp; 🔁 1 &nbsp;
+        💬 34 &nbsp; 🔖 0 &nbsp; 👁 7.5K
+        <a href="https://x.com/Mrbrothergay_/status/2073330749881958761" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 娱乐影视 <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="2378" data-time="1783074060">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>日経エンタテインメント！</b>
+            <a href="https://x.com/nikkei_ent" target="_blank" class="handle">@nikkei_ent</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲13%</span>
+            <span class="kw-score">活跃度 2.4K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日経エンタテインメント！</b>
+        <a href="https://x.com/nikkei_ent" target="_blank" class="handle">@nikkei_ent</a>
+        <span class="score">热度 2.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-03 18:21 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2072988974025789504" onclick="tg('2072988974025789504')">🌐 翻译</button></div><div class="tw-text" id="o2072988974025789504">【26年8月号発売中!】 
+
+
+#八木勇征（@yuseiyagi_YY）さんの連載「The Only One with entertainment！」 
+
+今月は、KAWAII LAB. （@kawaii__lab）のアイドルをプロデュースしている #木村ミサ （@misaxmas_）さんがゲストに登場し、”バズを学ぶ”をテーマに、SP対談を実施！</div><div class="tw-text tw-trans" id="t2072988974025789504" style="display:none">【26年8月号发售中！】八木勇征的连载「The Only One with entertainment！」本月迎来特别对谈，嘉宾是正在制作KAWAII LAB.旗下偶像的木村Misa，以「学习爆红」为主题展开对话！</div>
+      <div class="tw-stats">❤️ 1.2K &nbsp; 🔁 345 &nbsp;
+        💬 3 &nbsp; 🔖 100 &nbsp; 👁 31.0K
+        <a href="https://x.com/nikkei_ent/status/2072988974025789504" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1201" data-time="1783198244">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>beeple</b>
+            <a href="https://x.com/beeple" target="_blank" class="handle">@beeple</a>
+            <span class="kw-score">活跃度 1.2K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>beeple</b>
+        <a href="https://x.com/beeple" target="_blank" class="handle">@beeple</a>
+        <span class="score">热度 1.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 04:50 · 4小时前</b></div>
+      <div class="tw-text">FAFO x 250</div>
+      <div class="tw-stats">❤️ 693 &nbsp; 🔁 83 &nbsp;
+        💬 40 &nbsp; 🔖 24 &nbsp; 👁 24.4K
+        <a href="https://x.com/beeple/status/2073509838768717877" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><a class="trend" href="https://x.com/search?q=Tesla%20Launches%20Unsupervised%20Robotaxi%20Service%20in%20Miami" target="_blank"><span class="rank">#1</span> Tesla Launches Unsupervised Robotaxi Service in Miami<span class="meta"></span><span class="tmeta">特斯拉在迈阿密推出无监督自动驾驶出租车服务</span></a>
+<a class="trend" href="https://x.com/search?q=Skydiver%20Crashes%20into%20Rodeo%20Tent%20but%20Walks%20Away%20Smiling" target="_blank"><span class="rank">#2</span> Skydiver Crashes into Rodeo Tent but Walks Away Smiling<span class="meta"></span><span class="tmeta">跳伞者坠入牛仔竞技帐篷却面带微笑走开</span></a>
+<a class="trend" href="https://x.com/search?q=Eiffel%20Tower%20Glows%20%27USA%20250%27%20for%20America%27s%20250th%20Birthday" target="_blank"><span class="rank">#3</span> Eiffel Tower Glows &#x27;USA 250&#x27; for America&#x27;s 250th Birthday<span class="meta"></span><span class="tmeta">埃菲尔铁塔亮灯&#x27;美国250&#x27;庆祝美国建国250周年</span></a>
+<a class="trend" href="https://x.com/search?q=SPLC" target="_blank"><span class="rank">#4</span> SPLC<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=National%20Mall" target="_blank"><span class="rank">#5</span> National Mall<span class="meta"></span><span class="tmeta">国家广场</span></a>
+<a class="trend" href="https://x.com/search?q=Eli%20White" target="_blank"><span class="rank">#6</span> Eli White<span class="meta"></span><span class="tmeta">埃利·怀特</span></a>
+<a class="trend" href="https://x.com/search?q=Jack%20Doherty" target="_blank"><span class="rank">#7</span> Jack Doherty<span class="meta"></span><span class="tmeta">杰克·多尔蒂</span></a>
+<a class="trend" href="https://x.com/search?q=%23RWBY" target="_blank"><span class="rank">#8</span> #RWBY<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=POLARITY" target="_blank"><span class="rank">#9</span> POLARITY<span class="meta"></span><span class="tmeta">极性</span></a>
+<a class="trend" href="https://x.com/search?q=Paraguay" target="_blank"><span class="rank">#10</span> Paraguay<span class="meta"></span><span class="tmeta">巴拉圭</span></a>
+<a class="trend" href="https://x.com/search?q=Happy%204th" target="_blank"><span class="rank">#11</span> Happy 4th<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Patriot%20Front" target="_blank"><span class="rank">#12</span> Patriot Front<span class="meta"></span><span class="tmeta">爱国者阵线</span></a>
+<a class="trend" href="https://x.com/search?q=Antifa" target="_blank"><span class="rank">#13</span> Antifa<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Feds" target="_blank"><span class="rank">#14</span> Feds<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23250YearsStrong" target="_blank"><span class="rank">#15</span> #250YearsStrong<span class="meta"></span><span class="tmeta">#建国250周年强盛</span></a>
+<a class="trend" href="https://x.com/search?q=All-Star" target="_blank"><span class="rank">#16</span> All-Star<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Pennies" target="_blank"><span class="rank">#17</span> Pennies<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Galarza" target="_blank"><span class="rank">#18</span> Galarza<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Darryn%20Peterson" target="_blank"><span class="rank">#19</span> Darryn Peterson<span class="meta"></span><span class="tmeta">达里恩·彼得森</span></a>
+<a class="trend" href="https://x.com/search?q=Paul%20Pelosi" target="_blank"><span class="rank">#20</span> Paul Pelosi<span class="meta"></span><span class="tmeta">保罗·佩洛西</span></a>
+<a class="trend" href="https://x.com/search?q=Canada" target="_blank"><span class="rank">#21</span> Canada<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Independence%20Day" target="_blank"><span class="rank">#22</span> Independence Day<span class="meta"></span><span class="tmeta">独立日</span></a>
+<a class="trend" href="https://x.com/search?q=%23PARFRA" target="_blank"><span class="rank">#23</span> #PARFRA<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23Svengoolie" target="_blank"><span class="rank">#24</span> #Svengoolie<span class="meta"></span><span class="tmeta">#斯文古利</span></a>
+<a class="trend" href="https://x.com/search?q=Acuff" target="_blank"><span class="rank">#25</span> Acuff<span class="meta"></span></a>
+</div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>$TSLA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼55%</span>
+          <span class="kw-score">总热度 8.6K · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Ron DeSantis</b>
+        <a href="https://x.com/RonDeSantis" target="_blank" class="handle">@RonDeSantis</a>
+        <span class="score">热度 6.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 23:35 · 9小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073430542532444383" onclick="tg('2073430542532444383')">🌐 翻译</button></div><div class="tw-text" id="o2073430542532444383">No doubt.
+
+If we save on fuel costs, reduce mishaps through FSD and get lower insurance rates, that could be some real benefits for taxpayers when applied across the fleet.  
+
+And from a law enforcement/performance perspective, the Teslas are very fast and powerful.  I’d imagine</div><div class="tw-text tw-trans" id="t2073430542532444383" style="display:none">毫无疑问。如果能节省燃料成本、通过FSD减少事故并获得更低的保险费率，这对整个车队来说将为纳税人带来切实的收益。而从执法和性能角度来看，特斯拉车速极快、动力强劲。我能想象……</div>
+      <div class="tw-stats">❤️ 4.0K &nbsp; 🔁 288 &nbsp;
+        💬 167 &nbsp; 🔖 89 &nbsp; 👁 169.9K
+        <a href="https://x.com/RonDeSantis/status/2073430542532444383" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲207%</span>
+          <span class="kw-score">总热度 6.4K · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>The Kobeissi Letter</b>
+        <a href="https://x.com/KobeissiLetter" target="_blank" class="handle">@KobeissiLetter</a>
+        <span class="score">热度 3.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 03:55 · 4小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073495901411144059" onclick="tg('2073495901411144059')">🌐 翻译</button></div><div class="tw-text" id="o2073495901411144059">Leverage in South Korean chip stocks is out of control:
+
+Single-stock leveraged and inverse ETFs tracking SK Hynix now hold ~$19 billion in total assets, more than 4 times the stock&#x27;s average daily trading volume this year of ~$4.5 billion.
+
+At the same time, Samsung has ~$12.4</div><div class="tw-text tw-trans" id="t2073495901411144059" style="display:none">韩国芯片股的杠杆产品已经失控：追踪SK海力士的单股杠杆和反向ETF目前总资产规模约190亿美元，超过该股今年日均成交量约45亿美元的四倍。与此同时，三星约有124亿……</div>
+      <div class="tw-stats">❤️ 769 &nbsp; 🔁 114 &nbsp;
+        💬 64 &nbsp; 🔖 161 &nbsp; 👁 183.1K
+        <a href="https://x.com/KobeissiLetter/status/2073495901411144059" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲29%</span>
+          <span class="kw-score">总热度 3.6K · 26 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日経エンタテインメント！</b>
+        <a href="https://x.com/nikkei_ent" target="_blank" class="handle">@nikkei_ent</a>
+        <span class="score">热度 2.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-03 18:21 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2072988974025789504" onclick="tg('2072988974025789504')">🌐 翻译</button></div><div class="tw-text" id="o2072988974025789504">【26年8月号発売中!】 
+
+
+#八木勇征（@yuseiyagi_YY）さんの連載「The Only One with entertainment！」 
+
+今月は、KAWAII LAB. （@kawaii__lab）のアイドルをプロデュースしている #木村ミサ （@misaxmas_）さんがゲストに登場し、”バズを学ぶ”をテーマに、SP対談を実施！</div><div class="tw-text tw-trans" id="t2072988974025789504" style="display:none">【26年8月号发售中！】八木勇征的连载「The Only One with entertainment！」本月迎来特别对谈，嘉宾是正在制作KAWAII LAB.旗下偶像的木村Misa，以「学习爆红」为主题展开对话！</div>
+      <div class="tw-stats">❤️ 1.2K &nbsp; 🔁 345 &nbsp;
+        💬 3 &nbsp; 🔖 100 &nbsp; 👁 31.0K
+        <a href="https://x.com/nikkei_ent/status/2072988974025789504" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲579%</span>
+          <span class="kw-score">总热度 2.9K · 41 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>CatNarratives老三</b>
+        <a href="https://x.com/laosanhemao" target="_blank" class="handle">@laosanhemao</a>
+        <span class="score">热度 316</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-03 21:57 · 1天前</b></div>
+      <div class="tw-text">这个技巧真的非常好用，安利一波
+
+最近推文流量上来了，屏蔽我的账号数量也跟着上来了，有的还是我很敬仰的币圈前辈，曾经还发过帖推荐对方
+
+我写的美股内容，没有针对过任何人。
+21年，那个时候炒的是NFT、元宇宙房产，是新能源未来，是白酒的大革命</div>
+      <div class="tw-stats">❤️ 70 &nbsp; 🔁 10 &nbsp;
+        💬 84 &nbsp; 🔖 11 &nbsp; 👁 8.7K
+        <a href="https://x.com/laosanhemao/status/2073043394839069081" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼4%</span>
+          <span class="kw-score">总热度 2.1K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Kripto Zenci 🤵🏿🦅</b>
+        <a href="https://x.com/kriptozenciii" target="_blank" class="handle">@kriptozenciii</a>
+        <span class="score">热度 1.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 01:22 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073457436644556854" onclick="tg('2073457436644556854')">🌐 翻译</button></div><div class="tw-text" id="o2073457436644556854">Son Dakika : Herkesin adından söz ettiği Japon yatırımcı 🇯🇵, ETH&#x27;nin 2028&#x27;de 1.260 dolara ulaşacağını ve ardından 7.000 dolara kadar güçlü bir yükseliş göstereceğini tahmin ediyor.
+
+Önceki döngüde, ETH&#x27;yi 90 dolardan alıp 4.000 dolardan satarak ciddi bir kar elde etti.
+
+#Altın,</div><div class="tw-text tw-trans" id="t2073457436644556854" style="display:none">最新消息：广受关注的日本投资者🇯🇵预测ETH将在2028年触及1260美元，随后强劲上涨至7000美元。上一轮周期中，他以90美元买入ETH，4000美元卖出，斩获丰厚利润。#黄金</div>
+      <div class="tw-stats">❤️ 395 &nbsp; 🔁 49 &nbsp;
+        💬 63 &nbsp; 🔖 92 &nbsp; 👁 82.2K
+        <a href="https://x.com/kriptozenciii/status/2073457436644556854" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼46%</span>
+          <span class="kw-score">总热度 654 · 40 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>37度</b>
+        <a href="https://x.com/hibtc37" target="_blank" class="handle">@hibtc37</a>
+        <span class="score">热度 206</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 20:11 · 12小时前</b></div>
+      <div class="tw-text">市场逻辑变了，ETF如果转大额净流入，这波反弹的高度可能会大概率超过我的认知，所以，要坚决止损。此前，逻辑没变，我一定会拿到59k以下</div>
+      <div class="tw-stats">❤️ 32 &nbsp; 🔁 3 &nbsp;
+        💬 9 &nbsp; 🔖 4 &nbsp; 👁 15.0K
+        <a href="https://x.com/hibtc37/status/2073379159414624692" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲6310%</span>
+          <span class="kw-score">总热度 641 · 40 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>CoinGecko</b>
+        <a href="https://x.com/coingecko" target="_blank" class="handle">@coingecko</a>
+        <span class="score">热度 567</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 01:00 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073451804583506322" onclick="tg('2073451804583506322')">🌐 翻译</button></div><div class="tw-text" id="o2073451804583506322">INSIGHT: $MU, $NVDA, and $CRCL lead as the most traded tokenized stocks, with Micron hitting a peak of $13.16B in trading volume in May.</div><div class="tw-text tw-trans" id="t2073451804583506322" style="display:none">要闻：$MU、$NVDA和$CRCL是交易量最大的代币化股票，美光5月交易量峰值达131.6亿美元。</div>
+      <div class="tw-stats">❤️ 118 &nbsp; 🔁 35 &nbsp;
+        💬 40 &nbsp; 🔖 6 &nbsp; 👁 30.9K
+        <a href="https://x.com/coingecko/status/2073451804583506322" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼6%</span>
+          <span class="kw-score">总热度 232 · 75 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>小龙先生</b>
+        <a href="https://x.com/Dragonhau66" target="_blank" class="handle">@Dragonhau66</a>
+        <span class="score">热度 15</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 06:54 · 1小时前</b></div>
+      <div class="tw-text">比特币行情最新速报：
+《 🔥比特币反弹到关键的强引力区，可以做空了吗？》
+
+兄弟姐妹们，比特币从57800一路拱到63500附近，5,500点左右的反弹空间，看着确实挺猛。
+
+但价格到了63,000上方，很多人开始坐不住了，问同一个问题：“可以做空比特币了吗？”</div>
+      <div class="tw-stats">❤️ 4 &nbsp; 🔁 0 &nbsp;
+        💬 2 &nbsp; 🔖 1 &nbsp; 👁 656
+        <a href="https://x.com/Dragonhau66/status/2073541100237697319" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
