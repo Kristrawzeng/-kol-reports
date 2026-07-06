@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-07-06</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-07-06 · 更新于 08:55</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-07-06.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-07-06.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<div class="summary">🧠 <b>今日讨论总览</b><p>今日讨论聚焦AI安全风险、英伟达芯片延期、机器人替代就业、美联储降息预期及A股机器人赛道。情绪偏焦虑与投机并存，科技与金融叙事交织，多空分歧明显。</p></div><div class="vp-row">
+            <div class="vp-card">
+              <div class="vp-p">AI越狱研究者将Claude/Codex订阅变为攻击性安全工具，引发AI安全警惕</div>
+              <div class="vp-q">「turns a Claude Code or OpenAI Codex subscription into what he...」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/IntCyberDigest" target="_blank">@IntCyberDigest</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">英伟达Kyber NVL144芯片遭遇重大延期，发布时间推迟超12个月</div>
+              <div class="vp-q">「MASSIVE DELAY: Just 3 months after Jensen demoed Kyber NVL144 at GTC, it has faced major setbacks and has been delayed by more than 12 months」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/SemiAnalysis_" target="_blank">@SemiAnalysis_</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">京东CEO警告机器人将取代70万快递员，再培训承诺被质疑是画饼</div>
+              <div class="vp-q">「Robots Will Replace 700,000 Delivery Workers」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/aleabitoreddit" target="_blank">@aleabitoreddit</a> <a class="hold" href="https://x.com/chuge857" target="_blank">@chuge857</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">美联储下一步动作必是降息，市场应忽略噪音静待时机</div>
+              <div class="vp-q">「The next move in rates by the Fed will be a cut. Have a nice day.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/DrJStrategy" target="_blank">@DrJStrategy</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">美国M2创历史新高、债务堆积，BTC被越来越多人视为对冲通胀工具</div>
+              <div class="vp-q">「货币在扩张，债务在堆积，还款只能靠继续借或者稀释，这就是为什么总量2100万的BTC被越来越多人拿来当对冲工具」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/gigiz_eth" target="_blank">@gigiz_eth</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">日韩被认为是本轮AI牛市最大受益国，日经涨幅大幅跑赢标普和纳指</div>
+              <div class="vp-q">「日经225指数今年以来上涨35%，大幅跑赢标普500指数（9.1%）和纳斯达克100指数（16.3%）」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/cnfinancewatch" target="_blank">@cnfinancewatch</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">A股机器人赛道订单持续爆发，拓普集团等中国制造业公司领跑产业链</div>
+              <div class="vp-q">「无论是执行器、减速器、传感器，还是结构件，越来越多企业的订单开始爆发」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/eastweb3eth" target="_blank">@eastweb3eth</a> <a class="hold" href="https://x.com/0xKevin00" target="_blank">@0xKevin00</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">知名投资人Aschenbrenner做空半导体ETF及英伟达，规模逾20亿美元</div>
+              <div class="vp-q">「LEOPOLD ASCHENBRENNER, THE GUY WHO MADE $20 BILLION IN 1 YEAR, OPENED NEW SHORTS: $SMH: 5,327,900 SHARES FOR $2.13B」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/DeFiTracer" target="_blank">@DeFiTracer</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">特斯拉Cybercab在盲人协会年会展示无障碍功能，Robotaxi在新奥尔良开启测试</div>
+              <div class="vp-q">「Cybercab at the National Federation of the Blind&#x27;s Annual Convention in Austin for a hands-on experience of its accessibility features」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/robotaxi" target="_blank">@robotaxi</a> <a class="hold" href="https://x.com/SawyerMerritt" target="_blank">@SawyerMerritt</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">黄金再破4100美元，但多数人因购买渠道繁琐而错失行情</div>
+              <div class="vp-q">「每次金价创新高，都有人在感慨「早知道就买点」。但真让他去买，又开始犯难」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/0xwagggg" target="_blank">@0xwagggg</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">自民党被指借历史叙事操控皇室，被日本网友批评为危险政治组织</div>
+              <div class="vp-q">「自民党は本当に恐ろしい組織だ（自民党真是一个可怕的组织）」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/ashitawawatashi" target="_blank">@ashitawawatashi</a></div>
+            </div></div>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 科技/AI <span>· 5 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="19872" data-time="1783245942">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>International Cyber Digest</b>
+            <a href="https://x.com/IntCyberDigest" target="_blank" class="handle">@IntCyberDigest</a>
+            <span class="kw-score">活跃度 19.9K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>International Cyber Digest</b>
+        <a href="https://x.com/IntCyberDigest" target="_blank" class="handle">@IntCyberDigest</a>
+        <span class="score">热度 19.9K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 18:05 · 14小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073709900820099232" onclick="tg('2073709900820099232')">🌐 翻译</button></div><div class="tw-text" id="o2073709900820099232">‼️ Pliny, an AI jailbreak researcher, has released a multi-agent offensive-security framework that turns a Claude Code or OpenAI Codex subscription into what he calls real bug-hunting, pitched at people who never got the invite.
+
+It&#x27;s called T3MP3ST, and it sells an AI &quot;swarm&quot;</div><div class="tw-text tw-trans" id="t2073709900820099232" style="display:none">‼️ AI越狱研究员Pliny发布了一个多智能体攻防安全框架，可将Claude Code或OpenAI Codex订阅转化为他所称的真实漏洞猎捕工具，面向那些未获邀请的用户。该框架名为T3MP3ST，主打AI「蜂群」概念</div>
+      <div class="tw-stats">❤️ 1.9K &nbsp; 🔁 425 &nbsp;
+        💬 55 &nbsp; 🔖 1.3K &nbsp; 👁 1.6M
+        <a href="https://x.com/IntCyberDigest/status/2073709900820099232" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="5603" data-time="1783285227">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>SemiAnalysis</b>
+            <a href="https://x.com/SemiAnalysis_" target="_blank" class="handle">@SemiAnalysis_</a>
+            <span class="kw-score">活跃度 5.6K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>SemiAnalysis</b>
+        <a href="https://x.com/SemiAnalysis_" target="_blank" class="handle">@SemiAnalysis_</a>
+        <span class="score">热度 5.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-06 05:00 · 3小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073874671498387899" onclick="tg('2073874671498387899')">🌐 翻译</button></div><div class="tw-text" id="o2073874671498387899">MASSIVE DELAY: Just 3 months after Jensen demoed Kyber NVL144 at GTC, it has faced major setbacks and has been delayed by more than 12 months, pushing it back to 2028. Below, we explain why Kyber has faced massive delays and why NVIDIA’s NVL72x2 back-to-back rack architecture was</div><div class="tw-text tw-trans" id="t2073874671498387899" style="display:none">重大延期：就在Jensen于GTC发布Kyber NVL144仅三个月后，该产品遭遇重大挫折，延期超过12个月，推迟至2028年。以下我们将解释Kyber为何大幅延期，以及为何英伟达选择NVL72x2背靠背机架架构……</div>
+      <div class="tw-stats">❤️ 666 &nbsp; 🔁 72 &nbsp;
+        💬 86 &nbsp; 🔖 498 &nbsp; 👁 402.4K
+        <a href="https://x.com/SemiAnalysis_/status/2073874671498387899" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="4637" data-time="1783201479">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>Serenity</b>
+            <a href="https://x.com/aleabitoreddit" target="_blank" class="handle">@aleabitoreddit</a>
+            <span class="kw-score">活跃度 4.6K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Serenity</b>
+        <a href="https://x.com/aleabitoreddit" target="_blank" class="handle">@aleabitoreddit</a>
+        <span class="score">热度 4.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 05:44 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073523410643366242" onclick="tg('2073523410643366242')">🌐 翻译</button></div><div class="tw-text" id="o2073523410643366242">Nikkei - $JD E-Commerce Giant CEO warns &quot;Robots Will Replace 700,000 Delivery Workers&quot;. 
+
+Per FT&#x27;s earlier piece last month: The 700,000 delivery personnel working for the firm will be replaced by robots, highlighting how rapid automation has become a new threat to China&#x27;s</div><div class="tw-text tw-trans" id="t2073523410643366242" style="display:none">日经报道——$JD 电商巨头CEO警告「机器人将取代70万名快递员」。
+
+据《金融时报》上月早先报道：该公司旗下70万名快递人员将被机器人取代，凸显出快速自动化已成为中国……的新威胁</div>
+      <div class="tw-stats">❤️ 832 &nbsp; 🔁 64 &nbsp;
+        💬 139 &nbsp; 🔖 160 &nbsp; 👁 328.3K
+        <a href="https://x.com/aleabitoreddit/status/2073523410643366242" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1791" data-time="1783297226">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>Tesla Robotaxi</b>
+            <a href="https://x.com/robotaxi" target="_blank" class="handle">@robotaxi</a>
+            <span class="kw-score">活跃度 1.8K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Tesla Robotaxi</b>
+        <a href="https://x.com/robotaxi" target="_blank" class="handle">@robotaxi</a>
+        <span class="score">热度 1.8K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-06 08:20 · 35分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073925001661890910" onclick="tg('2073925001661890910')">🌐 翻译</button></div><div class="tw-text" id="o2073925001661890910">Cybercab at the National Federation of the Blind&#x27;s Annual Convention in Austin for a hands-on experience of its accessibility features for blind or visually impaired customers  For example: – Braille lettering on physical controls
+– Space for service animals &amp;amp; assistive</div><div class="tw-text tw-trans" id="t2073925001661890910" style="display:none">Cybercab亮相全美盲人联合会奥斯汀年会，让盲人及视障用户亲身体验其无障碍功能。例如：实体控制键上的盲文标识、导盲犬及辅助器具专属空间等。</div>
+      <div class="tw-stats">❤️ 934 &nbsp; 🔁 140 &nbsp;
+        💬 59 &nbsp; 🔖 43 &nbsp; 👁 36.9K
+        <a href="https://x.com/robotaxi/status/2073925001661890910" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="539" data-time="1783297819">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>Sawyer Merritt</b>
+            <a href="https://x.com/SawyerMerritt" target="_blank" class="handle">@SawyerMerritt</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼79%</span>
+            <span class="kw-score">活跃度 539 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Sawyer Merritt</b>
+        <a href="https://x.com/SawyerMerritt" target="_blank" class="handle">@SawyerMerritt</a>
+        <span class="score">热度 539</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-06 08:30 · 25分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073927489299063275" onclick="tg('2073927489299063275')">🌐 翻译</button></div><div class="tw-text" id="o2073927489299063275">Looks like Tesla is Robotaxi service testing in New Orleans, Louisiana. A fleet of Model Ys with rear camera washers, side camera washers and Texas manufacturer license plates have been spotted in the city.</div><div class="tw-text tw-trans" id="t2073927489299063275" style="display:none">特斯拉似乎正在路易斯安那州新奥尔良测试Robotaxi服务。一批搭载后置和侧置摄像头清洗装置、挂有德克萨斯厂牌的Model Y车队已在该市被目击。</div>
+      <div class="tw-stats">❤️ 300 &nbsp; 🔁 25 &nbsp;
+        💬 17 &nbsp; 🔖 10 &nbsp; 👁 14.4K
+        <a href="https://x.com/SawyerMerritt/status/2073927489299063275" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 社会时事 <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="17524" data-time="1783164369">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>ふっちゃん@戦争反対</b>
+            <a href="https://x.com/ashitawawatashi" target="_blank" class="handle">@ashitawawatashi</a>
+            <span class="kw-score">活跃度 17.5K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>ふっちゃん@戦争反対</b>
+        <a href="https://x.com/ashitawawatashi" target="_blank" class="handle">@ashitawawatashi</a>
+        <span class="score">热度 17.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 19:26 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073367757375328453" onclick="tg('2073367757375328453')">🌐 翻译</button></div><div class="tw-text" id="o2073367757375328453">やっぱりそうだよね🥶
+
+今、自民党は次の戦争に利用するために天皇家を自分たちの思い通りにしようとしているよね
+
+自民党は本当に恐ろしい組織だ</div><div class="tw-text tw-trans" id="t2073367757375328453" style="display:none">果然还是这样🥶
+
+自民党现在正试图将皇室纳入掌控，为下一场战争所用。
+
+自民党真的是一个可怕的组织。</div>
+      <div class="tw-stats">❤️ 9.1K &nbsp; 🔁 3.8K &nbsp;
+        💬 33 &nbsp; 🔖 214 &nbsp; 👁 68.0K
+        <a href="https://x.com/ashitawawatashi/status/2073367757375328453" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="761" data-time="1783160896">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>悉尼閑人</b>
+            <a href="https://x.com/ChinaTruth" target="_blank" class="handle">@ChinaTruth</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲56%</span>
+            <span class="kw-score">活跃度 761 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>悉尼閑人</b>
+        <a href="https://x.com/ChinaTruth" target="_blank" class="handle">@ChinaTruth</a>
+        <span class="score">热度 761</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 18:28 · 1天前</b></div>
+      <div class="tw-text">1987年7月15日经国先生发布“总统令”：
+
+宣布台湾自1987年7月15日零时起，解除戒严！解除报禁、
+党禁！
+
+并留下不朽的一句话：
+没有永远的执政党，只有永远的人民！
+
+网友：习近平你敢吗？</div>
+      <div class="tw-stats">❤️ 306 &nbsp; 🔁 50 &nbsp;
+        💬 80 &nbsp; 🔖 33 &nbsp; 👁 18.8K
+        <a href="https://x.com/ChinaTruth/status/2073353192096895438" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 宏观财经 <span>· 3 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="6490" data-time="1783280565">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>James E. Thorne</b>
+            <a href="https://x.com/DrJStrategy" target="_blank" class="handle">@DrJStrategy</a>
+            <span class="kw-score">活跃度 6.5K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>James E. Thorne</b>
+        <a href="https://x.com/DrJStrategy" target="_blank" class="handle">@DrJStrategy</a>
+        <span class="score">热度 6.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-06 03:42 · 5小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073855119104328037" onclick="tg('2073855119104328037')">🌐 翻译</button></div><div class="tw-text" id="o2073855119104328037">Ignore the noise.
+
+The next move in rates by the Fed will be a cut. 
+
+Have a nice day.</div><div class="tw-text tw-trans" id="t2073855119104328037" style="display:none">忽略那些噪音。
+
+美联储下一步必然是降息。
+
+祝你们有个好日子。</div>
+      <div class="tw-stats">❤️ 2.9K &nbsp; 🔁 341 &nbsp;
+        💬 180 &nbsp; 🔖 320 &nbsp; 👁 219.4K
+        <a href="https://x.com/DrJStrategy/status/2073855119104328037" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="358" data-time="1783297043">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>华尔街观察 Xtrader</b>
+            <a href="https://x.com/cnfinancewatch" target="_blank" class="handle">@cnfinancewatch</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼18%</span>
+            <span class="kw-score">活跃度 358 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>华尔街观察 Xtrader</b>
+        <a href="https://x.com/cnfinancewatch" target="_blank" class="handle">@cnfinancewatch</a>
+        <span class="score">热度 126</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 17:44 · 1天前</b></div>
+      <div class="tw-text">刚刚认真考察过日本。日经新高。本轮AI，日韩是产业链受益国。日本加息股市还继续涨，无他，AI科技储备 尤其是上游原材料行业，机械设备行业，吃到红利。</div>
+      <div class="tw-stats">❤️ 7 &nbsp; 🔁 0 &nbsp;
+        💬 6 &nbsp; 🔖 4 &nbsp; 👁 10.6K
+        <a href="https://x.com/cnfinancewatch/status/2073342167024873733" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>华尔街观察 Xtrader</b>
+        <a href="https://x.com/cnfinancewatch" target="_blank" class="handle">@cnfinancewatch</a>
+        <span class="score">热度 115</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-04 12:37 · 1天前</b></div>
+      <div class="tw-text">日本、韩国、是这一轮AI牛市的最大受益国，我们的观察和预见有错吗？没有。一个月前我们就呼吁看多日经和韩国指数：
+
+日经225指数今年以来上涨35%，大幅跑赢标普500指数（9.1%）和纳斯达克100指数（16.3%）。
+
+今年的上涨主要由AI硬件股带动，包括：
+
+Advantest（6857 TYO）+38.58%
+Tokyo</div>
+      <div class="tw-stats">❤️ 8 &nbsp; 🔁 0 &nbsp;
+        💬 6 &nbsp; 🔖 3 &nbsp; 👁 9.5K
+        <a href="https://x.com/cnfinancewatch/status/2073264958348120472" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="195" data-time="1783263819">
+          <div class="kol-head"><span class="rank">#19</span>
+            <b>幻想 | 预测世界杯就在Gate</b>
+            <a href="https://x.com/315728dzp" target="_blank" class="handle">@315728dzp</a>
+            <span class="kw-score">活跃度 195 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>幻想 | 预测世界杯就在Gate</b>
+        <a href="https://x.com/315728dzp" target="_blank" class="handle">@315728dzp</a>
+        <span class="score">热度 195</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 23:03 · 9小时前</b></div>
+      <div class="tw-text">最近很多朋友都在焦虑，说现在美股高位震荡，降息预期又悬在头上，资金到底该怎么走才安全？坦白讲，这几年折腾下来，我发现大家最怕的其实不是死在行情波动里，而是死在出入金和换汇这些本不该损耗的摩擦成本上</div>
+      <div class="tw-stats">❤️ 28 &nbsp; 🔁 0 &nbsp;
+        💬 29 &nbsp; 🔖 0 &nbsp; 👁 12.4K
+        <a href="https://x.com/315728dzp/status/2073784883428958310" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 8 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="1518" data-time="1783293706">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>加密游侠</b>
+            <a href="https://x.com/CryptoRangerCN" target="_blank" class="handle">@CryptoRangerCN</a>
+            <span class="kw-score">活跃度 1.5K · 58 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>加密游侠</b>
+        <a href="https://x.com/CryptoRangerCN" target="_blank" class="handle">@CryptoRangerCN</a>
+        <span class="score">热度 5</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-06 07:21 · 1小时前</b></div>
+      <div class="tw-text">每一个链上成功落地的应用，都是对区块链价值最有力的现实背书
+
+从链上期权结算到去中心化结构化产品，TRON金融创新边界持续突破
+
+毫秒级的链上交易确认速度，为用户提供了接近传统互联网的流畅链上交互体验
+
+这种以每位参与者长期利益为导向的生态设计哲学，赋予了TRONDAO持久强大的内生增长动力</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 0 &nbsp; 👁 108
+        <a href="https://x.com/CryptoRangerCN/status/2073910235320954938" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>加密游侠</b>
+        <a href="https://x.com/CryptoRangerCN" target="_blank" class="handle">@CryptoRangerCN</a>
+        <span class="score">热度 5</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-06 03:16 · 5小时前</b></div>
+      <div class="tw-text">链上数据是最诚实的叙事者，TRONDAO的成长有据可查有迹可循
+
+从链上碳足迹追踪到绿色行为激励，TRON可持续发展生态持续深化
+
+完善的链上身份验证与KYC集成标准，为合规应用场景提供了便捷的技术接入支持
+
+这种以生态长期繁荣为最高目标的战略定力，是TRONDAO区别于短期逐利者最本质的核心特质</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 0 &nbsp; 👁 54
+        <a href="https://x.com/CryptoRangerCN/status/2073848450849157565" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1043" data-time="1783205057">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>ᴛʀᴀᴄᴇʀ</b>
+            <a href="https://x.com/DeFiTracer" target="_blank" class="handle">@DeFiTracer</a>
+            <span class="kw-score">活跃度 1.0K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>ᴛʀᴀᴄᴇʀ</b>
+        <a href="https://x.com/DeFiTracer" target="_blank" class="handle">@DeFiTracer</a>
+        <span class="score">热度 1.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 06:44 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073538414117274001" onclick="tg('2073538414117274001')">🌐 翻译</button></div><div class="tw-text" id="o2073538414117274001">🚨 BREAKING:
+
+LEOPOLD ASCHENBRENNER, THE GUY WHO MADE $20 BILLION IN 1 YEAR, OPENED NEW SHORTS:
+
+$SMH: 5,327,900 SHARES FOR $2.13B
+$NVDA: 8,992,300 SHARES FOR $1.66B
+$AMD: 4,764,100 SHARES FOR $1.06B
+$MU: 1,727,700 SHARES FOR $686M
+
+THIS MAN TURNED $225 MILLION INTO $20 BILLION</div><div class="tw-text tw-trans" id="t2073538414117274001" style="display:none">🚨 突发：
+
+一年赚200亿美元的男人LEOPOLD ASCHENBRENNER新开空仓：
+
+$SMH：532.79万股，约21.3亿美元
+$NVDA：899.23万股，约16.6亿美元
+$AMD：476.41万股，约10.6亿美元
+$MU：172.77万股，约6.86亿美元
+
+此人将2.25亿美元变成了200亿美元</div>
+      <div class="tw-stats">❤️ 177 &nbsp; 🔁 34 &nbsp;
+        💬 36 &nbsp; 🔖 67 &nbsp; 👁 67.1K
+        <a href="https://x.com/DeFiTracer/status/2073538414117274001" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="199" data-time="1783265363">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>加密猫</b>
+            <a href="https://x.com/Funboys_78" target="_blank" class="handle">@Funboys_78</a>
+            <span class="kw-score">活跃度 199 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>加密猫</b>
+        <a href="https://x.com/Funboys_78" target="_blank" class="handle">@Funboys_78</a>
+        <span class="score">热度 199</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 23:29 · 9小时前</b></div>
+      <div class="tw-text">这段时间真的压力山大，世界杯看球的兴奋和多市场交易的紧张交织在一起，睡眠质量直线下降
+
+以前最让我崩溃的就是不断切换各种软件，眼睛累、心也累。现在BiyaPay给我带来了久违的轻松感
+
+一个账户管理所有资产，美股港股加密实时查看，USDT兑换和跨境划转也顺滑无比。</div>
+      <div class="tw-stats">❤️ 37 &nbsp; 🔁 5 &nbsp;
+        💬 31 &nbsp; 🔖 0 &nbsp; 👁 10.6K
+        <a href="https://x.com/Funboys_78/status/2073791357332930957" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="199" data-time="1783264861">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>黑眼圈｜预测世界杯就在Gate</b>
+            <a href="https://x.com/i_m_m_" target="_blank" class="handle">@i_m_m_</a>
+            <span class="kw-score">活跃度 199 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>黑眼圈｜预测世界杯就在Gate</b>
+        <a href="https://x.com/i_m_m_" target="_blank" class="handle">@i_m_m_</a>
+        <span class="score">热度 199</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 23:21 · 9小时前</b></div>
+      <div class="tw-text">最近因为世界杯，深刻体会到时间和精力有多宝贵
+
+白天要关注港美股走势，晚上看球赛激动得睡不着，早上还得检查加密市场异动，整个人状态下滑得厉害。
+以前我总在不同App之间切换，效率低得可怕，还容易漏掉重要信息。</div>
+      <div class="tw-stats">❤️ 43 &nbsp; 🔁 5 &nbsp;
+        💬 30 &nbsp; 🔖 0 &nbsp; 👁 10.1K
+        <a href="https://x.com/i_m_m_/status/2073789253189013853" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="199" data-time="1783264851">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>无妄</b>
+            <a href="https://x.com/sugardad076" target="_blank" class="handle">@sugardad076</a>
+            <span class="kw-score">活跃度 199 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>无妄</b>
+        <a href="https://x.com/sugardad076" target="_blank" class="handle">@sugardad076</a>
+        <span class="score">热度 199</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 23:20 · 9小时前</b></div>
+      <div class="tw-text">哈哈，世界杯把我作息整成“环球旅行”了——白天亚洲盘，晚上欧洲南美，早上美股币圈接力，以前切App切得我怀疑自己有三头六臂。
+
+现在BiyaPay直接拯救了我这个“多线程选手”！
+
+美股港股加密全塞到一个App里，看仓位像刷朋友圈一样简单，转钱换币也不用再东奔西跑。</div>
+      <div class="tw-stats">❤️ 39 &nbsp; 🔁 5 &nbsp;
+        💬 30 &nbsp; 🔖 0 &nbsp; 👁 10.5K
+        <a href="https://x.com/sugardad076/status/2073789208439947669" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="198" data-time="1783263352">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>千纸鹤</b>
+            <a href="https://x.com/mattbrevis" target="_blank" class="handle">@mattbrevis</a>
+            <span class="kw-score">活跃度 198 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>千纸鹤</b>
+        <a href="https://x.com/mattbrevis" target="_blank" class="handle">@mattbrevis</a>
+        <span class="score">热度 198</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 22:55 · 9小时前</b></div>
+      <div class="tw-text">世界杯一开，我这作息彻底乱套了。
+
+白天盯着港美股行情，晚上熬夜看球赛，早上四五点还得爬起来刷美股和加密市场的波动。</div>
+      <div class="tw-stats">❤️ 39 &nbsp; 🔁 5 &nbsp;
+        💬 30 &nbsp; 🔖 0 &nbsp; 👁 10.4K
+        <a href="https://x.com/mattbrevis/status/2073782923673878721" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="196" data-time="1783265412">
+          <div class="kol-head"><span class="rank">#18</span>
+            <b>中中</b>
+            <a href="https://x.com/NudistmaleZ" target="_blank" class="handle">@NudistmaleZ</a>
+            <span class="kw-score">活跃度 196 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>中中</b>
+        <a href="https://x.com/NudistmaleZ" target="_blank" class="handle">@NudistmaleZ</a>
+        <span class="score">热度 196</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 23:30 · 9小时前</b></div>
+      <div class="tw-text">作为多市场同时操作的实用主义者，我最近对工具的要求就是“够用、高效、不折腾”。
+
+世界杯这几天验证了BiyaPay的实力：美股、港股、加密资产全部整合到一个账户，仓位总览、资金动态、兑换划转一站式完成。</div>
+      <div class="tw-stats">❤️ 39 &nbsp; 🔁 5 &nbsp;
+        💬 30 &nbsp; 🔖 0 &nbsp; 👁 10.2K
+        <a href="https://x.com/NudistmaleZ/status/2073791564875432434" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="191" data-time="1783263012">
+          <div class="kol-head"><span class="rank">#20</span>
+            <b>千门</b>
+            <a href="https://x.com/qianmen987" target="_blank" class="handle">@qianmen987</a>
+            <span class="kw-score">活跃度 191 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>千门</b>
+        <a href="https://x.com/qianmen987" target="_blank" class="handle">@qianmen987</a>
+        <span class="score">热度 191</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 22:50 · 10小时前</b></div>
+      <div class="tw-text">老实说，这届世界杯把我害惨了。
+
+白天看盘分析，晚上守球到半夜，早上还要强打精神看美股和币圈有没有大动静。
+
+以前那种日子最痛苦的就是反复切软件，交易所、美股软件、钱包App来回跳，操作个资金调动都要好几分钟，烦得我想砸手机。</div>
+      <div class="tw-stats">❤️ 32 &nbsp; 🔁 5 &nbsp;
+        💬 30 &nbsp; 🔖 0 &nbsp; 👁 10.4K
+        <a href="https://x.com/qianmen987/status/2073781495865442411" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 A股投资 <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="1673" data-time="1783234235">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>0xkevin (🖤 , 💙)</b>
+            <a href="https://x.com/0xKevin00" target="_blank" class="handle">@0xKevin00</a>
+            <span class="kw-score">活跃度 1.7K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>0xkevin (🖤 , 💙)</b>
+        <a href="https://x.com/0xKevin00" target="_blank" class="handle">@0xKevin00</a>
+        <span class="score">热度 1.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 14:50 · 18小时前</b></div>
+      <div class="tw-text">白毛股神喊单的 A股 $绿的谐波 有没有技术含量？
+
+存储萎靡不振，AI 热钱抢跑机器人赛道
+
+股神说绿的谐波是长期投资标的，机器人业绩高速增长时期还没到，你怎么看？</div>
+      <div class="tw-stats">❤️ 226 &nbsp; 🔁 25 &nbsp;
+        💬 34 &nbsp; 🔖 180 &nbsp; 👁 115.6K
+        <a href="https://x.com/0xKevin00/status/2073660798380245274" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1273" data-time="1783297591">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>Jealousy 尼卡</b>
+            <a href="https://x.com/eastweb3eth" target="_blank" class="handle">@eastweb3eth</a>
+            <span class="kw-score">活跃度 1.3K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jealousy 尼卡</b>
+        <a href="https://x.com/eastweb3eth" target="_blank" class="handle">@eastweb3eth</a>
+        <span class="score">热度 1.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 12:08 · 20小时前</b></div>
+      <div class="tw-text">目前A股机器人赛道订单前8名
+
+机器人赛道大家一定要重视A股，制造业上中国还是有优势。目前无论是执行器、减速器、传感器，还是结构件，越来越多企业的订单开始爆发。
+
+我翻了不少公开资料，把目前订单规模较大的机器人产业链公司前八名排了一下（以公开披露数据为参考）：
+
+第1名：拓普集团</div>
+      <div class="tw-stats">❤️ 225 &nbsp; 🔁 49 &nbsp;
+        💬 91 &nbsp; 🔖 154 &nbsp; 👁 45.2K
+        <a href="https://x.com/eastweb3eth/status/2073620094828060885" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Jealousy 尼卡</b>
+        <a href="https://x.com/eastweb3eth" target="_blank" class="handle">@eastweb3eth</a>
+        <span class="score">热度 36</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-06 08:26 · 29分钟前</b></div>
+      <div class="tw-text">A股【机器人减速器】核心企业盘点（附股票代码）
+
+昨天那篇聊的是机器人产业链整体，很多朋友留言，希望单独聊聊减速器。
+
+确实，人形机器人最核心的零部件之一就是减速器。 @elonmusk 马斯克</div>
+      <div class="tw-stats">❤️ 12 &nbsp; 🔁 1 &nbsp;
+        💬 12 &nbsp; 🔖 1 &nbsp; 👁 307
+        <a href="https://x.com/eastweb3eth/status/2073926530187559312" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><a class="trend" href="https://x.com/search?q=Massive%20Tall%20Ship%20Parade%20and%20Air%20Show%20Mark%20U.S.%20250th%20Anniversary%20in%20New%20York%20Harbor" target="_blank"><span class="rank">#1</span> Massive Tall Ship Parade and Air Show Mark U.S. 250th Anniversary in New York Harbor<span class="meta"></span><span class="tmeta">纽约港盛大高帆船巡游与航空表演庆祝美国建国250周年</span></a>
+<a class="trend" href="https://x.com/search?q=Taylor%20Swift%20and%20Travis%20Kelce%20Marry%20in%20Lavish%20Madison%20Square%20Garden%20Ceremony" target="_blank"><span class="rank">#2</span> Taylor Swift and Travis Kelce Marry in Lavish Madison Square Garden Ceremony<span class="meta"></span><span class="tmeta">泰勒·斯威夫特与特拉维斯·凯尔西在麦迪逊广场花园举行盛大婚礼</span></a>
+<a class="trend" href="https://x.com/search?q=Patriot%20Front%20Marches%20in%20D.C.%20on%20America%27s%20250th%20Independence%20Day" target="_blank"><span class="rank">#3</span> Patriot Front Marches in D.C. on America&#x27;s 250th Independence Day<span class="meta"></span><span class="tmeta">爱国者阵线在美国独立250周年纪念日于华盛顿游行</span></a>
+<a class="trend" href="https://x.com/search?q=%23MEXENG" target="_blank"><span class="rank">#4</span> #MEXENG<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%24LNQ" target="_blank"><span class="rank">#5</span> $LNQ<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=SemiAnalysis" target="_blank"><span class="rank">#6</span> SemiAnalysis<span class="meta"></span><span class="tmeta">半分析</span></a>
+<a class="trend" href="https://x.com/search?q=%24SHAZ" target="_blank"><span class="rank">#7</span> $SHAZ<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23baddiesgonewild" target="_blank"><span class="rank">#8</span> #baddiesgonewild<span class="meta"></span><span class="tmeta">#野性辣妹</span></a>
+<a class="trend" href="https://x.com/search?q=%23lockedin" target="_blank"><span class="rank">#9</span> #lockedin<span class="meta"></span><span class="tmeta">#全神贯注</span></a>
+<a class="trend" href="https://x.com/search?q=Brazil" target="_blank"><span class="rank">#10</span> Brazil<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Norway" target="_blank"><span class="rank">#11</span> Norway<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=FIFA" target="_blank"><span class="rank">#12</span> FIFA<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Belgium" target="_blank"><span class="rank">#13</span> Belgium<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=England" target="_blank"><span class="rank">#14</span> England<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Gabriel" target="_blank"><span class="rank">#15</span> Gabriel<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Norwegian" target="_blank"><span class="rank">#16</span> Norwegian<span class="meta"></span><span class="tmeta">挪威</span></a>
+<a class="trend" href="https://x.com/search?q=Ronaldo" target="_blank"><span class="rank">#17</span> Ronaldo<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Viking" target="_blank"><span class="rank">#18</span> Viking<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Marlins" target="_blank"><span class="rank">#19</span> Marlins<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Joao%20Pedro" target="_blank"><span class="rank">#20</span> Joao Pedro<span class="meta"></span><span class="tmeta">若昂·佩德罗</span></a>
+<a class="trend" href="https://x.com/search?q=%2390DayFiance" target="_blank"><span class="rank">#21</span> #90DayFiance<span class="meta"></span><span class="tmeta">#九十天未婚夫</span></a>
+<a class="trend" href="https://x.com/search?q=NEW%20ANNOUNCEMENT" target="_blank"><span class="rank">#22</span> NEW ANNOUNCEMENT<span class="meta"></span><span class="tmeta">重大公告</span></a>
+<a class="trend" href="https://x.com/search?q=Medium" target="_blank"><span class="rank">#23</span> Medium<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=HOT%20UPDATE" target="_blank"><span class="rank">#24</span> HOT UPDATE<span class="meta"></span><span class="tmeta">最新动态</span></a>
+<a class="trend" href="https://x.com/search?q=Article%2027" target="_blank"><span class="rank">#25</span> Article 27<span class="meta"></span></a>
+</div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲3545%</span>
+          <span class="kw-score">总热度 44.6K · 44 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>International Cyber Digest</b>
+        <a href="https://x.com/IntCyberDigest" target="_blank" class="handle">@IntCyberDigest</a>
+        <span class="score">热度 19.9K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 18:05 · 14小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073709900820099232" onclick="tg('2073709900820099232')">🌐 翻译</button></div><div class="tw-text" id="o2073709900820099232">‼️ Pliny, an AI jailbreak researcher, has released a multi-agent offensive-security framework that turns a Claude Code or OpenAI Codex subscription into what he calls real bug-hunting, pitched at people who never got the invite.
+
+It&#x27;s called T3MP3ST, and it sells an AI &quot;swarm&quot;</div><div class="tw-text tw-trans" id="t2073709900820099232" style="display:none">‼️ AI越狱研究员Pliny发布了一个多智能体攻防安全框架，可将Claude Code或OpenAI Codex订阅转化为他所称的真实漏洞猎捕工具，面向那些未获邀请的用户。该框架名为T3MP3ST，主打AI「蜂群」概念</div>
+      <div class="tw-stats">❤️ 1.9K &nbsp; 🔁 425 &nbsp;
+        💬 55 &nbsp; 🔖 1.3K &nbsp; 👁 1.6M
+        <a href="https://x.com/IntCyberDigest/status/2073709900820099232" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲234%</span>
+          <span class="kw-score">总热度 7.0K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>SemiAnalysis</b>
+        <a href="https://x.com/SemiAnalysis_" target="_blank" class="handle">@SemiAnalysis_</a>
+        <span class="score">热度 5.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-06 05:00 · 3小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073874671498387899" onclick="tg('2073874671498387899')">🌐 翻译</button></div><div class="tw-text" id="o2073874671498387899">MASSIVE DELAY: Just 3 months after Jensen demoed Kyber NVL144 at GTC, it has faced major setbacks and has been delayed by more than 12 months, pushing it back to 2028. Below, we explain why Kyber has faced massive delays and why NVIDIA’s NVL72x2 back-to-back rack architecture was</div><div class="tw-text tw-trans" id="t2073874671498387899" style="display:none">重大延期：就在Jensen于GTC发布Kyber NVL144仅三个月后，该产品遭遇重大挫折，延期超过12个月，推迟至2028年。以下我们将解释Kyber为何大幅延期，以及为何英伟达选择NVL72x2背靠背机架架构……</div>
+      <div class="tw-stats">❤️ 666 &nbsp; 🔁 72 &nbsp;
+        💬 86 &nbsp; 🔖 498 &nbsp; 👁 402.4K
+        <a href="https://x.com/SemiAnalysis_/status/2073874671498387899" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲67%</span>
+          <span class="kw-score">总热度 6.2K · 21 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Serenity</b>
+        <a href="https://x.com/aleabitoreddit" target="_blank" class="handle">@aleabitoreddit</a>
+        <span class="score">热度 4.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 05:44 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073523410643366242" onclick="tg('2073523410643366242')">🌐 翻译</button></div><div class="tw-text" id="o2073523410643366242">Nikkei - $JD E-Commerce Giant CEO warns &quot;Robots Will Replace 700,000 Delivery Workers&quot;. 
+
+Per FT&#x27;s earlier piece last month: The 700,000 delivery personnel working for the firm will be replaced by robots, highlighting how rapid automation has become a new threat to China&#x27;s</div><div class="tw-text tw-trans" id="t2073523410643366242" style="display:none">日经报道——$JD 电商巨头CEO警告「机器人将取代70万名快递员」。
+
+据《金融时报》上月早先报道：该公司旗下70万名快递人员将被机器人取代，凸显出快速自动化已成为中国……的新威胁</div>
+      <div class="tw-stats">❤️ 832 &nbsp; 🔁 64 &nbsp;
+        💬 139 &nbsp; 🔖 160 &nbsp; 👁 328.3K
+        <a href="https://x.com/aleabitoreddit/status/2073523410643366242" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲422%</span>
+          <span class="kw-score">总热度 3.7K · 41 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>0xkevin (🖤 , 💙)</b>
+        <a href="https://x.com/0xKevin00" target="_blank" class="handle">@0xKevin00</a>
+        <span class="score">热度 1.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 14:50 · 18小时前</b></div>
+      <div class="tw-text">白毛股神喊单的 A股 $绿的谐波 有没有技术含量？
+
+存储萎靡不振，AI 热钱抢跑机器人赛道
+
+股神说绿的谐波是长期投资标的，机器人业绩高速增长时期还没到，你怎么看？</div>
+      <div class="tw-stats">❤️ 226 &nbsp; 🔁 25 &nbsp;
+        💬 34 &nbsp; 🔖 180 &nbsp; 👁 115.6K
+        <a href="https://x.com/0xKevin00/status/2073660798380245274" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$TSLA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼93%</span>
+          <span class="kw-score">总热度 2.5K · 41 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Tesla Robotaxi</b>
+        <a href="https://x.com/robotaxi" target="_blank" class="handle">@robotaxi</a>
+        <span class="score">热度 1.8K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-06 08:20 · 35分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073925001661890910" onclick="tg('2073925001661890910')">🌐 翻译</button></div><div class="tw-text" id="o2073925001661890910">Cybercab at the National Federation of the Blind&#x27;s Annual Convention in Austin for a hands-on experience of its accessibility features for blind or visually impaired customers  For example: – Braille lettering on physical controls
+– Space for service animals &amp;amp; assistive</div><div class="tw-text tw-trans" id="t2073925001661890910" style="display:none">Cybercab亮相全美盲人联合会奥斯汀年会，让盲人及视障用户亲身体验其无障碍功能。例如：实体控制键上的盲文标识、导盲犬及辅助器具专属空间等。</div>
+      <div class="tw-stats">❤️ 934 &nbsp; 🔁 140 &nbsp;
+        💬 59 &nbsp; 🔖 43 &nbsp; 👁 36.9K
+        <a href="https://x.com/robotaxi/status/2073925001661890910" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼62%</span>
+          <span class="kw-score">总热度 1.2K · 41 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jealousy 尼卡</b>
+        <a href="https://x.com/eastweb3eth" target="_blank" class="handle">@eastweb3eth</a>
+        <span class="score">热度 1.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 12:08 · 20小时前</b></div>
+      <div class="tw-text">目前A股机器人赛道订单前8名
+
+机器人赛道大家一定要重视A股，制造业上中国还是有优势。目前无论是执行器、减速器、传感器，还是结构件，越来越多企业的订单开始爆发。
+
+我翻了不少公开资料，把目前订单规模较大的机器人产业链公司前八名排了一下（以公开披露数据为参考）：
+
+第1名：拓普集团</div>
+      <div class="tw-stats">❤️ 225 &nbsp; 🔁 49 &nbsp;
+        💬 91 &nbsp; 🔖 154 &nbsp; 👁 45.2K
+        <a href="https://x.com/eastweb3eth/status/2073620094828060885" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼94%</span>
+          <span class="kw-score">总热度 384 · 41 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>JustDario</b>
+        <a href="https://x.com/DarioCpx" target="_blank" class="handle">@DarioCpx</a>
+        <span class="score">热度 132</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-06 08:32 · 23分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2073928043350163960" onclick="tg('2073928043350163960')">🌐 翻译</button></div><div class="tw-text" id="o2073928043350163960">They are really throwing all they can find at the KOSPI to do all they can to avoid the spectacular burst of the bubble, aren&#x27;t they</div><div class="tw-text tw-trans" id="t2073928043350163960" style="display:none">他们真的是把能找到的一切手段都用上了，拼命托住韩国综合股价指数，竭力避免泡沫壮观地破裂，不是吗。</div>
+      <div class="tw-stats">❤️ 65 &nbsp; 🔁 4 &nbsp;
+        💬 5 &nbsp; 🔖 4 &nbsp; 👁 4.8K
+        <a href="https://x.com/DarioCpx/status/2073928043350163960" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼86%</span>
+          <span class="kw-score">总热度 375 · 70 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>BitHappy</b>
+        <a href="https://x.com/BitHappy" target="_blank" class="handle">@BitHappy</a>
+        <span class="score">热度 117</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-05 20:13 · 12小时前</b></div>
+      <div class="tw-text">Deribit 的活动明天 8 点正式开启，记得报名！
+
+可以不为活动专门上仓位，但期权确实是很好的抄底和高抛工具（简单理解为挂买单和挂卖单都能拿利息）。
+
+而我估计现在行情仍有分歧，用卖 Put 的方式在不同点位做 $BTC 的抄底，整体体验还是很舒服的。
+
+坦白说，就现在这个行情，低于 20% 年化的 DeFi</div>
+      <div class="tw-stats">❤️ 20 &nbsp; 🔁 0 &nbsp;
+        💬 10 &nbsp; 🔖 15 &nbsp; 👁 6.3K
+        <a href="https://x.com/BitHappy/status/2073742162123264447" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
