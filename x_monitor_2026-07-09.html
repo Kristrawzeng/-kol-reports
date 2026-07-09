@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-07-09</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-07-09 · 更新于 09:40</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-07-09.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-07-09.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<div class="summary">🧠 <b>今日讨论总览</b><p>今日讨论围绕美伊地缘冲突、半导体板块大跌与东亚科技资产分化展开。霍尔木兹危机推升油价，韩股熔断、存储股领跌，而美联储鹰派纪要令降息预期降温，市场情绪整体偏谨慎。</p></div><div class="vp-row">
+            <div class="vp-card">
+              <div class="vp-p">美军空袭伊朗，霍尔木兹威胁等级上调，地缘溢价点燃能源市场</div>
+              <div class="vp-q">「美国中央司令部对伊朗发动多轮空袭，同步撤销石油出口豁免，停火协议岌岌可危」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/Alpha_Cat" target="_blank">@Alpha_Cat</a> <a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a> <a class="hold" href="https://x.com/Monera_Digital" target="_blank">@Monera_Digital</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">韩国KOSPI暴跌超5%，半导体领跌，东亚科技股集体承压</div>
+              <div class="vp-q">「韩国KOSPI指数直接被重锤，暴跌5.35%，盘中一度砸出熔断，从6月高点算下来累计回撤已超过20%」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/jielove233" target="_blank">@jielove233</a> <a class="hold" href="https://x.com/yijiangren" target="_blank">@yijiangren</a> <a class="hold" href="https://x.com/0xBTCZhangSir" target="_blank">@0xBTCZhangSir</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">美联储6月纪要鹰派表态：通胀若持续居高，不排除重启加息</div>
+              <div class="vp-q">「美联储官员已达成共识，将不排除重启升息」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/TheMarketMemo" target="_blank">@TheMarketMemo</a> <a class="hold" href="https://x.com/JasonZX" target="_blank">@JasonZX</a> <a class="hold" href="https://x.com/pipizhu_eth" target="_blank">@pipizhu_eth</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">中国获批购买20万枚英伟达H200芯片用于AI训练，DeepSeek、字节、阿里入列</div>
+              <div class="vp-q">「CHINA&#x27;S GOVERNMENT HAS APPROVED PURCHASES OF 200,000 NVIDIA H200 CHIPS BY DEEPSEEK, BYTEDANCE, ALIBABA AND OTHERS FOR TRAINING PURPOSES.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/jukan05" target="_blank">@jukan05</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">SK海力士宣布510亿美元建厂，SanDisk单日跌逾14%，存储产业竞争格局生变</div>
+              <div class="vp-q">「Sandisk plunges -14.4% after SK Hynix announces $51 billion investment in a new production facility.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/Hedgeye" target="_blank">@Hedgeye</a> <a class="hold" href="https://x.com/PolymarketMoney" target="_blank">@PolymarketMoney</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">特朗普暗示不愿扩大军事打击，地缘紧张情绪短暂缓解，风险资产反弹</div>
+              <div class="vp-q">「只要伊朗不再主动袭击船只，特朗普是不愿意再实施军事打击的，这基本上就是在主动示好」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/Cato_KT" target="_blank">@Cato_KT</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">2026年上半年东亚科技资产领涨全球，韩国综合指数涨幅逾100%</div>
+              <div class="vp-q">「韩国综合指数涨101.14%，全球主要资产涨幅榜前列，几乎被东亚科技产业链包了」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/Baili1018" target="_blank">@Baili1018</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">高市早苗涉台言论激怒北京，中国切断关键矿产对日出口，日本经济压力上升</div>
+              <div class="vp-q">「关键矿产的短缺正开始影响日本整体经济，日本在寻找替代中国已切断出口资源方面面临日益紧迫的压力」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/dw_chinese" target="_blank">@dw_chinese</a> <a class="hold" href="https://x.com/nikkei" target="_blank">@nikkei</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">三星财报亮眼仍遭抛售，说明AI存储预期已被过度定价</div>
+              <div class="vp-q">「市场没有因为这份漂亮答卷继续狂欢，三星跌了，SK海力士也跌了，这件事比财报更有意思」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/yijiangren" target="_blank">@yijiangren</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">日本旅游消费额已超越半导体出口，正加速转型为「旅游产业国」</div>
+              <div class="vp-q">「2025年访日游客消费额达约9.5万亿日元，而同期半导体等电子零部件出口额约为6.6万亿日元」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/erchenlu1" target="_blank">@erchenlu1</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">小红书上市争议中，多位投资者认为估值受损论据不足，背后资方阵容强大</div>
+              <div class="vp-q">「说小红书上市上不去、估值因为这件事掉100亿的都可以取关了」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/Dr_goosee" target="_blank">@Dr_goosee</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">期权是控制员工的理想工具：空头支票加上一丝希望，让员工主动自我PUA</div>
+              <div class="vp-q">「没给任何好处，员工就会主动自我PUA了」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/disksing" target="_blank">@disksing</a></div>
+            </div></div>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 美股投资 <span>· 9 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="4900" data-time="1783435782">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>Hedgeye</b>
+            <a href="https://x.com/Hedgeye" target="_blank" class="handle">@Hedgeye</a>
+            <span class="kw-score">活跃度 4.9K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Hedgeye</b>
+        <a href="https://x.com/Hedgeye" target="_blank" class="handle">@Hedgeye</a>
+        <span class="score">热度 4.9K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 22:49 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074506147130740842" onclick="tg('2074506147130740842')">🌐 翻译</button></div><div class="tw-text" id="o2074506147130740842">BREAKING: Sandisk, $SNDK, plunges -14.4% after SK Hynix announces $51 billion investment in a new production facility.</div><div class="tw-text tw-trans" id="t2074506147130740842" style="display:none">突发：SK海力士宣布投资510亿美元建设新生产设施，闪迪（$SNDK）股价暴跌14.4%。</div>
+      <div class="tw-stats">❤️ 927 &nbsp; 🔁 84 &nbsp;
+        💬 31 &nbsp; 🔖 87 &nbsp; 👁 363.4K
+        <a href="https://x.com/Hedgeye/status/2074506147130740842" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="836" data-time="1783535700">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>Polymarket Money</b>
+            <a href="https://x.com/PolymarketMoney" target="_blank" class="handle">@PolymarketMoney</a>
+            <span class="kw-score">活跃度 836 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Polymarket Money</b>
+        <a href="https://x.com/PolymarketMoney" target="_blank" class="handle">@PolymarketMoney</a>
+        <span class="score">热度 836</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-09 02:35 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074925232112934998" onclick="tg('2074925232112934998')">🌐 翻译</button></div><div class="tw-text" id="o2074925232112934998">BREAKING: SK Hynix is expected to generate $231,000,000,000.00 in revenue this year.</div><div class="tw-text tw-trans" id="t2074925232112934998" style="display:none">突发：SK海力士今年预计营收将达2310亿美元。</div>
+      <div class="tw-stats">❤️ 424 &nbsp; 🔁 28 &nbsp;
+        💬 19 &nbsp; 🔖 17 &nbsp; 👁 30.0K
+        <a href="https://x.com/PolymarketMoney/status/2074925232112934998" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="617" data-time="1783422069">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>王二鹅 ERE</b>
+            <a href="https://x.com/Dr_goosee" target="_blank" class="handle">@Dr_goosee</a>
+            <span class="kw-score">活跃度 617 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>王二鹅 ERE</b>
+        <a href="https://x.com/Dr_goosee" target="_blank" class="handle">@Dr_goosee</a>
+        <span class="score">热度 617</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 19:01 · 1天前</b></div>
+      <div class="tw-text">说小红书上市上不去，估值因为这件事掉100亿的都可以取关了，因为这些人都他妈是纯傻逼
+随便给你放几个背后的投资方，真格基金、金沙江创投、纪源资本、腾讯、阿里巴巴、淡马锡、元生资本、天图投资、DST Global、红杉中国 / HongShan、高瓴资本、博裕资本、中信资本</div>
+      <div class="tw-stats">❤️ 72 &nbsp; 🔁 5 &nbsp;
+        💬 69 &nbsp; 🔖 20 &nbsp; 👁 40.6K
+        <a href="https://x.com/Dr_goosee/status/2074448630933553177" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="453" data-time="1783534325">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>Phyrex</b>
+            <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+            <span class="kw-score">活跃度 453 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 263</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 01:57 · 1天前</b></div>
+      <div class="tw-text">今天美股尤其是 AI 和半导体仍然情况并不理想，带动的指数都开始下跌，最近我写了七八篇相关的推文，在置顶都可以看到，很多小伙伴从加密货币进入美股以后仍然是比较粗犷的打法，我很难对此评论，但对于美股来说，数据的重要性可能会更加有意义。</div>
+      <div class="tw-stats">❤️ 41 &nbsp; 🔁 4 &nbsp;
+        💬 17 &nbsp; 🔖 2 &nbsp; 👁 18.5K
+        <a href="https://x.com/PhyrexNi/status/2074553356207690024" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 131</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-09 02:12 · 7小时前</b></div>
+      <div class="tw-text">今天的重点是美股和伊朗又打起来的，我都很久没有看油价了，现在又开始看 WTI 感觉还是很亲切的，下午的时候 WTI 的价格就已经到 72 美元左右了，这个时候并不是最好的做空时间，第一个是因为价格还是较低，另一个是因为目前还没有到美国交易时间，战争的发酵还没有让欧美的投资者恐慌。</div>
+      <div class="tw-stats">❤️ 23 &nbsp; 🔁 4 &nbsp;
+        💬 11 &nbsp; 🔖 0 &nbsp; 👁 8.3K
+        <a href="https://x.com/PhyrexNi/status/2074919464760733745" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="377" data-time="1783554930">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>Masa</b>
+            <a href="https://x.com/Masa_Aug2020" target="_blank" class="handle">@Masa_Aug2020</a>
+            <span class="kw-score">活跃度 377 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Masa</b>
+        <a href="https://x.com/Masa_Aug2020" target="_blank" class="handle">@Masa_Aug2020</a>
+        <span class="score">热度 377</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-09 07:55 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2075005890198171812" onclick="tg('2075005890198171812')">🌐 翻译</button></div><div class="tw-text" id="o2075005890198171812">韓国の証券会社がサムスン電子やSKハイニックスを含む主要株の証拠金維持率を積極的に引き上げている。これらの比率を上昇させることで（一部の投機的な銘柄では100%に引き上げられる場合も）高レバレッジ取引を抑制し、市場の下落時に強制清算のリスクを積極的に軽減することを目指している。</div><div class="tw-text tw-trans" id="t2075005890198171812" style="display:none">韩国多家券商正积极上调三星电子、SK海力士等主要股票的保证金维持比率。通过提高该比率（部分投机性个股甚至上调至100%），旨在抑制高杠杆交易，主动降低市场下跌时被强制平仓的风险。</div>
+      <div class="tw-stats">❤️ 101 &nbsp; 🔁 22 &nbsp;
+        💬 8 &nbsp; 🔖 10 &nbsp; 👁 20.6K
+        <a href="https://x.com/Masa_Aug2020/status/2075005890198171812" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="377" data-time="1783526060">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>Metamental | 方外之域</b>
+            <a href="https://x.com/yijiangren" target="_blank" class="handle">@yijiangren</a>
+            <span class="kw-score">活跃度 377 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Metamental | 方外之域</b>
+        <a href="https://x.com/yijiangren" target="_blank" class="handle">@yijiangren</a>
+        <span class="score">热度 245</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 18:58 · 14小时前</b></div>
+      <div class="tw-text">大暴跌，数据好与跟上涨没有必然联系
+
+三星的财报，单看数字没什么好挑的。
+AI 需求继续拉着存储往上走，利润同比大幅爆发，内存周期看起来还是很强。
+
+市场没有因为这份漂亮答卷继续狂欢。
+三星跌了，SK 海力士也跌了，韩国市场被带着一起回调。
+
+这件事比财报更有意思。
+因为它说明 AI</div>
+      <div class="tw-stats">❤️ 65 &nbsp; 🔁 2 &nbsp;
+        💬 49 &nbsp; 🔖 5 &nbsp; 👁 9.5K
+        <a href="https://x.com/yijiangren/status/2074810462802419957" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Metamental | 方外之域</b>
+        <a href="https://x.com/yijiangren" target="_blank" class="handle">@yijiangren</a>
+        <span class="score">热度 83</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 23:54 · 9小时前</b></div>
+      <div class="tw-text">都在讲AI和存储的时候，来聊聊美股的生物科技
+
+我是【得到】APP的老用户了，创始人罗振宇目前在做一期节目，叫【文明】。
+我从小对历史很感兴趣，高中还是历史课代表，所以一直有在追，对历史同样感兴趣的朋友可以去听听。
+得到的老朋友应该都看得到，罗胖已经快瘦成罗瘦了。</div>
+      <div class="tw-stats">❤️ 25 &nbsp; 🔁 2 &nbsp;
+        💬 5 &nbsp; 🔖 9 &nbsp; 👁 3.6K
+        <a href="https://x.com/yijiangren/status/2074884801564385635" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="340" data-time="1783509897">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>是 阿 杰 吖｜预测世界杯就在Gate</b>
+            <a href="https://x.com/jielove233" target="_blank" class="handle">@jielove233</a>
+            <span class="kw-score">活跃度 340 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>是 阿 杰 吖｜预测世界杯就在Gate</b>
+        <a href="https://x.com/jielove233" target="_blank" class="handle">@jielove233</a>
+        <span class="score">热度 172</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 19:48 · 1天前</b></div>
+      <div class="tw-text">人形机器人的风，最近又吹回盘面了
+不过比起去凑热闹追那几只热门概念股，我现在的自选里反而多盯了一个标的： $HUMN
+
+这并不是哪家横空出世的机器人工厂，而是一只死磕人形机器人赛道的主动型 ETF
+看中它最大的逻辑就一条：现阶段，不用去赌谁是最后的赢家</div>
+      <div class="tw-stats">❤️ 41 &nbsp; 🔁 1 &nbsp;
+        💬 45 &nbsp; 🔖 2 &nbsp; 👁 5.8K
+        <a href="https://x.com/jielove233/status/2074460660961087807" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>是 阿 杰 吖｜预测世界杯就在Gate</b>
+        <a href="https://x.com/jielove233" target="_blank" class="handle">@jielove233</a>
+        <span class="score">热度 124</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 19:24 · 14小时前</b></div>
+      <div class="tw-text">亚洲盘今天实打实地挨了一锤
+
+日经225收跌 2.11%，韩国 KOSPI 指数更是直接被重锤，暴跌 5.35%，盘中一度砸出熔断
+从 6 月高点算下来，韩股累计回撤已经超过 20%，一脚踩进了技术性熊市
+
+盘面杀跌的重灾区很明确：半导体
+
+三星电子、 SK 海力士带头跳水</div>
+      <div class="tw-stats">❤️ 36 &nbsp; 🔁 2 &nbsp;
+        💬 42 &nbsp; 🔖 2 &nbsp; 👁 1.9K
+        <a href="https://x.com/jielove233/status/2074817009293136346" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="274" data-time="1783494212">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>BTC张Sir🅱️</b>
+            <a href="https://x.com/0xBTCZhangSir" target="_blank" class="handle">@0xBTCZhangSir</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼27%</span>
+            <span class="kw-score">活跃度 274 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>BTC张Sir🅱️</b>
+        <a href="https://x.com/0xBTCZhangSir" target="_blank" class="handle">@0xBTCZhangSir</a>
+        <span class="score">热度 129</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 15:03 · 18小时前</b></div>
+      <div class="tw-text">关于这一次全球科技板块的波动与回调，我们重点来看看美股纳斯达克指数、韩国KOSPI、美股SMH指数、日经等在周K线上呈现的潜在的下行风险。
+
+其实你还可以看A股的上证、CPO等指数的表现，均处于周K线上向下发散的进程之中。</div>
+      <div class="tw-stats">❤️ 31 &nbsp; 🔁 0 &nbsp;
+        💬 35 &nbsp; 🔖 0 &nbsp; 👁 4.3K
+        <a href="https://x.com/0xBTCZhangSir/status/2074751218820497497" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>BTC张Sir🅱️</b>
+        <a href="https://x.com/0xBTCZhangSir" target="_blank" class="handle">@0xBTCZhangSir</a>
+        <span class="score">热度 109</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 23:41 · 1天前</b></div>
+      <div class="tw-text">说好的纳指下跌到底来不来呀？
+
+PS：这是开盘前写的稿子，美股已经在下跌了，
+
+但其实指数跌的不多啦。还得要跌更多才是！
+
+1、纳指下跌来不来，不用猜测的，
+
+缠师说不测而测，跌下来你就会看到。 
+
+举个例子纳指100指数从10000点，
+
+跌10%左右，也就是跌到9000点，</div>
+      <div class="tw-stats">❤️ 22 &nbsp; 🔁 1 &nbsp;
+        💬 14 &nbsp; 🔖 4 &nbsp; 👁 5.8K
+        <a href="https://x.com/0xBTCZhangSir/status/2074519069634810024" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="186" data-time="1783395272">
+          <div class="kol-head"><span class="rank">#20</span>
+            <b>百里 🦅</b>
+            <a href="https://x.com/Baili1018" target="_blank" class="handle">@Baili1018</a>
+            <span class="kw-score">活跃度 186 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>百里 🦅</b>
+        <a href="https://x.com/Baili1018" target="_blank" class="handle">@Baili1018</a>
+        <span class="score">热度 186</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 11:34 · 1天前</b></div>
+      <div class="tw-text">2026年上半年，涨幅最猛的资产不是美股，不是黄金，居然是——东亚科技资产。意外吗？
+
+韩国综合指数涨101.14%；
+科创50涨64.25%；
+中国台湾加权指数涨59.25%；
+日经225涨39.18%；
+创业板指涨35.58%。
+
+全球主要资产涨幅榜前列，几乎被东亚科技产业链包了。
+
+韩国，存储芯片；
+中国台湾，半导体代工；</div>
+      <div class="tw-stats">❤️ 45 &nbsp; 🔁 5 &nbsp;
+        💬 50 &nbsp; 🔖 1 &nbsp; 👁 5.5K
+        <a href="https://x.com/Baili1018/status/2074336236882575526" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 娱乐社会时事 <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="8302" data-time="1783557596">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>比特币总裁</b>
+            <a href="https://x.com/chairbtc" target="_blank" class="handle">@chairbtc</a>
+            <span class="kw-score">活跃度 8.3K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>比特币总裁</b>
+        <a href="https://x.com/chairbtc" target="_blank" class="handle">@chairbtc</a>
+        <span class="score">热度 7.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 11:01 · 22小时前</b></div>
+      <div class="tw-text">范冰冰在国内混不下去，开始在国外走秀，尺度有点大啊
+
+范爷之前最火时片酬800万，每分钟挣13万，2017年还买了比特币，若不是2018年偷税漏税被罚9亿，把比特币卖了，现在光是BTC就翻了几倍，何至于此，守法永远是第一位，尤其是公众人物</div>
+      <div class="tw-stats">❤️ 418 &nbsp; 🔁 38 &nbsp;
+        💬 331 &nbsp; 🔖 206 &nbsp; 👁 599.8K
+        <a href="https://x.com/chairbtc/status/2074690215944573418" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>比特币总裁</b>
+        <a href="https://x.com/chairbtc" target="_blank" class="handle">@chairbtc</a>
+        <span class="score">热度 17</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-09 08:39 · 1小时前</b></div>
+      <div class="tw-text">美伊冲突再起，石油应声上涨，美国的通胀和消费者指数又要变高了，继续打下去，今年美联储降息的概率就更小了</div>
+      <div class="tw-stats">❤️ 4 &nbsp; 🔁 0 &nbsp;
+        💬 4 &nbsp; 🔖 0 &nbsp; 👁 731
+        <a href="https://x.com/chairbtc/status/2075017073294794756" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="331" data-time="1783471060">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>Aoxzh</b>
+            <a href="https://x.com/aoxzh" target="_blank" class="handle">@aoxzh</a>
+            <span class="kw-score">活跃度 331 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Aoxzh</b>
+        <a href="https://x.com/aoxzh" target="_blank" class="handle">@aoxzh</a>
+        <span class="score">热度 331</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 08:37 · 1天前</b></div>
+      <div class="tw-text">日经新闻的评论区都是傻逼，可以改名叫日本笑话合集。</div>
+      <div class="tw-stats">❤️ 122 &nbsp; 🔁 6 &nbsp;
+        💬 16 &nbsp; 🔖 12 &nbsp; 👁 15.7K
+        <a href="https://x.com/aoxzh/status/2074654113263140954" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 科技/AI <span>· 3 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="5147" data-time="1783522937">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>Jukan @ ICML</b>
+            <a href="https://x.com/jukan05" target="_blank" class="handle">@jukan05</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲591%</span>
+            <span class="kw-score">活跃度 5.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jukan @ ICML</b>
+        <a href="https://x.com/jukan05" target="_blank" class="handle">@jukan05</a>
+        <span class="score">热度 5.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 23:02 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074871701616329193" onclick="tg('2074871701616329193')">🌐 翻译</button></div><div class="tw-text" id="o2074871701616329193">CHINA’S GOVERNMENT HAS APPROVED PURCHASES OF 200,000 NVIDIA H200 CHIPS BY DEEPSEEK, BYTEDANCE, ALIBABA AND OTHERS FOR TRAINING PURPOSES.</div><div class="tw-text tw-trans" id="t2074871701616329193" style="display:none">中国政府已批准深度求索、字节跳动、阿里巴巴等公司采购共20万颗英伟达H200芯片用于训练。</div>
+      <div class="tw-stats">❤️ 1.3K &nbsp; 🔁 181 &nbsp;
+        💬 72 &nbsp; 🔖 210 &nbsp; 👁 308.3K
+        <a href="https://x.com/jukan05/status/2074871701616329193" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1221" data-time="1783523465">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>Joe Tegtmeyer 🚀 🤠🛸😎</b>
+            <a href="https://x.com/JoeTegtmeyer" target="_blank" class="handle">@JoeTegtmeyer</a>
+            <span class="kw-score">活跃度 1.2K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Joe Tegtmeyer 🚀 🤠🛸😎</b>
+        <a href="https://x.com/JoeTegtmeyer" target="_blank" class="handle">@JoeTegtmeyer</a>
+        <span class="score">热度 1.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 23:11 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074873914807750667" onclick="tg('2074873914807750667')">🌐 翻译</button></div><div class="tw-text" id="o2074873914807750667">The Optimus 10m/yr Factory at Giga Texas construction makes noticeable progress every day, with the steel structure hard to ignore from everywhere on the site and the highway as it grows ever larger. On the S end, the land reclamation work and extension of the site continues too,</div><div class="tw-text tw-trans" id="t2074873914807750667" style="display:none">位于德克萨斯超级工厂的Optimus年产千万台工厂每天都有明显进展，钢结构从厂区各处及高速公路上都清晰可见，规模持续扩大。南侧的土地平整和厂区扩建工作也在同步推进。</div>
+      <div class="tw-stats">❤️ 763 &nbsp; 🔁 83 &nbsp;
+        💬 16 &nbsp; 🔖 36 &nbsp; 👁 22.4K
+        <a href="https://x.com/JoeTegtmeyer/status/2074873914807750667" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="477" data-time="1783486685">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>X Freeze</b>
+            <a href="https://x.com/XFreeze" target="_blank" class="handle">@XFreeze</a>
+            <span class="kw-score">活跃度 477 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>X Freeze</b>
+        <a href="https://x.com/XFreeze" target="_blank" class="handle">@XFreeze</a>
+        <span class="score">热度 477</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 12:58 · 20小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074719649481281845" onclick="tg('2074719649481281845')">🌐 翻译</button></div><div class="tw-text" id="o2074719649481281845">The Tesla Model Y now costs less per mile to own than several mass-market gas SUVs
+
+From Tesla’s latest analysis of 5 years and 60,000 miles of ownership:
+• Tesla Model Y RWD: $0.77/mile
+• Toyota RAV4: $0.81/mile
+• Hyundai IONIQ 5: $0.85/mile
+• BMW X3: $1.15/mile
+
+The savings</div><div class="tw-text tw-trans" id="t2074719649481281845" style="display:none">特斯拉Model Y每英里拥车成本现已低于多款主流燃油SUV。
+
+据特斯拉最新分析（5年/6万英里）：
+• 特斯拉Model Y后驱版：0.77美元/英里
+• 丰田RAV4：0.81美元/英里
+• 现代IONIQ 5：0.85美元/英里
+• 宝马X3：1.15美元/英里
+
+省钱效果显著。</div>
+      <div class="tw-stats">❤️ 232 &nbsp; 🔁 50 &nbsp;
+        💬 26 &nbsp; 🔖 7 &nbsp; 👁 8.9K
+        <a href="https://x.com/XFreeze/status/2074719649481281845" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 宏观财经 <span>· 6 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="670" data-time="1783419253">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>日本経済新聞 電子版（日経電子版）</b>
+            <a href="https://x.com/nikkei" target="_blank" class="handle">@nikkei</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼98%</span>
+            <span class="kw-score">活跃度 670 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日本経済新聞 電子版（日経電子版）</b>
+        <a href="https://x.com/nikkei" target="_blank" class="handle">@nikkei</a>
+        <span class="score">热度 670</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 18:14 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074436820633260292" onclick="tg('2074436820633260292')">🌐 翻译</button></div><div class="tw-text" id="o2074436820633260292">［社説］中国のSLBM発射を深く憂慮する</div><div class="tw-text tw-trans" id="t2074436820633260292" style="display:none">【社论】对中国发射潜射弹道导弹深感忧虑</div>
+      <div class="tw-stats">❤️ 62 &nbsp; 🔁 21 &nbsp;
+        💬 31 &nbsp; 🔖 5 &nbsp; 👁 50.5K
+        <a href="https://x.com/nikkei/status/2074436820633260292" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="663" data-time="1783424615">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>DW 中文- 德国之声</b>
+            <a href="https://x.com/dw_chinese" target="_blank" class="handle">@dw_chinese</a>
+            <span class="kw-score">活跃度 663 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>DW 中文- 德国之声</b>
+        <a href="https://x.com/dw_chinese" target="_blank" class="handle">@dw_chinese</a>
+        <span class="score">热度 663</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 19:43 · 1天前</b></div>
+      <div class="tw-text">路透社引述日本企业近期披露的信息分析指出，关键矿产的短缺正开始影响日本整体经济，这使得高市早苗政府在寻找替代中国已切断出口的资源方面，面临着日益紧迫的压力。
+
+自高市早苗于去年11月发表与台湾相关言论激怒北京以来，北京方面已切断了向日本出口某些关键矿产的渠道。</div>
+      <div class="tw-stats">❤️ 115 &nbsp; 🔁 19 &nbsp;
+        💬 38 &nbsp; 🔖 22 &nbsp; 👁 41.5K
+        <a href="https://x.com/dw_chinese/status/2074459310659137566" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="474" data-time="1783552714">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>LEI</b>
+            <a href="https://x.com/TheMarketMemo" target="_blank" class="handle">@TheMarketMemo</a>
+            <span class="kw-score">活跃度 474 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>LEI</b>
+        <a href="https://x.com/TheMarketMemo" target="_blank" class="handle">@TheMarketMemo</a>
+        <span class="score">热度 208</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-09 07:18 · 2小时前</b></div>
+      <div class="tw-text">有網友問：美聯儲不降息了，那美股持續上漲的錢從哪裡來？
+
+你會怎樣回答這個問題？</div>
+      <div class="tw-stats">❤️ 32 &nbsp; 🔁 1 &nbsp;
+        💬 16 &nbsp; 🔖 3 &nbsp; 👁 14.7K
+        <a href="https://x.com/TheMarketMemo/status/2074996596039876613" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>LEI</b>
+        <a href="https://x.com/TheMarketMemo" target="_blank" class="handle">@TheMarketMemo</a>
+        <span class="score">热度 204</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-09 03:55 · 5小时前</b></div>
+      <div class="tw-text">據WSJ：美聯儲新主席沃什首次主持的6月份貨幣政策會議紀要顯示，若通膨持續居高不下，美聯儲官員已達成共識，將不排除重啟升息。</div>
+      <div class="tw-stats">❤️ 64 &nbsp; 🔁 4 &nbsp;
+        💬 3 &nbsp; 🔖 17 &nbsp; 👁 10.4K
+        <a href="https://x.com/TheMarketMemo/status/2074945487447474436" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="253" data-time="1783398763">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>Monera_Digital</b>
+            <a href="https://x.com/Monera_Digital" target="_blank" class="handle">@Monera_Digital</a>
+            <span class="kw-score">活跃度 253 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Monera_Digital</b>
+        <a href="https://x.com/Monera_Digital" target="_blank" class="handle">@Monera_Digital</a>
+        <span class="score">热度 253</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 12:32 · 1天前</b></div>
+      <div class="tw-text">霍尔木兹遇袭点燃地缘溢价，存储链领跌，道指逆势新高
+
+核心数据 
+· CME最新定价：7月维持利率不变74.3%（前77%），加息25bp概率25.7%；9月维持不变42.9%，累计加息25bp 46.2%，加息50bp 10.8% 
+· 标普全球：美联储是否加息取决于油价——能源变量重回反应函数核心 
+·</div>
+      <div class="tw-stats">❤️ 66 &nbsp; 🔁 4 &nbsp;
+        💬 9 &nbsp; 🔖 19 &nbsp; 👁 14.5K
+        <a href="https://x.com/Monera_Digital/status/2074350877268140350" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="240" data-time="1783537599">
+          <div class="kol-head"><span class="rank">#18</span>
+            <b>Cato_KT</b>
+            <a href="https://x.com/Cato_KT" target="_blank" class="handle">@Cato_KT</a>
+            <span class="kw-score">活跃度 240 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Cato_KT</b>
+        <a href="https://x.com/Cato_KT" target="_blank" class="handle">@Cato_KT</a>
+        <span class="score">热度 115</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-09 02:19 · 7小时前</b></div>
+      <div class="tw-text">果然，特朗普是不允许彻底掀掉美伊谈判桌的，这点是毋庸置疑
+
+特朗普的一句话算是暂时缓解了短期地缘紧张情绪，风险市场反弹，能源下跌
+
+虽然不是明显的TACO，但是只要伊朗不在主动袭击船只，特朗普是不愿意在实施军事打击的，这基本上就是在主动示好</div>
+      <div class="tw-stats">❤️ 9 &nbsp; 🔁 0 &nbsp;
+        💬 3 &nbsp; 🔖 1 &nbsp; 👁 9.8K
+        <a href="https://x.com/Cato_KT/status/2074921304390877505" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Cato_KT</b>
+        <a href="https://x.com/Cato_KT" target="_blank" class="handle">@Cato_KT</a>
+        <span class="score">热度 94</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-09 03:06 · 6小时前</b></div>
+      <div class="tw-text">美联储6月份会议纪要内容公布，个人解读一下情况：
+
+1，核心问题依旧是通胀，大家承认通胀有所改善，但是没人敢说对抗通胀已经胜利</div>
+      <div class="tw-stats">❤️ 8 &nbsp; 🔁 0 &nbsp;
+        💬 2 &nbsp; 🔖 2 &nbsp; 👁 7.7K
+        <a href="https://x.com/Cato_KT/status/2074933198962971088" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="213" data-time="1783397368">
+          <div class="kol-head"><span class="rank">#19</span>
+            <b>卢尔辰</b>
+            <a href="https://x.com/erchenlu1" target="_blank" class="handle">@erchenlu1</a>
+            <span class="kw-score">活跃度 213 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>卢尔辰</b>
+        <a href="https://x.com/erchenlu1" target="_blank" class="handle">@erchenlu1</a>
+        <span class="score">热度 213</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 12:09 · 1天前</b></div>
+      <div class="tw-text">日本🇯🇵正在逐渐成为一个“旅游产业国家”。
+
+外国游客在日本的消费，已经超过了日本半导体等电子零部件的出口额。
+
+根据《日经新闻》报道，2025年访日游客消费额达到约9.5万亿日元，同比增长16.4%；而同期日本半导体等电子零部件出口额约为6.6万亿日元。</div>
+      <div class="tw-stats">❤️ 57 &nbsp; 🔁 5 &nbsp;
+        💬 0 &nbsp; 🔖 15 &nbsp; 👁 12.7K
+        <a href="https://x.com/erchenlu1/status/2074345026352513228" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><a class="trend" href="https://x.com/search?q=Democrats%20Withdraw%20Endorsements%20from%20Maine%20Senate%20Nominee%20Graham%20Platner%20After%20Rape%20Allegation" target="_blank"><span class="rank">#1</span> Democrats Withdraw Endorsements from Maine Senate Nominee Graham Platner After Rape Allegation<span class="meta"></span><span class="tmeta">缅因州参议院提名人格雷厄姆·普拉特纳遭强奸指控后民主党人撤回背书</span></a>
+<a class="trend" href="https://x.com/search?q=Anthropic%20Extends%20Claude%20Fable%205%20Access%20Through%20July%2012" target="_blank"><span class="rank">#2</span> Anthropic Extends Claude Fable 5 Access Through July 12<span class="meta"></span><span class="tmeta">Anthropic将Claude Fable 5访问权限延长至7月12日</span></a>
+<a class="trend" href="https://x.com/search?q=Apple%20Signs%20%2430%20Billion%20U.S.%20Chip%20Deal%20with%20Broadcom" target="_blank"><span class="rank">#3</span> Apple Signs $30 Billion U.S. Chip Deal with Broadcom<span class="meta"></span><span class="tmeta">苹果与博通签署300亿美元美国芯片协议</span></a>
+<a class="trend" href="https://x.com/search?q=Gulf" target="_blank"><span class="rank">#4</span> Gulf<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Composer%202.5" target="_blank"><span class="rank">#5</span> Composer 2.5<span class="meta"></span><span class="tmeta">Composer 2.5版本</span></a>
+<a class="trend" href="https://x.com/search?q=Kuminga" target="_blank"><span class="rank">#6</span> Kuminga<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Thekla" target="_blank"><span class="rank">#7</span> Thekla<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23TheValley" target="_blank"><span class="rank">#8</span> #TheValley<span class="meta"></span><span class="tmeta">#山谷</span></a>
+<a class="trend" href="https://x.com/search?q=Thielbar" target="_blank"><span class="rank">#9</span> Thielbar<span class="meta"></span><span class="tmeta">蒂尔巴尔</span></a>
+<a class="trend" href="https://x.com/search?q=%23AEWDynamite" target="_blank"><span class="rank">#10</span> #AEWDynamite<span class="meta"></span><span class="tmeta">#AEW动力赛</span></a>
+<a class="trend" href="https://x.com/search?q=Tanner%20Banks" target="_blank"><span class="rank">#11</span> Tanner Banks<span class="meta"></span><span class="tmeta">坦纳·班克斯</span></a>
+<a class="trend" href="https://x.com/search?q=Joey%20Bart" target="_blank"><span class="rank">#12</span> Joey Bart<span class="meta"></span><span class="tmeta">乔伊·巴特</span></a>
+<a class="trend" href="https://x.com/search?q=Jared%20Jones" target="_blank"><span class="rank">#13</span> Jared Jones<span class="meta"></span><span class="tmeta">贾里德·琼斯</span></a>
+<a class="trend" href="https://x.com/search?q=Ciampa" target="_blank"><span class="rank">#14</span> Ciampa<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Fallout" target="_blank"><span class="rank">#15</span> Fallout<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Air%20Force%20One" target="_blank"><span class="rank">#16</span> Air Force One<span class="meta"></span><span class="tmeta">空军一号</span></a>
+<a class="trend" href="https://x.com/search?q=Grok%204.5" target="_blank"><span class="rank">#17</span> Grok 4.5<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Dennis%20Santana" target="_blank"><span class="rank">#18</span> Dennis Santana<span class="meta"></span><span class="tmeta">丹尼斯·桑塔纳</span></a>
+<a class="trend" href="https://x.com/search?q=Dune" target="_blank"><span class="rank">#19</span> Dune<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Davis%20Martin" target="_blank"><span class="rank">#20</span> Davis Martin<span class="meta"></span><span class="tmeta">戴维斯·马丁</span></a>
+<a class="trend" href="https://x.com/search?q=Adeyemi" target="_blank"><span class="rank">#21</span> Adeyemi<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Mo%20Bamba" target="_blank"><span class="rank">#22</span> Mo Bamba<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23CFBPlayDontPay" target="_blank"><span class="rank">#23</span> #CFBPlayDontPay<span class="meta"></span><span class="tmeta">#大学橄榄球赛应付薪酬</span></a>
+<a class="trend" href="https://x.com/search?q=Dingler" target="_blank"><span class="rank">#24</span> Dingler<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Dean%20Kremer" target="_blank"><span class="rank">#25</span> Dean Kremer<span class="meta"></span><span class="tmeta">迪恩·克雷默</span></a>
+</div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲45%</span>
+          <span class="kw-score">总热度 6.4K · 44 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Hedgeye</b>
+        <a href="https://x.com/Hedgeye" target="_blank" class="handle">@Hedgeye</a>
+        <span class="score">热度 4.9K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 22:49 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074506147130740842" onclick="tg('2074506147130740842')">🌐 翻译</button></div><div class="tw-text" id="o2074506147130740842">BREAKING: Sandisk, $SNDK, plunges -14.4% after SK Hynix announces $51 billion investment in a new production facility.</div><div class="tw-text tw-trans" id="t2074506147130740842" style="display:none">突发：SK海力士宣布投资510亿美元建设新生产设施，闪迪（$SNDK）股价暴跌14.4%。</div>
+      <div class="tw-stats">❤️ 927 &nbsp; 🔁 84 &nbsp;
+        💬 31 &nbsp; 🔖 87 &nbsp; 👁 363.4K
+        <a href="https://x.com/Hedgeye/status/2074506147130740842" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼54%</span>
+          <span class="kw-score">总热度 5.9K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jukan @ ICML</b>
+        <a href="https://x.com/jukan05" target="_blank" class="handle">@jukan05</a>
+        <span class="score">热度 5.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 23:02 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074871701616329193" onclick="tg('2074871701616329193')">🌐 翻译</button></div><div class="tw-text" id="o2074871701616329193">CHINA’S GOVERNMENT HAS APPROVED PURCHASES OF 200,000 NVIDIA H200 CHIPS BY DEEPSEEK, BYTEDANCE, ALIBABA AND OTHERS FOR TRAINING PURPOSES.</div><div class="tw-text tw-trans" id="t2074871701616329193" style="display:none">中国政府已批准深度求索、字节跳动、阿里巴巴等公司采购共20万颗英伟达H200芯片用于训练。</div>
+      <div class="tw-stats">❤️ 1.3K &nbsp; 🔁 181 &nbsp;
+        💬 72 &nbsp; 🔖 210 &nbsp; 👁 308.3K
+        <a href="https://x.com/jukan05/status/2074871701616329193" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲101%</span>
+          <span class="kw-score">总热度 3.4K · 39 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日本経済新聞 電子版（日経電子版）</b>
+        <a href="https://x.com/nikkei" target="_blank" class="handle">@nikkei</a>
+        <span class="score">热度 670</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 18:14 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074436820633260292" onclick="tg('2074436820633260292')">🌐 翻译</button></div><div class="tw-text" id="o2074436820633260292">［社説］中国のSLBM発射を深く憂慮する</div><div class="tw-text tw-trans" id="t2074436820633260292" style="display:none">【社论】对中国发射潜射弹道导弹深感忧虑</div>
+      <div class="tw-stats">❤️ 62 &nbsp; 🔁 21 &nbsp;
+        💬 31 &nbsp; 🔖 5 &nbsp; 👁 50.5K
+        <a href="https://x.com/nikkei/status/2074436820633260292" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$TSLA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼96%</span>
+          <span class="kw-score">总热度 1.9K · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Joe Tegtmeyer 🚀 🤠🛸😎</b>
+        <a href="https://x.com/JoeTegtmeyer" target="_blank" class="handle">@JoeTegtmeyer</a>
+        <span class="score">热度 1.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 23:11 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074873914807750667" onclick="tg('2074873914807750667')">🌐 翻译</button></div><div class="tw-text" id="o2074873914807750667">The Optimus 10m/yr Factory at Giga Texas construction makes noticeable progress every day, with the steel structure hard to ignore from everywhere on the site and the highway as it grows ever larger. On the S end, the land reclamation work and extension of the site continues too,</div><div class="tw-text tw-trans" id="t2074873914807750667" style="display:none">位于德克萨斯超级工厂的Optimus年产千万台工厂每天都有明显进展，钢结构从厂区各处及高速公路上都清晰可见，规模持续扩大。南侧的土地平整和厂区扩建工作也在同步推进。</div>
+      <div class="tw-stats">❤️ 763 &nbsp; 🔁 83 &nbsp;
+        💬 16 &nbsp; 🔖 36 &nbsp; 👁 22.4K
+        <a href="https://x.com/JoeTegtmeyer/status/2074873914807750667" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼63%</span>
+          <span class="kw-score">总热度 1.4K · 44 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>王二鹅 ERE</b>
+        <a href="https://x.com/Dr_goosee" target="_blank" class="handle">@Dr_goosee</a>
+        <span class="score">热度 617</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-07 19:01 · 1天前</b></div>
+      <div class="tw-text">说小红书上市上不去，估值因为这件事掉100亿的都可以取关了，因为这些人都他妈是纯傻逼
+随便给你放几个背后的投资方，真格基金、金沙江创投、纪源资本、腾讯、阿里巴巴、淡马锡、元生资本、天图投资、DST Global、红杉中国 / HongShan、高瓴资本、博裕资本、中信资本</div>
+      <div class="tw-stats">❤️ 72 &nbsp; 🔁 5 &nbsp;
+        💬 69 &nbsp; 🔖 20 &nbsp; 👁 40.6K
+        <a href="https://x.com/Dr_goosee/status/2074448630933553177" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲29%</span>
+          <span class="kw-score">总热度 1.0K · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>LEI</b>
+        <a href="https://x.com/TheMarketMemo" target="_blank" class="handle">@TheMarketMemo</a>
+        <span class="score">热度 208</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-09 07:18 · 2小时前</b></div>
+      <div class="tw-text">有網友問：美聯儲不降息了，那美股持續上漲的錢從哪裡來？
+
+你會怎樣回答這個問題？</div>
+      <div class="tw-stats">❤️ 32 &nbsp; 🔁 1 &nbsp;
+        💬 16 &nbsp; 🔖 3 &nbsp; 👁 14.7K
+        <a href="https://x.com/TheMarketMemo/status/2074996596039876613" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼98%</span>
+          <span class="kw-score">总热度 200 · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>BSPK</b>
+        <a href="https://x.com/BSPK_" target="_blank" class="handle">@BSPK_</a>
+        <span class="score">热度 35</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 23:25 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2074877488510234900" onclick="tg('2074877488510234900')">🌐 翻译</button></div><div class="tw-text" id="o2074877488510234900">DGX H100에서 왜 B100이 아니라, GB200/GB300 NVL72로 갔는지, 왜 그 다음은 VR NVL72/144/Kyber로 가는지를 이해하는게 에이전틱 컴퓨팅의 핵심이라 봅니다.</div><div class="tw-text tw-trans" id="t2074877488510234900" style="display:none">我认为，理解从DGX H100为何没有走向B100、而是直接跨越到GB200/GB300 NVL72，以及下一步为何走向VR NVL72/144/Kyber，是掌握智能体计算核心逻辑的关键所在。</div>
+      <div class="tw-stats">❤️ 13 &nbsp; 🔁 1 &nbsp;
+        💬 1 &nbsp; 🔖 6 &nbsp; 👁 1.1K
+        <a href="https://x.com/BSPK_/status/2074877488510234900" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼73%</span>
+          <span class="kw-score">总热度 93 · 21 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>37度</b>
+        <a href="https://x.com/hibtc37" target="_blank" class="handle">@hibtc37</a>
+        <span class="score">热度 81</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-08 20:26 · 13小时前</b></div>
+      <div class="tw-text">从最高浮盈40%多，到浮亏11%和16%，拿到海力士上市，之前留了5万刀，没太在乎这种持仓体验真好</div>
+      <div class="tw-stats">❤️ 7 &nbsp; 🔁 0 &nbsp;
+        💬 5 &nbsp; 🔖 0 &nbsp; 👁 6.4K
+        <a href="https://x.com/hibtc37/status/2074832596257939830" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
