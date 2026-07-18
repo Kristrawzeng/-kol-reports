@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-07-18</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-07-18 · 更新于 09:40</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-07-18.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-07-18.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<div class="summary">🧠 <b>今日讨论总览</b><p>Kimi K3引爆AI估值与芯片股危机是今日主线，半导体板块领跌亚美股市，市场恐慌情绪蔓延。与此同时，AI军备竞赛逻辑遭质疑，加密货币表现相对抗跌，地缘政治紧张局势亦升温。</p></div><div class="vp-row">
+            <div class="vp-card">
+              <div class="vp-p">Kimi K3冲击AI格局，OpenAI和Anthropic估值逻辑被严重动摇</div>
+              <div class="vp-q">「Kimi K3 may be an important inflection point for AI. Potentially negative for Anthropic and OpenAI」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/GavinSBaker" target="_blank">@GavinSBaker</a> <a class="hold" href="https://x.com/gelunding" target="_blank">@gelunding</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">亚美股市芯片板块遭重挫，标普跌幅被少数权重股绑架</div>
+              <div class="vp-q">「芯片现在占了标普500的两成，三四年前才8%，把这几只票拿掉，剩下的市场其实活得好好的。这不是普跌，是一场被少数权重股绑架的假摔。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/KKaWSB" target="_blank">@KKaWSB</a> <a class="hold" href="https://x.com/JasonZX" target="_blank">@JasonZX</a> <a class="hold" href="https://x.com/WarrenPies" target="_blank">@WarrenPies</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">AI基础设施CAPEX叙事正在崩塌，万亿估值泡沫受质疑</div>
+              <div class="vp-q">「AI基础设施CAPEX投资逻辑，会不会本来就是一个神话？」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/gelunding" target="_blank">@gelunding</a> <a class="hold" href="https://x.com/jimcramer" target="_blank">@jimcramer</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">Kimi K3的线性注意力机制被误读为利空英伟达，恐慌情绪非理性</div>
+              <div class="vp-q">「Similar to the panic over DeepSeek R1, some uneducated people think Kimi K3&#x27;s use of linear attention is bad for NVIDIA」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/SemiAnalysis_" target="_blank">@SemiAnalysis_</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">散户爆仓是半导体接近底部的反向信号</div>
+              <div class="vp-q">「A good indicator is if everyone on $RDDT blew up their portfolios to $0.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/aleabitoreddit" target="_blank">@aleabitoreddit</a> <a class="hold" href="https://x.com/chuge857" target="_blank">@chuge857</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">Bitcoin在纳指持续下跌中保持韧性，资金正从AI板块向加密货币转移</div>
+              <div class="vp-q">「随着资金从AI和半导体的撤出，已经有资金开始在注意Bitcoin了，这并不仅仅是购买力的提升」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">ETH现货ETF资金流入明显强于BTC，机构资金偏好出现分化</div>
+              <div class="vp-q">「当日净流入23,980.55 ETH，延续了前一日的强修复，资金表现明显强于BTC」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">DeepSeek人才流失与期权激励不足，技术护城河面临断层风险</div>
+              <div class="vp-q">「罗福莉、郭达雅一走，V3、R1技术线直接断层。钱没给够：大厂砸2-3倍薪资+千万总包，DeepSeek期权不融资、没估值，纯属「废纸期票」。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/WangNextDoor2" target="_blank">@WangNextDoor2</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">美国正扩大对伊朗军事部署，中东地缘风险显著上升</div>
+              <div class="vp-q">「The U.S. is preparing for a significantly expanded military campaign against Iran — flooding Israel with dozens of additional refueling tankers」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/HormuzReport" target="_blank">@HormuzReport</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">内塔尼亚胡向西班牙发出停电和火车事故威胁，言辞极具挑衅性</div>
+              <div class="vp-q">「They might experience sudden power outages, and train accidents could happen.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/GBC_Press" target="_blank">@GBC_Press</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">下周财报季将成重磅催化剂，特斯拉谷歌等巨头集中披露</div>
+              <div class="vp-q">「OMG next week earnings is going to be WILD… We got $TSLA, $GOOGL, $NOW, $IBM, $NOK, $INTC. Hugeeeeeeeeeeeeee」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/DudeWhoInvests" target="_blank">@DudeWhoInvests</a> <a class="hold" href="https://x.com/SawyerMerritt" target="_blank">@SawyerMerritt</a></div>
+            </div></div>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 美股投资 <span>· 6 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="18604" data-time="1784310055">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>Stocktwits</b>
+            <a href="https://x.com/Stocktwits" target="_blank" class="handle">@Stocktwits</a>
+            <span class="kw-score">活跃度 18.6K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Stocktwits</b>
+        <a href="https://x.com/Stocktwits" target="_blank" class="handle">@Stocktwits</a>
+        <span class="score">热度 18.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 01:40 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078173112785305858" onclick="tg('2078173112785305858')">🌐 翻译</button></div><div class="tw-text" id="o2078173112785305858">Looks like SpaceX ate the Taco Bell lettuce</div><div class="tw-text tw-trans" id="t2078173112785305858" style="display:none">看来SpaceX吃了塔可贝尔的生菜（暗指拉肚子/出问题了）</div>
+      <div class="tw-stats">❤️ 8.4K &nbsp; 🔁 688 &nbsp;
+        💬 189 &nbsp; 🔖 467 &nbsp; 👁 787.8K
+        <a href="https://x.com/Stocktwits/status/2078173112785305858" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="13486" data-time="1784217425">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>Serenity</b>
+            <a href="https://x.com/aleabitoreddit" target="_blank" class="handle">@aleabitoreddit</a>
+            <span class="kw-score">活跃度 13.5K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Serenity</b>
+        <a href="https://x.com/aleabitoreddit" target="_blank" class="handle">@aleabitoreddit</a>
+        <span class="score">热度 13.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-16 23:57 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2077784594959725056" onclick="tg('2077784594959725056')">🌐 翻译</button></div><div class="tw-text" id="o2077784594959725056">My guess is we’re close to market bottom on semis from $INTC to $LITE.
+
+A good indicator is if everyone on $RDDT blew up their portfolios to $0.</div><div class="tw-text tw-trans" id="t2077784594959725056" style="display:none">我猜半导体板块从英特尔到莱特波（$LITE）已接近市场底部。一个参考指标是：如果Reddit上的人都把账户亏到归零，那差不多就到底了。</div>
+      <div class="tw-stats">❤️ 4.0K &nbsp; 🔁 207 &nbsp;
+        💬 366 &nbsp; 🔖 723 &nbsp; 👁 775.0K
+        <a href="https://x.com/aleabitoreddit/status/2077784594959725056" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="10740" data-time="1784253652">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>Jim Cramer</b>
+            <a href="https://x.com/jimcramer" target="_blank" class="handle">@jimcramer</a>
+            <span class="kw-score">活跃度 10.7K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jim Cramer</b>
+        <a href="https://x.com/jimcramer" target="_blank" class="handle">@jimcramer</a>
+        <span class="score">热度 10.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 10:00 · 23小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2077936542903882164" onclick="tg('2077936542903882164')">🌐 翻译</button></div><div class="tw-text" id="o2077936542903882164">Futures tonight  signaling the unwind of the data center accoutrements is not complete...</div><div class="tw-text tw-trans" id="t2077936542903882164" style="display:none">今晚期货市场在暗示：数据中心配套设备的抛售尚未结束……</div>
+      <div class="tw-stats">❤️ 1.4K &nbsp; 🔁 89 &nbsp;
+        💬 284 &nbsp; 🔖 133 &nbsp; 👁 836.9K
+        <a href="https://x.com/jimcramer/status/2077936542903882164" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="2657" data-time="1784210284">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>Warren Pies</b>
+            <a href="https://x.com/WarrenPies" target="_blank" class="handle">@WarrenPies</a>
+            <span class="kw-score">活跃度 2.7K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Warren Pies</b>
+        <a href="https://x.com/WarrenPies" target="_blank" class="handle">@WarrenPies</a>
+        <span class="score">热度 2.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-16 21:58 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2077754644638339081" onclick="tg('2077754644638339081')">🌐 翻译</button></div><div class="tw-text" id="o2077754644638339081">Semis now down ~13% from the recent highs.
+
+The group first registered in our &quot;blow-off&quot; screen 32 months ago and has gone through two &amp;gt;20% drawdowns since.
+
+For perspective, the 90s bull lasted 63 months after registering a blow-off and suffered about one 20% dd per year.</div><div class="tw-text tw-trans" id="t2077754644638339081" style="display:none">半导体板块自近期高点已下跌约13%。该板块32个月前首次触发我们的「过热」预警，此后经历了两次超过20%的回撤。作为参考，90年代的牛市在触发过热信号后持续了63个月，平均每年经历约一次20%的回调。</div>
+      <div class="tw-stats">❤️ 708 &nbsp; 🔁 89 &nbsp;
+        💬 27 &nbsp; 🔖 239 &nbsp; 👁 146.3K
+        <a href="https://x.com/WarrenPies/status/2077754644638339081" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="639" data-time="1784310821">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>Manchurius Hao — Greeks.live首席赌狗</b>
+            <a href="https://x.com/AntonLaVay" target="_blank" class="handle">@AntonLaVay</a>
+            <span class="kw-score">活跃度 639 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Manchurius Hao — Greeks.live首席赌狗</b>
+        <a href="https://x.com/AntonLaVay" target="_blank" class="handle">@AntonLaVay</a>
+        <span class="score">热度 447</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 21:59 · 11小时前</b></div>
+      <div class="tw-text">$dram 作为入场点其实是合理的。</div>
+      <div class="tw-stats">❤️ 35 &nbsp; 🔁 0 &nbsp;
+        💬 22 &nbsp; 🔖 2 &nbsp; 👁 37.5K
+        <a href="https://x.com/AntonLaVay/status/2078117272053223751" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Manchurius Hao — Greeks.live首席赌狗</b>
+        <a href="https://x.com/AntonLaVay" target="_blank" class="handle">@AntonLaVay</a>
+        <span class="score">热度 109</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 01:53 · 7小时前</b></div>
+      <div class="tw-text">合理归合理 给了他一个期权仓位 但是大部分我在搞能源… 
+
+战争重启后，其实 $cl 一直在涨， $xle 也一直在涨。
+
+还有一个东西叫 3-2-1 裂解价差。
+
+详情见订阅 or 你自己去查</div>
+      <div class="tw-stats">❤️ 21 &nbsp; 🔁 0 &nbsp;
+        💬 6 &nbsp; 🔖 3 &nbsp; 👁 7.6K
+        <a href="https://x.com/AntonLaVay/status/2078176326112993613" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="547" data-time="1784309019">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>提款机</b>
+            <a href="https://x.com/OtmAtm" target="_blank" class="handle">@OtmAtm</a>
+            <span class="kw-score">活跃度 547 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>提款机</b>
+        <a href="https://x.com/OtmAtm" target="_blank" class="handle">@OtmAtm</a>
+        <span class="score">热度 406</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 21:42 · 11小时前</b></div>
+      <div class="tw-text">款哥今晚准备继续抄底。
+
+不惧全球市场AI行业的暴跌和去杠杆，坚持逢低买入标的只有两个：
+
+指数买 SOXX，个股买台积电。
+
+原因很简单。
+
+如果让我只投资一个 AI 指数，款哥会选 SOXX。
+
+因为它几乎覆盖了整个 AI 硬件产业链：GPU、CPU、ASIC、HBM</div>
+      <div class="tw-stats">❤️ 11 &nbsp; 🔁 1 &nbsp;
+        💬 20 &nbsp; 🔖 3 &nbsp; 👁 35.8K
+        <a href="https://x.com/OtmAtm/status/2078113174382092538" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>提款机</b>
+        <a href="https://x.com/OtmAtm" target="_blank" class="handle">@OtmAtm</a>
+        <span class="score">热度 8</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 01:23 · 8小时前</b></div>
+      <div class="tw-text">@mingchikuo 巧用期权组合抄底TSM，无惧震荡洗盘去杠杆</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 1 &nbsp; 👁 560
+        <a href="https://x.com/OtmAtm/status/2078168768459792813" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 娱乐体育 <span>· 1 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="55114" data-time="1784235523">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>Happy Punch</b>
+            <a href="https://x.com/HappyPunch" target="_blank" class="handle">@HappyPunch</a>
+            <span class="kw-score">活跃度 55.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Happy Punch</b>
+        <a href="https://x.com/HappyPunch" target="_blank" class="handle">@HappyPunch</a>
+        <span class="score">热度 55.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 04:58 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2077860502726742462" onclick="tg('2077860502726742462')">🌐 翻译</button></div><div class="tw-text" id="o2077860502726742462">The world’s first robot MMA event just went down in China 🤯
+
+Kicked his head clean off 💀</div><div class="tw-text tw-trans" id="t2077860502726742462" style="display:none">世界首场机器人MMA格斗赛刚刚在中国上演🤯，直接把对方脑袋踢飞了💀</div>
+      <div class="tw-stats">❤️ 24.4K &nbsp; 🔁 1.3K &nbsp;
+        💬 455 &nbsp; 🔖 4.6K &nbsp; 👁 2.2M
+        <a href="https://x.com/HappyPunch/status/2077860502726742462" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 科技/AI <span>· 5 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="26093" data-time="1784295230">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>Gavin Baker</b>
+            <a href="https://x.com/GavinSBaker" target="_blank" class="handle">@GavinSBaker</a>
+            <span class="kw-score">活跃度 26.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Gavin Baker</b>
+        <a href="https://x.com/GavinSBaker" target="_blank" class="handle">@GavinSBaker</a>
+        <span class="score">热度 26.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 21:33 · 12小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078110934740980193" onclick="tg('2078110934740980193')">🌐 翻译</button></div><div class="tw-text" id="o2078110934740980193">Kimi K3 may be an important inflection point for AI. Potentially negative for Anthropic and OpenAI while being net positive for essentially every other company in the world. I mean that very literally. Although the real “Sputnik moment” would be an open-source frontier model that</div><div class="tw-text tw-trans" id="t2078110934740980193" style="display:none">Kimi K3可能是AI领域一个重要的拐点。对Anthropic和OpenAI而言潜在利空，但对世界上几乎所有其他公司而言净利好——我说的是字面意思。不过真正的「斯普特尼克时刻」将是一个开源的前沿模型……</div>
+      <div class="tw-stats">❤️ 5.7K &nbsp; 🔁 828 &nbsp;
+        💬 402 &nbsp; 🔖 3.8K &nbsp; 👁 1.4M
+        <a href="https://x.com/GavinSBaker/status/2078110934740980193" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="3389" data-time="1784328551">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>SemiAnalysis</b>
+            <a href="https://x.com/SemiAnalysis_" target="_blank" class="handle">@SemiAnalysis_</a>
+            <span class="kw-score">活跃度 3.4K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>SemiAnalysis</b>
+        <a href="https://x.com/SemiAnalysis_" target="_blank" class="handle">@SemiAnalysis_</a>
+        <span class="score">热度 3.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 06:49 · 2小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078250693010309260" onclick="tg('2078250693010309260')">🌐 翻译</button></div><div class="tw-text" id="o2078250693010309260">Similar to the panic over DeepSeek R1, some uneducated people think Kimi K3’s use of linear attention (KDA) is bad for NVIDIA, HBM, DRAM, and networking because it has relatively lower KV-cache requirements. The opposite is true, and we explain why below. 👇️ 1/8🧵</div><div class="tw-text tw-trans" id="t2078250693010309260" style="display:none">和当初对DeepSeek R1的恐慌类似，一些不了解情况的人认为Kimi K3采用线性注意力机制（KDA）对英伟达、HBM、DRAM及网络设备是利空，因为其KV缓存需求相对较低。事实恰恰相反，原因请看以下分析👇 1/8🧵</div>
+      <div class="tw-stats">❤️ 1.0K &nbsp; 🔁 139 &nbsp;
+        💬 30 &nbsp; 🔖 728 &nbsp; 👁 125.4K
+        <a href="https://x.com/SemiAnalysis_/status/2078250693010309260" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="2057" data-time="1784314787">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>Sawyer Merritt</b>
+            <a href="https://x.com/SawyerMerritt" target="_blank" class="handle">@SawyerMerritt</a>
+            <span class="kw-score">活跃度 2.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Sawyer Merritt</b>
+        <a href="https://x.com/SawyerMerritt" target="_blank" class="handle">@SawyerMerritt</a>
+        <span class="score">热度 2.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 02:59 · 6小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078192959883780329" onclick="tg('2078192959883780329')">🌐 翻译</button></div><div class="tw-text" id="o2078192959883780329">Tesla has released their company-compiled earnings consensus estimates of sell-side analysts for Q2 2026.
+
+Analysts expect ~$27.6B in revenue and $1.3B in net income for Q2 2026.</div><div class="tw-text tw-trans" id="t2078192959883780329" style="display:none">特斯拉发布了公司汇总的卖方分析师对2026年第二季度的盈利一致预期：分析师预计2026年第二季度营收约276亿美元，净利润约13亿美元。</div>
+      <div class="tw-stats">❤️ 857 &nbsp; 🔁 57 &nbsp;
+        💬 49 &nbsp; 🔖 44 &nbsp; 👁 95.5K
+        <a href="https://x.com/SawyerMerritt/status/2078192959883780329" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="838" data-time="1784313600">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>WangNextDoor</b>
+            <a href="https://x.com/WangNextDoor2" target="_blank" class="handle">@WangNextDoor2</a>
+            <span class="kw-score">活跃度 838 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>WangNextDoor</b>
+        <a href="https://x.com/WangNextDoor2" target="_blank" class="handle">@WangNextDoor2</a>
+        <span class="score">热度 838</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 02:40 · 7小时前</b></div>
+      <div class="tw-text">Deepseek目前团队太小太脆：不到200人，70%是30岁以下，罗福莉、郭达雅一走，V3、R1技术线直接断层。
+钱没给够：大厂砸2-3倍薪资+千万总包，DeepSeek期权不融资、没估值，纯属“废纸期票”。
+融资是把双刃剑：刚撬500亿补血，但创始人占股84%池子浅，资本进来怕丢了技术专注度。</div>
+      <div class="tw-stats">❤️ 62 &nbsp; 🔁 7 &nbsp;
+        💬 10 &nbsp; 🔖 31 &nbsp; 👁 71.4K
+        <a href="https://x.com/WangNextDoor2/status/2078187981060354417" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="451" data-time="1784288527">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>GeLun Ding</b>
+            <a href="https://x.com/gelunding" target="_blank" class="handle">@gelunding</a>
+            <span class="kw-score">活跃度 451 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>GeLun Ding</b>
+        <a href="https://x.com/gelunding" target="_blank" class="handle">@gelunding</a>
+        <span class="score">热度 451</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 19:42 · 13小时前</b></div>
+      <div class="tw-text">Kimi发布K3模型，刚刚引发了全球股市震荡。周四，美国几乎所有AI概念股集体暴跌，周五，亚洲AI相关股票也遭到大规模抛售。
+
+Moonshot的K3让投资者开始质疑两件事：第一，美国前沿AI实验室如OpenAI和Anthropic凭什么能支撑1万亿美元的估值？第二，AI基础设施CAPEX投资逻辑，会不会本来就是一个神话？</div>
+      <div class="tw-stats">❤️ 103 &nbsp; 🔁 28 &nbsp;
+        💬 41 &nbsp; 🔖 49 &nbsp; 👁 17.5K
+        <a href="https://x.com/gelunding/status/2078082819369091269" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 社会时事 <span>· 3 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="21727" data-time="1784307954">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>GBC</b>
+            <a href="https://x.com/GBC_Press" target="_blank" class="handle">@GBC_Press</a>
+            <span class="kw-score">活跃度 21.7K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>GBC</b>
+        <a href="https://x.com/GBC_Press" target="_blank" class="handle">@GBC_Press</a>
+        <span class="score">热度 21.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 01:05 · 8小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078164299151974463" onclick="tg('2078164299151974463')">🌐 翻译</button></div><div class="tw-text" id="o2078164299151974463">🚨 BREAKING:
+
+​Netanyahu threatened Spain.
+
+​He said: &quot;They might experience sudden power outages, and train accidents could happen.&quot;</div><div class="tw-text tw-trans" id="t2078164299151974463" style="display:none">🚨突发：内塔尼亚胡威胁西班牙，称「他们可能会突然遭遇大停电，火车事故也可能发生。」</div>
+      <div class="tw-stats">❤️ 6.8K &nbsp; 🔁 3.1K &nbsp;
+        💬 789 &nbsp; 🔖 1.7K &nbsp; 👁 480.0K
+        <a href="https://x.com/GBC_Press/status/2078164299151974463" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="6579" data-time="1784310803">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>The Hormuz Report</b>
+            <a href="https://x.com/HormuzReport" target="_blank" class="handle">@HormuzReport</a>
+            <span class="kw-score">活跃度 6.6K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>The Hormuz Report</b>
+        <a href="https://x.com/HormuzReport" target="_blank" class="handle">@HormuzReport</a>
+        <span class="score">热度 6.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 01:53 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078176249818783848" onclick="tg('2078176249818783848')">🌐 翻译</button></div><div class="tw-text" id="o2078176249818783848">BREAKING: The U.S. is preparing for a significantly expanded military campaign against Iran — flooding Israel with dozens of additional refueling tankers, turning Ben Gurion Airport into a forward base for expanded attacks on Iran, a move Tehran has warned will make Israel a</div><div class="tw-text tw-trans" id="t2078176249818783848" style="display:none">突发：美国正准备对伊朗发动规模大幅扩大的军事行动——向以色列增派数十架加油机，并将本·古里安机场改造为对伊攻势的前进基地。德黑兰已警告此举将使以色列成为……</div>
+      <div class="tw-stats">❤️ 1.9K &nbsp; 🔁 602 &nbsp;
+        💬 114 &nbsp; 🔖 258 &nbsp; 👁 292.5K
+        <a href="https://x.com/HormuzReport/status/2078176249818783848" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="440" data-time="1784281779">
+          <div class="kol-head"><span class="rank">#18</span>
+            <b>Wilco de Kreij</b>
+            <a href="https://x.com/Emarky" target="_blank" class="handle">@Emarky</a>
+            <span class="kw-score">活跃度 440 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Wilco de Kreij</b>
+        <a href="https://x.com/Emarky" target="_blank" class="handle">@Emarky</a>
+        <span class="score">热度 440</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 17:49 · 15小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078054515119452564" onclick="tg('2078054515119452564')">🌐 翻译</button></div><div class="tw-text" id="o2078054515119452564">Last week I got permission to drive again. First time in a year!
+
+Why? A year ago, I blacked out behind the wheel and crashed straight into another car. We had our three kids in the back (our youngest was 2 months old at the time), but thankfully everyone was okay. 
+
+Turned out</div><div class="tw-text tw-trans" id="t2078054515119452564" style="display:none">上周我终于获准重新驾车，整整一年了！为什么停驾这么久？一年前我在方向盘后突然晕厥，径直撞上了另一辆车。当时三个孩子在后座（最小的才两个月大），所幸大家都平安无事。后来查出来……</div>
+      <div class="tw-stats">❤️ 209 &nbsp; 🔁 15 &nbsp;
+        💬 15 &nbsp; 🔖 1 &nbsp; 👁 16.8K
+        <a href="https://x.com/Emarky/status/2078054515119452564" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 5 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="3239" data-time="1784318211">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>Phyrex</b>
+            <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲148%</span>
+            <span class="kw-score">活跃度 3.2K · 8 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 372</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 00:54 · 8小时前</b></div>
+      <div class="tw-text">降落的第一件事就是看到 ADR 反弹，赶紧在 162 美元平仓了所有空单，盈利不到 100%，昨天追的空单亏了一些，但却整体盈利就好，今天周末就先不动了，严格遵守自己的规则。</div>
+      <div class="tw-stats">❤️ 44 &nbsp; 🔁 0 &nbsp;
+        💬 20 &nbsp; 🔖 4 &nbsp; 👁 29.2K
+        <a href="https://x.com/PhyrexNi/status/2078161312585236893" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 295</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 01:31 · 1天前</b></div>
+      <div class="tw-text">又是疲劳的一天，不过今天 bitcoin:native 的表现仍然不错，尤其是在纳指继续下跌超过 1% 以后，Bitcoin 并没有像吃了泻药一样不止，仍然在 64,000 美元左右震荡，我很难说 Bitcoin 的底部就是 60,000 美元，但我强调过无数次，60,000 美元的购买力非常强势，我自己也在 59,000 美元到 63,000</div>
+      <div class="tw-stats">❤️ 47 &nbsp; 🔁 1 &nbsp;
+        💬 17 &nbsp; 🔖 4 &nbsp; 👁 21.3K
+        <a href="https://x.com/PhyrexNi/status/2077808357591990381" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1497" data-time="1784295078">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>Ondo Finance</b>
+            <a href="https://x.com/OndoFinance" target="_blank" class="handle">@OndoFinance</a>
+            <span class="kw-score">活跃度 1.5K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Ondo Finance</b>
+        <a href="https://x.com/OndoFinance" target="_blank" class="handle">@OndoFinance</a>
+        <span class="score">热度 1.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 21:31 · 12小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078110296971915767" onclick="tg('2078110296971915767')">🌐 翻译</button></div><div class="tw-text" id="o2078110296971915767">Weekend trading just got a major upgrade.
+
+10 more of the most in-demand Ondo Stocks are now live with real 24/7 trading:
+
+→ AMD
+→ Intel
+→ Micron
+→ TSMC
+→ Marvell
+→ SpaceX
+→ SanDisk
+→ Broadcom
+→ SK hynix
+→ Arm Holdings
+
+That brings the 24/7 lineup to 16 assets, joining</div><div class="tw-text tw-trans" id="t2078110296971915767" style="display:none">周末交易迎来重大升级。又有10只热门Ondo股票正式上线，支持真正的7×24小时交易：AMD、英特尔、美光、台积电、Marvell、SpaceX、闪迪、博通、SK海力士、Arm。至此，全天候交易品种已扩展至16个。</div>
+      <div class="tw-stats">❤️ 558 &nbsp; 🔁 85 &nbsp;
+        💬 68 &nbsp; 🔖 14 &nbsp; 👁 58.3K
+        <a href="https://x.com/OndoFinance/status/2078110296971915767" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="691" data-time="1784290738">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>井上春生</b>
+            <a href="https://x.com/HUGMACH" target="_blank" class="handle">@HUGMACH</a>
+            <span class="kw-score">活跃度 691 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>井上春生</b>
+        <a href="https://x.com/HUGMACH" target="_blank" class="handle">@HUGMACH</a>
+        <span class="score">热度 691</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 20:18 · 13小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078092091738227197" onclick="tg('2078092091738227197')">🌐 翻译</button></div><div class="tw-text" id="o2078092091738227197">何が将来価値を開拓するのかの、瀬戸際の今日っつ（懐）機関に煽られた今週は、特に
+
+失ったのは、時間だと思う
+でもありがたいことにたった数ヶ月
+
+今朝、BKLZさんと軽くポスト会話したんだけど、昨秋発表されて、先週か？、さらにレイヤーを極めてきた
+
+NOK+NVDAは、</div><div class="tw-text tw-trans" id="t2078092091738227197" style="display:none">在这个站在「未来价值将由什么开拓」关键节点的当下（怀念），被机构煽动的这一周尤其如此。失去的，我认为是时间——但好在只有短短几个月，值得庆幸。今早和BKLZ简单聊了聊帖子，去年秋天发布的那个方向，上周还是何时，又把层级推进到了极致。NOK+NVDA的组合……</div>
+      <div class="tw-stats">❤️ 87 &nbsp; 🔁 4 &nbsp;
+        💬 1 &nbsp; 🔖 24 &nbsp; 👁 56.7K
+        <a href="https://x.com/HUGMACH/status/2078092091738227197" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="409" data-time="1784204485">
+          <div class="kol-head"><span class="rank">#19</span>
+            <b>币安Binance华语</b>
+            <a href="https://x.com/binancezh" target="_blank" class="handle">@binancezh</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼81%</span>
+            <span class="kw-score">活跃度 409 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>币安Binance华语</b>
+        <a href="https://x.com/binancezh" target="_blank" class="handle">@binancezh</a>
+        <span class="score">热度 409</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-16 20:21 · 1天前</b></div>
+      <div class="tw-text">全新TradFi股票永续合约即将上线！
+
+在币安合约上以 Quanto 合约交易以下标的：
+
+🔸腾讯控股（HK0700）
+🔸小米集团（HK1810）
+
+注：Quanto 合约是一种永续合约，其标的资产以一种计价资产定价，但保证金和盈亏则以另一种计价资产结算。
+
+全天候 24/7 可交易，最高 25 倍杠杆。</div>
+      <div class="tw-stats">❤️ 41 &nbsp; 🔁 2 &nbsp;
+        💬 60 &nbsp; 🔖 3 &nbsp; 👁 24.9K
+        <a href="https://x.com/binancezh/status/2077730319617163370" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="393" data-time="1784275117">
+          <div class="kol-head"><span class="rank">#20</span>
+            <b>ADMEN | CryptoTimes</b>
+            <a href="https://x.com/admen_vc_2" target="_blank" class="handle">@admen_vc_2</a>
+            <span class="kw-score">活跃度 393 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>ADMEN | CryptoTimes</b>
+        <a href="https://x.com/admen_vc_2" target="_blank" class="handle">@admen_vc_2</a>
+        <span class="score">热度 393</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 15:58 · 17小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078026574293811633" onclick="tg('2078026574293811633')">🌐 翻译</button></div><div class="tw-text" id="o2078026574293811633">韓国、想像以上に大変なことになっていて、今週だけで約120万人の個人投資家が追証を受けたとのこと。
+
+韓国の成人人口の約3.4%に相当する規模らしい😨</div><div class="tw-text tw-trans" id="t2078026574293811633" style="display:none">韩国的情况比想象中严峻得多——据悉仅本周就有约120万散户投资者收到追加保证金通知，相当于韩国成人人口的约3.4%😨</div>
+      <div class="tw-stats">❤️ 87 &nbsp; 🔁 14 &nbsp;
+        💬 3 &nbsp; 🔖 17 &nbsp; 👁 24.3K
+        <a href="https://x.com/admen_vc_2/status/2078026574293811633" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><a class="trend" href="https://x.com/search?q=Starship%20Flight%2013%20Aborts%20Seconds%20Before%20Liftoff%20Due%20to%20Engine%20Issues" target="_blank"><span class="rank">#1</span> Starship Flight 13 Aborts Seconds Before Liftoff Due to Engine Issues<span class="meta"></span><span class="tmeta">星舰13号飞行因发动机故障在升空前数秒中止</span></a>
+<a class="trend" href="https://x.com/search?q=Moonshot%20AI%27s%20Kimi%20K3%20Tops%20Frontend%20Code%20Arena%20Leaderboard" target="_blank"><span class="rank">#2</span> Moonshot AI&#x27;s Kimi K3 Tops Frontend Code Arena Leaderboard<span class="meta"></span><span class="tmeta">月之暗面Kimi K3登顶前端代码竞技场排行榜</span></a>
+<a class="trend" href="https://x.com/search?q=Blue%20Angels%20Low%20Flyover%20Scatters%20Pensacola%20Beach%20Gear%2C%20Clears%20Navy%20Review" target="_blank"><span class="rank">#3</span> Blue Angels Low Flyover Scatters Pensacola Beach Gear, Clears Navy Review<span class="meta"></span><span class="tmeta">蓝天使低空飞越吹散彭萨科拉海滩装备并通过海军审查</span></a>
+<a class="trend" href="https://x.com/search?q=Lala" target="_blank"><span class="rank">#4</span> Lala<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=War%20Raiders" target="_blank"><span class="rank">#5</span> War Raiders<span class="meta"></span><span class="tmeta">战争掠夺者</span></a>
+<a class="trend" href="https://x.com/search?q=Seattle%20Storm" target="_blank"><span class="rank">#6</span> Seattle Storm<span class="meta"></span><span class="tmeta">西雅图风暴</span></a>
+<a class="trend" href="https://x.com/search?q=Boardwalk%20Empire" target="_blank"><span class="rank">#7</span> Boardwalk Empire<span class="meta"></span><span class="tmeta">木板路帝国</span></a>
+<a class="trend" href="https://x.com/search?q=Lash%20Legend" target="_blank"><span class="rank">#8</span> Lash Legend<span class="meta"></span><span class="tmeta">睫毛传奇</span></a>
+<a class="trend" href="https://x.com/search?q=BNB%20Chain" target="_blank"><span class="rank">#9</span> BNB Chain<span class="meta"></span><span class="tmeta">BNB链</span></a>
+<a class="trend" href="https://x.com/search?q=%23SmackDown" target="_blank"><span class="rank">#10</span> #SmackDown<span class="meta"></span><span class="tmeta">#SmackDown摔角节目</span></a>
+<a class="trend" href="https://x.com/search?q=Bryson" target="_blank"><span class="rank">#11</span> Bryson<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Logan%20Paul" target="_blank"><span class="rank">#12</span> Logan Paul<span class="meta"></span><span class="tmeta">洛根·保罗</span></a>
+<a class="trend" href="https://x.com/search?q=Jimothy" target="_blank"><span class="rank">#13</span> Jimothy<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23loveafterlockup" target="_blank"><span class="rank">#14</span> #loveafterlockup<span class="meta"></span><span class="tmeta">#出狱后的爱情</span></a>
+<a class="trend" href="https://x.com/search?q=Gerrit%20Cole" target="_blank"><span class="rank">#15</span> Gerrit Cole<span class="meta"></span><span class="tmeta">格里特·科尔</span></a>
+<a class="trend" href="https://x.com/search?q=Tiana" target="_blank"><span class="rank">#16</span> Tiana<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Brandel" target="_blank"><span class="rank">#17</span> Brandel<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Olive%20Garden" target="_blank"><span class="rank">#18</span> Olive Garden<span class="meta"></span><span class="tmeta">橄榄花园餐厅</span></a>
+<a class="trend" href="https://x.com/search?q=Awa%20Fam" target="_blank"><span class="rank">#19</span> Awa Fam<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Blake%20Monroe" target="_blank"><span class="rank">#20</span> Blake Monroe<span class="meta"></span><span class="tmeta">布莱克·门罗</span></a>
+<a class="trend" href="https://x.com/search?q=Roki" target="_blank"><span class="rank">#21</span> Roki<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Next%20100" target="_blank"><span class="rank">#22</span> Next 100<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Meatloaf" target="_blank"><span class="rank">#23</span> Meatloaf<span class="meta"></span><span class="tmeta">肉饼</span></a>
+<a class="trend" href="https://x.com/search?q=%23OPNation" target="_blank"><span class="rank">#24</span> #OPNation<span class="meta"></span><span class="tmeta">#OP国度</span></a>
+<a class="trend" href="https://x.com/search?q=Interim" target="_blank"><span class="rank">#25</span> Interim<span class="meta"></span></a>
+</div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>$TSLA</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲18401%</span>
+          <span class="kw-score">总热度 105.1K · 48 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Happy Punch</b>
+        <a href="https://x.com/HappyPunch" target="_blank" class="handle">@HappyPunch</a>
+        <span class="score">热度 55.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 04:58 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2077860502726742462" onclick="tg('2077860502726742462')">🌐 翻译</button></div><div class="tw-text" id="o2077860502726742462">The world’s first robot MMA event just went down in China 🤯
+
+Kicked his head clean off 💀</div><div class="tw-text tw-trans" id="t2077860502726742462" style="display:none">世界首场机器人MMA格斗赛刚刚在中国上演🤯，直接把对方脑袋踢飞了💀</div>
+      <div class="tw-stats">❤️ 24.4K &nbsp; 🔁 1.3K &nbsp;
+        💬 455 &nbsp; 🔖 4.6K &nbsp; 👁 2.2M
+        <a href="https://x.com/HappyPunch/status/2077860502726742462" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲134557%</span>
+          <span class="kw-score">总热度 71.4K · 45 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Gavin Baker</b>
+        <a href="https://x.com/GavinSBaker" target="_blank" class="handle">@GavinSBaker</a>
+        <span class="score">热度 26.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 21:33 · 12小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078110934740980193" onclick="tg('2078110934740980193')">🌐 翻译</button></div><div class="tw-text" id="o2078110934740980193">Kimi K3 may be an important inflection point for AI. Potentially negative for Anthropic and OpenAI while being net positive for essentially every other company in the world. I mean that very literally. Although the real “Sputnik moment” would be an open-source frontier model that</div><div class="tw-text tw-trans" id="t2078110934740980193" style="display:none">Kimi K3可能是AI领域一个重要的拐点。对Anthropic和OpenAI而言潜在利空，但对世界上几乎所有其他公司而言净利好——我说的是字面意思。不过真正的「斯普特尼克时刻」将是一个开源的前沿模型……</div>
+      <div class="tw-stats">❤️ 5.7K &nbsp; 🔁 828 &nbsp;
+        💬 402 &nbsp; 🔖 3.8K &nbsp; 👁 1.4M
+        <a href="https://x.com/GavinSBaker/status/2078110934740980193" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲169%</span>
+          <span class="kw-score">总热度 15.9K · 46 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Serenity</b>
+        <a href="https://x.com/aleabitoreddit" target="_blank" class="handle">@aleabitoreddit</a>
+        <span class="score">热度 13.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-16 23:57 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2077784594959725056" onclick="tg('2077784594959725056')">🌐 翻译</button></div><div class="tw-text" id="o2077784594959725056">My guess is we’re close to market bottom on semis from $INTC to $LITE.
+
+A good indicator is if everyone on $RDDT blew up their portfolios to $0.</div><div class="tw-text tw-trans" id="t2077784594959725056" style="display:none">我猜半导体板块从英特尔到莱特波（$LITE）已接近市场底部。一个参考指标是：如果Reddit上的人都把账户亏到归零，那差不多就到底了。</div>
+      <div class="tw-stats">❤️ 4.0K &nbsp; 🔁 207 &nbsp;
+        💬 366 &nbsp; 🔖 723 &nbsp; 👁 775.0K
+        <a href="https://x.com/aleabitoreddit/status/2077784594959725056" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲19%</span>
+          <span class="kw-score">总热度 2.5K · 45 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>WangNextDoor</b>
+        <a href="https://x.com/WangNextDoor2" target="_blank" class="handle">@WangNextDoor2</a>
+        <span class="score">热度 838</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 02:40 · 7小时前</b></div>
+      <div class="tw-text">Deepseek目前团队太小太脆：不到200人，70%是30岁以下，罗福莉、郭达雅一走，V3、R1技术线直接断层。
+钱没给够：大厂砸2-3倍薪资+千万总包，DeepSeek期权不融资、没估值，纯属“废纸期票”。
+融资是把双刃剑：刚撬500亿补血，但创始人占股84%池子浅，资本进来怕丢了技术专注度。</div>
+      <div class="tw-stats">❤️ 62 &nbsp; 🔁 7 &nbsp;
+        💬 10 &nbsp; 🔖 31 &nbsp; 👁 71.4K
+        <a href="https://x.com/WangNextDoor2/status/2078187981060354417" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲3%</span>
+          <span class="kw-score">总热度 2.4K · 45 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Ondo Finance</b>
+        <a href="https://x.com/OndoFinance" target="_blank" class="handle">@OndoFinance</a>
+        <span class="score">热度 1.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 21:31 · 12小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078110296971915767" onclick="tg('2078110296971915767')">🌐 翻译</button></div><div class="tw-text" id="o2078110296971915767">Weekend trading just got a major upgrade.
+
+10 more of the most in-demand Ondo Stocks are now live with real 24/7 trading:
+
+→ AMD
+→ Intel
+→ Micron
+→ TSMC
+→ Marvell
+→ SpaceX
+→ SanDisk
+→ Broadcom
+→ SK hynix
+→ Arm Holdings
+
+That brings the 24/7 lineup to 16 assets, joining</div><div class="tw-text tw-trans" id="t2078110296971915767" style="display:none">周末交易迎来重大升级。又有10只热门Ondo股票正式上线，支持真正的7×24小时交易：AMD、英特尔、美光、台积电、Marvell、SpaceX、闪迪、博通、SK海力士、Arm。至此，全天候交易品种已扩展至16个。</div>
+      <div class="tw-stats">❤️ 558 &nbsp; 🔁 85 &nbsp;
+        💬 68 &nbsp; 🔖 14 &nbsp; 👁 58.3K
+        <a href="https://x.com/OndoFinance/status/2078110296971915767" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼96%</span>
+          <span class="kw-score">总热度 1.9K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>井上春生</b>
+        <a href="https://x.com/HUGMACH" target="_blank" class="handle">@HUGMACH</a>
+        <span class="score">热度 691</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 20:18 · 13小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078092091738227197" onclick="tg('2078092091738227197')">🌐 翻译</button></div><div class="tw-text" id="o2078092091738227197">何が将来価値を開拓するのかの、瀬戸際の今日っつ（懐）機関に煽られた今週は、特に
+
+失ったのは、時間だと思う
+でもありがたいことにたった数ヶ月
+
+今朝、BKLZさんと軽くポスト会話したんだけど、昨秋発表されて、先週か？、さらにレイヤーを極めてきた
+
+NOK+NVDAは、</div><div class="tw-text tw-trans" id="t2078092091738227197" style="display:none">在这个站在「未来价值将由什么开拓」关键节点的当下（怀念），被机构煽动的这一周尤其如此。失去的，我认为是时间——但好在只有短短几个月，值得庆幸。今早和BKLZ简单聊了聊帖子，去年秋天发布的那个方向，上周还是何时，又把层级推进到了极致。NOK+NVDA的组合……</div>
+      <div class="tw-stats">❤️ 87 &nbsp; 🔁 4 &nbsp;
+        💬 1 &nbsp; 🔖 24 &nbsp; 👁 56.7K
+        <a href="https://x.com/HUGMACH/status/2078092091738227197" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼41%</span>
+          <span class="kw-score">总热度 891 · 40 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jason Z</b>
+        <a href="https://x.com/JasonZX" target="_blank" class="handle">@JasonZX</a>
+        <span class="score">热度 181</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 16:34 · 17小时前</b></div>
+      <div class="tw-text">今天的亚洲股市又是暴跌的一天：
+
+日经225跌4.73%
+上证指数跌3.03%
+恒生指数跌2.01%
+台湾市场跌幅超过6%，是亚洲受冲击最严重的市场之一，韩国因公共假日休市。今天美股最好也能休市😔。</div>
+      <div class="tw-stats">❤️ 14 &nbsp; 🔁 1 &nbsp;
+        💬 24 &nbsp; 🔖 1 &nbsp; 👁 12.6K
+        <a href="https://x.com/JasonZX/status/2078035724465762462" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼25%</span>
+          <span class="kw-score">总热度 858 · 44 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>ADMEN | CryptoTimes</b>
+        <a href="https://x.com/admen_vc_2" target="_blank" class="handle">@admen_vc_2</a>
+        <span class="score">热度 393</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 15:58 · 17小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078026574293811633" onclick="tg('2078026574293811633')">🌐 翻译</button></div><div class="tw-text" id="o2078026574293811633">韓国、想像以上に大変なことになっていて、今週だけで約120万人の個人投資家が追証を受けたとのこと。
+
+韓国の成人人口の約3.4%に相当する規模らしい😨</div><div class="tw-text tw-trans" id="t2078026574293811633" style="display:none">韩国的情况比想象中严峻得多——据悉仅本周就有约120万散户投资者收到追加保证金通知，相当于韩国成人人口的约3.4%😨</div>
+      <div class="tw-stats">❤️ 87 &nbsp; 🔁 14 &nbsp;
+        💬 3 &nbsp; 🔖 17 &nbsp; 👁 24.3K
+        <a href="https://x.com/admen_vc_2/status/2078026574293811633" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
