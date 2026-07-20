@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-07-20</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-07-20 · 更新于 09:40</div>
+    <nav class="snav"><a class="tab " href="x_monitor_2026-07-20.html">🔥 热点广场</a><a class="tab on" href="x_focus_2026-07-20.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">重点人物动态：每人本周最热 + 最新动态</div>
+    <h2>⭐ 重点人物动态（52 人）</h2><div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div><div class="cat-h">🏷 美股投资 <span>· 31 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Michael的美投日记</b>
+            <a href="https://x.com/Michael_QQQ2025" target="_blank" class="handle">@Michael_QQQ2025</a>
+            <span class="kw-score">2.8K 粉丝</span></div>
+          <div class="bio">a trader，just trade，don&#x27;t pray。我有discord社区和微信群，客观判断、独立思考、敬畏市场。进群添加微信号：SPYLI</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="750" data-time="1784508649">
+          <div class="kol-head"><b>Leto Bao</b>
+            <a href="https://x.com/leto_bao" target="_blank" class="handle">@leto_bao</a>
+            <span class="kw-score">90.9K 粉丝</span></div>
+          <div class="bio">Fight Wall Street!</div><div class="sublbl">🔥 本周最热</div>
+    <div class="tw">
+      <div class="tw-head"><b>P Equity Research 📰</b>
+        <a href="https://x.com/pequityresearch" target="_blank" class="handle">@pequityresearch</a>
+        <span class="score">热度 750</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 09:14 · 1天前</b></div>
+      <div class="tw-text">Mizuho Securities: CPUs &amp;amp; GPUs
+
+Market Forecasts &amp;amp; Growth
+
+&amp;gt; Shipment Growth: Industry server CPU shipments are forecasted to reach 35 million units in 2026 and grow to 50 million units by 2027, representing a 40% year-over-year increase.  
+
+&amp;gt; Long-Term TAM: The long-term Total</div>
+      <div class="tw-stats">❤️ 191 &nbsp; 🔁 38 &nbsp;
+        💬 5 &nbsp; 🔖 122 &nbsp; 👁 33.8K
+        <a href="https://x.com/pequityresearch/status/2078649523178508300" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>ImNotHarsh | 📈💸</b>
+        <a href="https://x.com/imnotharsh" target="_blank" class="handle">@imnotharsh</a>
+        <span class="score">热度 466</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 21:56 · 11小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078841329875038709" onclick="tg('2078841329875038709')">🌐 翻译</button></div><div class="tw-text" id="o2078841329875038709">Semiconductor selloff likely (definitely) coming to an end. 
+
+Goldman Sachs Global Investment Research analyzes the historical behavior of the Momentum factor after sharp rallies. It tracks the performance of a long/short Momentum strategy (buying recent winners, shorting recent</div><div class="tw-text tw-trans" id="t2078841329875038709" style="display:none">半导体板块的抛售很可能（几乎可以确定）即将结束。高盛全球投资研究分析了动量因子在急涨后的历史表现，追踪了多空动量策略（买入近期强势股、做空近期弱势股）的收益表现。</div>
+      <div class="tw-stats">❤️ 56 &nbsp; 🔁 8 &nbsp;
+        💬 4 &nbsp; 🔖 20 &nbsp; 👁 36.2K
+        <a href="https://x.com/imnotharsh/status/2078841329875038709" target="_blank" class="link">原帖 ↗</a></div>
+    </div><div class="sublbl">🕐 最新动态</div>
+    <div class="tw">
+      <div class="tw-head"><b>Michael的美投日记</b>
+        <a href="https://x.com/Michael_QQQ2025" target="_blank" class="handle">@Michael_QQQ2025</a>
+        <span class="score">热度 5</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 08:50 · 49分钟前</b></div>
+      <div class="tw-text">CPU 的趋势强不强，其实就关注一只票：
+
+$AMD 在最近的半导体下跌行情里📉扛不扛揍？
+
+之所以扛揍是因为在抵挡不住的大行情下仍然有源源不断的买盘进场。</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 1 &nbsp; 👁 271
+        <a href="https://x.com/Michael_QQQ2025/status/2079006077958664321" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Michael的美投日记</b>
+        <a href="https://x.com/Michael_QQQ2025" target="_blank" class="handle">@Michael_QQQ2025</a>
+        <span class="score">热度 8</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 08:27 · 1小时前</b></div>
+      <div class="tw-text">其实从价格行为学的角度来看，always in short 伴随下跌斜率放缓，逐步演变形成trading ranges磨底，这至少需要3-6个月的时间</div>
+      <div class="tw-stats">❤️ 2 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 1 &nbsp; 👁 478
+        <a href="https://x.com/Michael_QQQ2025/status/2079000210106380704" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Michael的美投日记</b>
+        <a href="https://x.com/Michael_QQQ2025" target="_blank" class="handle">@Michael_QQQ2025</a>
+        <span class="score">热度 291</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 14:12 · 2天前</b></div>
+      <div class="tw-text">昨天的文章大家关注度挺高的，其实威科夫派发一般没有那么快，短则三个月，长则有半年时间。
+
+而今天亚太隔夜纳指期货，三角形跌破，并且碰到 前期的低点支撑，这里跌破的话，下方两个支撑点位均已标出。我不期待这么快就会跌破这里。</div>
+      <div class="tw-stats">❤️ 34 &nbsp; 🔁 4 &nbsp;
+        💬 45 &nbsp; 🔖 31 &nbsp; 👁 15.1K
+        <a href="https://x.com/Michael_QQQ2025/status/2077999974839628184" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Michael的美投日记</b>
+        <a href="https://x.com/Michael_QQQ2025" target="_blank" class="handle">@Michael_QQQ2025</a>
+        <span class="score">热度 67</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 10:42 · 2天前</b></div>
+      <div class="tw-text">7月初那会儿看到存储板块的结构已经开始松动了。现在存储板块的高点回撤如下：
+$MU -32%    $SNDK -39%     $WDC -42%   $STX -34% 
+
+存储，众所周知卡脖子，稀缺到2030年，涨价到台积电的魏CC说羡慕。为什么还跌呢？</div>
+      <div class="tw-stats">❤️ 10 &nbsp; 🔁 1 &nbsp;
+        💬 4 &nbsp; 🔖 1 &nbsp; 👁 4.8K
+        <a href="https://x.com/Michael_QQQ2025/status/2077947114047627299" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Sober 期权坤哥</b>
+            <a href="https://x.com/soberoption" target="_blank" class="handle">@soberoption</a>
+            <span class="kw-score">2.2K 粉丝</span></div>
+          <div class="bio">| 小助理微信：April1336 |
+| 全球华人期权精英俱乐部：https://t.co/UDqWibzNDA |
+| 机器人🤖（限时免费）：https:/</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>老李来了</b>
+            <a href="https://x.com/lxrcr1201" target="_blank" class="handle">@lxrcr1201</a>
+            <span class="kw-score">13.1K 粉丝</span></div>
+          <div class="bio">老李来了！10年交易老兵HODL BTC到100万！空投策略+行情分析+Web3洞见，什么都略懂一点。
+币安手续费全返邀请：https://t.co/6rxuc</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>逍遥XTony</b>
+            <a href="https://x.com/xtony1314" target="_blank" class="handle">@xtony1314</a>
+            <span class="kw-score">111.6K 粉丝</span></div>
+          <div class="bio">独立交易员 | 干学创始人 | 抽象艺术家
+历史成绩：实盘 5W➡️5000W ，2.5年1000倍收益率
+#Binance 币安交易，安全稳定，拥抱web3，</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Brett Krieger</b>
+            <a href="https://x.com/BrettKrieger12" target="_blank" class="handle">@BrettKrieger12</a>
+            <span class="kw-score">15.5K 粉丝</span></div>
+          <div class="bio">Covering markets, AI and new tech</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Rich Peter</b>
+            <a href="https://x.com/RichPeterLi" target="_blank" class="handle">@RichPeterLi</a>
+            <span class="kw-score">5.4K 粉丝</span></div>
+          <div class="bio">Focused on crypto, US stocks, and high-dividend ETFs.
+Let&#x27;s turn what you l</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Mrs. Iglesias</b>
+            <a href="https://x.com/MrsIglesiasRKLB" target="_blank" class="handle">@MrsIglesiasRKLB</a>
+            <span class="kw-score">2.3K 粉丝</span></div>
+          <div class="bio">YT: Space Lab https://t.co/xRaxnxOPY6 , @spacelabRKLB. Space enthusiast, vested </div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>JinYu金鱼</b>
+            <a href="https://x.com/JinYu762" target="_blank" class="handle">@JinYu762</a>
+            <span class="kw-score">11.4K 粉丝</span></div>
+          <div class="bio">📊 港美股 &amp; Web3追踪
+🤖 AI × 干货分享
+📣 市场里90%是噪音，我帮你过滤
+🤝 合作：https://t.co/3XeH6fbMoA</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Sean G.</b>
+            <a href="https://x.com/RealSean_G" target="_blank" class="handle">@RealSean_G</a>
+            <span class="kw-score">1.7K 粉丝</span></div>
+          <div class="bio">I Buy and I Sell</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Donald Trump Portfolio Tracker</b>
+            <a href="https://x.com/TrumpsPortfolio" target="_blank" class="handle">@TrumpsPortfolio</a>
+            <span class="kw-score">170.9K 粉丝</span></div>
+          <div class="bio">Tracking all of Trumps trades so I can get filthy rich</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>美股混学家</b>
+            <a href="https://x.com/bitpanda88" target="_blank" class="handle">@bitpanda88</a>
+            <span class="kw-score">5.0K 粉丝</span></div>
+          <div class="bio">专注美股 | AI | CRYPTO 👾
+混学研究员 × 抽象艺术家
+粉丝带我炒股 💹
+纯纯韭菜踏上回本之路
+记录思考 × 只说人话
+欢迎指点批评
+非投资建议</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>DD 滴滴</b>
+            <a href="https://x.com/rtk17025" target="_blank" class="handle">@rtk17025</a>
+            <span class="kw-score">44.6K 粉丝</span></div>
+          <div class="bio">Full time BD for @o1_exchange
+Cofounder of @GMWallet
+Trade US HK stocks on @Stab</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Bean哥</b>
+            <a href="https://x.com/BroBean88" target="_blank" class="handle">@BroBean88</a>
+            <span class="kw-score">96.3K 粉丝</span></div>
+          <div class="bio">金融架构 ，AI Native，All in 港美股&amp;加密 。#AI #Bitcoin Hodler #ETH #DYOR 📈</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Finsee</b>
+            <a href="https://x.com/Finsee_main" target="_blank" class="handle">@Finsee_main</a>
+            <span class="kw-score">8.5K 粉丝</span></div>
+          <div class="bio">Using AI to summarise companies&#x27; earnings. Not advice. AI could make mistak</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>KaizenInvestor</b>
+            <a href="https://x.com/Kaizen_Investor" target="_blank" class="handle">@Kaizen_Investor</a>
+            <span class="kw-score">41.9K 粉丝</span></div>
+          <div class="bio">29 years old Belgian long-term Investor - Commercial Director of a company with </div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Ren</b>
+            <a href="https://x.com/Ryrenz" target="_blank" class="handle">@Ryrenz</a>
+            <span class="kw-score">7.7K 粉丝</span></div>
+          <div class="bio">🇺🇸 美国全栈程序员 💻
+⚙️ 整理小白能懂的优质 AI 教程 📚 
+📢 持续挖掘实用的 AI 提效方式 🤖
+💰 分享我关于投资、副业、职场的思考 🧠
+📝 开源</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>colo</b>
+            <a href="https://x.com/jpgbmp" target="_blank" class="handle">@jpgbmp</a>
+            <span class="kw-score">5.3K 粉丝</span></div>
+          <div class="bio">前游戏大厂搬砖人，现跨境小小卖，精通各种境外账户开设，玩美卡，港卡，AI,主打各类薅羊毛教程。</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>심월</b>
+            <a href="https://x.com/mindmoon_108" target="_blank" class="handle">@mindmoon_108</a>
+            <span class="kw-score">21.9K 粉丝</span></div>
+          <div class="bio">⚙️ 반도체공정엔지니어 
+📚 세상의 재미난 이야기들을 좋아함
+직접 쓴 글은 하이라이트에💡</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Thariq</b>
+            <a href="https://x.com/trq212" target="_blank" class="handle">@trq212</a>
+            <span class="kw-score">315.1K 粉丝</span></div>
+          <div class="bio">Claude Code @anthropicai.   prev YC W20, @southpkcommons, @medialab</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Jimmy狐狸</b>
+            <a href="https://x.com/jimmyhuli" target="_blank" class="handle">@jimmyhuli</a>
+            <span class="kw-score">23.0K 粉丝</span></div>
+          <div class="bio">Vibe Investing &amp; Vibe Coding 
+两年30倍，投资、分享美股的成长科技股
+个人Substack主页：https://t.co/</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>波浪理论学习——备忘录fan</b>
+            <a href="https://x.com/wugudehaore" target="_blank" class="handle">@wugudehaore</a>
+            <span class="kw-score">23.6K 粉丝</span></div>
+          <div class="bio">波浪理论fan专注于波浪理论的金融分析，覆盖加密货币、商品和股票，更多精细点位交易分析可以加付费群。加电报群99u一年 https://t.co/vn39vOp</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Marty Chargin</b>
+            <a href="https://x.com/MartyChargin" target="_blank" class="handle">@MartyChargin</a>
+            <span class="kw-score">51.3K 粉丝</span></div>
+          <div class="bio">I have seen the stock market change people&#x27;s lives! It can change yours too</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Shay Boloor</b>
+            <a href="https://x.com/StockSavvyShay" target="_blank" class="handle">@StockSavvyShay</a>
+            <span class="kw-score">431.1K 粉丝</span></div>
+          <div class="bio">Chief Market Strategist @FuturumEquities | Regular on @Reuters, @YahooFinance, @</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>animajoe0917</b>
+            <a href="https://x.com/JoeAnima" target="_blank" class="handle">@JoeAnima</a>
+            <span class="kw-score">8.5K 粉丝</span></div>
+          <div class="bio">A Rookie  
+not financial advice
+AI/Crypto/Macroeconomics/Semiconductors
+人工智能、半导体</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>逸尘</b>
+            <a href="https://x.com/gengdaJ" target="_blank" class="handle">@gengdaJ</a>
+            <span class="kw-score">45.4K 粉丝</span></div>
+          <div class="bio">🦄06年连续创业者 | 渝客松发起人
+👀YouTube一个月涨粉十万 | 多个AI产品实现超五位数闭环营收
+💗付费咨询（yichen10801）：AI知识库&a</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>美股大数据</b>
+            <a href="https://x.com/StockWe_Com" target="_blank" class="handle">@StockWe_Com</a>
+            <span class="kw-score">7.5K 粉丝</span></div>
+          <div class="bio">前纽约证券交易所分析师Ken，每日分享美股交易机会与深度研究报告，第一手AI+芯片产业链+科技资讯，投行研报，旗下AI量化分析工具 美股大数据 https://</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>W总</b>
+            <a href="https://x.com/Wzong123" target="_blank" class="handle">@Wzong123</a>
+            <span class="kw-score">2.7K 粉丝</span></div>
+          <div class="bio">本人就这一账号, 其他都是冒充， 请留意识别
+不构成投资建议， 股市有风险，投资需谨慎。请结合个人风险承受能力决策。
+
+美股仙人DC群 https://t.co</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Gary Du</b>
+            <a href="https://x.com/GaryDu18" target="_blank" class="handle">@GaryDu18</a>
+            <span class="kw-score">14.9K 粉丝</span></div>
+          <div class="bio">Value investor | Index fund investor 
+985本科｜美股价值投资者｜任何帖子不构成投资建议</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Photon Capital</b>
+            <a href="https://x.com/PhotonCap" target="_blank" class="handle">@PhotonCap</a>
+            <span class="kw-score">59.7K 粉丝</span></div>
+          <div class="bio">Seeing tech through a different wavelength. Photonics &amp; semiconductor resear</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Mike Webster</b>
+            <a href="https://x.com/mwebster1971" target="_blank" class="handle">@mwebster1971</a>
+            <span class="kw-score">49.3K 粉丝</span></div>
+          <div class="bio">Proud dad, trying to follow the golden rule. IBD-Senior Market Strategist. Prior</div><p class="empty">近期无动态</p>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 10 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>indigo</b>
+            <a href="https://x.com/indigox" target="_blank" class="handle">@indigox</a>
+            <span class="kw-score">54.0K 粉丝</span></div>
+          <div class="bio">Co-founder of https://t.co/WosXbyLukR / Partner of Brilliant Phoenix / ex-Weibo.</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Z大诗</b>
+            <a href="https://x.com/Zh_Crypto517" target="_blank" class="handle">@Zh_Crypto517</a>
+            <span class="kw-score">12.7K 粉丝</span></div>
+          <div class="bio">产业链拆解狂魔 看懂投资
+预测市场｜港美股交易｜RWA｜AI
+商务合作：https://t.co/bwCfRWX0sg
+https://t.co/f2Fzv2P</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>0xJoker💎 | 买美股上币安</b>
+            <a href="https://x.com/yuki651151" target="_blank" class="handle">@yuki651151</a>
+            <span class="kw-score">20.1K 粉丝</span></div>
+          <div class="bio">Crypto KOL｜#HTX 交易体验尽在火币：https://t.co/vTUTD7VLSy | #Conso 聊天 ：https://t.co/flJka</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>孙宇晨（去过太空版）🧑‍🚀</b>
+            <a href="https://x.com/sunyuchentron" target="_blank" class="handle">@sunyuchentron</a>
+            <span class="kw-score">446.3K 粉丝</span></div>
+          <div class="bio">👨‍💻 企业家 | 🤵‍♂️ 外交官 | 👨‍🚀 宇航员 #712 | 🍌 艺术收藏家 | 创始人 @trondaoCN | 顾问 https://t.co/U</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Mr. Z｜168X 主持人</b>
+            <a href="https://x.com/168MrZ" target="_blank" class="handle">@168MrZ</a>
+            <span class="kw-score">3.6K 粉丝</span></div>
+          <div class="bio">Hosting AI &amp; frontier tech builders on @168X_Fortune. Long Semi. Long Taiwan</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>水Lane💧</b>
+            <a href="https://x.com/VentLane" target="_blank" class="handle">@VentLane</a>
+            <span class="kw-score">6.8K 粉丝</span></div>
+          <div class="bio">2015入市老登 ｜ 画图狗 ｜ 自由猫 Holder
+｜ 混迹美股、港股、Crypto，顺便研究 AI
+｜ 佛系交易，如水般顺势而行
+｜ 随性记录市场、生活与</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="478" data-time="1784462718">
+          <div class="kol-head"><b>猎手killer🪙</b>
+            <a href="https://x.com/memekiller365" target="_blank" class="handle">@memekiller365</a>
+            <span class="kw-score">25.1K 粉丝</span></div>
+          <div class="bio">前四大|地产私募| 🎾知识星球:猎手AI半导体交流圈🧩公众号:猎手AI雷达🌐网址: https://t.co/Mzb5fWu9Sd | 合伙人@leslielo</div><div class="sublbl">🔥 本周最热</div>
+    <div class="tw">
+      <div class="tw-head"><b>波浪理论学习——备忘录fan</b>
+        <a href="https://x.com/wugudehaore" target="_blank" class="handle">@wugudehaore</a>
+        <span class="score">热度 478</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 11:55 · 1天前</b></div>
+      <div class="tw-text">科创50指数每个交易日定投1000元，目前已投20000元，亏损13%，2700元。科创50指数现在是1715点，假设到2026年底下跌到1000点（崩盘式下跌）。仍然每个交易日定投1000元。则到年底共计亏损26%。稍微一个反弹就进入盈利。“下跌是定投的好朋友”。因为定投是“建仓”，要的是更多的份额，有了更多的份额才能</div>
+      <div class="tw-stats">❤️ 66 &nbsp; 🔁 10 &nbsp;
+        💬 46 &nbsp; 🔖 40 &nbsp; 👁 28.3K
+        <a href="https://x.com/wugudehaore/status/2078327806170485124" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>波浪理论学习——备忘录fan</b>
+        <a href="https://x.com/wugudehaore" target="_blank" class="handle">@wugudehaore</a>
+        <span class="score">热度 206</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 15:57 · 1天前</b></div>
+      <div class="tw-text">#SNDK #闪迪 从7月4号明确“已见顶正在回撤”。这轮下跌从最高点开始已经跌了43%。还会继续跌吗？我的看法是不久会展开反弹。电报付费群分享位置。8月5号公布财报。前瞻每股收益31美元。折合每股210元人民币，而A股里最能赚钱的茅台单季每股收益是21元。论赚钱，闪迪是茅台的10倍。</div>
+      <div class="tw-stats">❤️ 26 &nbsp; 🔁 1 &nbsp;
+        💬 39 &nbsp; 🔖 5 &nbsp; 👁 11.5K
+        <a href="https://x.com/wugudehaore/status/2078388713525309616" target="_blank" class="link">原帖 ↗</a></div>
+    </div><div class="sublbl">🕐 最新动态</div>
+    <div class="tw">
+      <div class="tw-head"><b>波浪理论学习——备忘录fan</b>
+        <a href="https://x.com/wugudehaore" target="_blank" class="handle">@wugudehaore</a>
+        <span class="score">热度 110</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 20:05 · 13小时前</b></div>
+      <div class="tw-text">7月19日关注列表10只羊的羊圈，移出2只羊，加入1只羊。目前9只羊。</div>
+      <div class="tw-stats">❤️ 3 &nbsp; 🔁 0 &nbsp;
+        💬 40 &nbsp; 🔖 0 &nbsp; 👁 4.7K
+        <a href="https://x.com/wugudehaore/status/2078813428593082735" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>波浪理论学习——备忘录fan</b>
+        <a href="https://x.com/wugudehaore" target="_blank" class="handle">@wugudehaore</a>
+        <span class="score">热度 77</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 17:50 · 15小时前</b></div>
+      <div class="tw-text">#BTC 2026.7.19</div>
+      <div class="tw-stats">❤️ 14 &nbsp; 🔁 0 &nbsp;
+        💬 6 &nbsp; 🔖 0 &nbsp; 👁 5.4K
+        <a href="https://x.com/wugudehaore/status/2078779419402055830" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>波浪理论学习——备忘录fan</b>
+        <a href="https://x.com/wugudehaore" target="_blank" class="handle">@wugudehaore</a>
+        <span class="score">热度 98</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 17:40 · 16小时前</b></div>
+      <div class="tw-text">阿里是中国AI公司“月之暗面”的第二大股东。阿里还是“智谱”的第三大股东。是“minimax”的第二大股东。比较清晰了吧，阿里是中国最牛的AI公司。</div>
+      <div class="tw-stats">❤️ 16 &nbsp; 🔁 0 &nbsp;
+        💬 16 &nbsp; 🔖 3 &nbsp; 👁 5.5K
+        <a href="https://x.com/wugudehaore/status/2078776940807471464" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>波浪理论学习——备忘录fan</b>
+        <a href="https://x.com/wugudehaore" target="_blank" class="handle">@wugudehaore</a>
+        <span class="score">热度 41</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 13:25 · 20小时前</b></div>
+      <div class="tw-text">中国四个AI少年个人身价少则几十亿多则2000多亿。真是自古英雄出少年。AI这场第四次工业革命，脱颖而出的是敏锐又勇敢的人。</div>
+      <div class="tw-stats">❤️ 2 &nbsp; 🔁 0 &nbsp;
+        💬 7 &nbsp; 🔖 1 &nbsp; 👁 2.7K
+        <a href="https://x.com/wugudehaore/status/2078712764693205411" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>0x鸣人</b>
+            <a href="https://x.com/LuBtc888" target="_blank" class="handle">@LuBtc888</a>
+            <span class="kw-score">87.0K 粉丝</span></div>
+          <div class="bio">加密投研｜美股投资｜交易体系｜财经认知 ｜AI科技</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Backpack中文</b>
+            <a href="https://x.com/Backpack_CN" target="_blank" class="handle">@Backpack_CN</a>
+            <span class="kw-score">37.6K 粉丝</span></div>
+          <div class="bio">Backpack证券🎒https://t.co/HIbrA0OK0L
+交易所钱包股票一体化 App 📲 https://t.co/zb21IqoKss 
+官方社</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>BitalkNews</b>
+            <a href="https://x.com/0xBitalk" target="_blank" class="handle">@0xBitalk</a>
+            <span class="kw-score">29.1K 粉丝</span></div>
+          <div class="bio">提供有价值的加密、美股等全资产交易视角、投研及观点</div><p class="empty">近期无动态</p>
+        </div></div><div class="cat-h">🏷 宏观财经 <span>· 9 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Serenity Research</b>
+            <a href="https://x.com/SerenityRSH" target="_blank" class="handle">@SerenityRSH</a>
+            <span class="kw-score">2.7K 粉丝</span></div>
+          <div class="bio">secret</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>James E. Thorne</b>
+            <a href="https://x.com/DrJStrategy" target="_blank" class="handle">@DrJStrategy</a>
+            <span class="kw-score">113.2K 粉丝</span></div>
+          <div class="bio">Chief Market Strategist @WellingtonAltus. PhD Econ. Astute, observations and con</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Lord William｜UK</b>
+            <a href="https://x.com/LordWilliamUK" target="_blank" class="handle">@LordWilliamUK</a>
+            <span class="kw-score">22.3K 粉丝</span></div>
+          <div class="bio">Founder of 1024 Capital, Investor, Philanthropist, Crypto&amp;Stock Trader / 美国1</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="576" data-time="1784428925">
+          <div class="kol-head"><b>𝙃𝘼𝙕𝙀𝙉𝙇𝙀𝙀</b>
+            <a href="https://x.com/hazenlee" target="_blank" class="handle">@hazenlee</a>
+            <span class="kw-score">72.5K 粉丝</span></div>
+          <div class="bio">𝙀/𝘼𝙘𝙘｜十年加密𝙊𝙂｜伪𝙏𝙧𝙖𝙙𝙚𝙧，真𝙃𝙤𝙙𝙡𝙚𝙧｜长期信仰 ₿𝙏𝘾 + 𝘼𝙄 ｜致力于科技金融投资交易科普｜抽象派行为艺术大师｜牛熊转换趋势吹号手｜观点</div><div class="sublbl">🔥 本周最热</div>
+    <div class="tw">
+      <div class="tw-head"><b>𝙃𝘼𝙕𝙀𝙉𝙇𝙀𝙀</b>
+        <a href="https://x.com/hazenlee" target="_blank" class="handle">@hazenlee</a>
+        <span class="score">热度 576</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 22:08 · 2天前</b></div>
+      <div class="tw-text">纳指前低守住了
+存储开始反弹
+反弹是给减仓降风险的</div>
+      <div class="tw-stats">❤️ 59 &nbsp; 🔁 1 &nbsp;
+        💬 57 &nbsp; 🔖 2 &nbsp; 👁 42.5K
+        <a href="https://x.com/hazenlee/status/2078119599485415597" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>𝙃𝘼𝙕𝙀𝙉𝙇𝙀𝙀</b>
+        <a href="https://x.com/hazenlee" target="_blank" class="handle">@hazenlee</a>
+        <span class="score">热度 553</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 21:17 · 2天前</b></div>
+      <div class="tw-text">三倍做多家务 家人萌
+不要大声说话
+擦地要跪在地上擦
+这样小珍珠掉在地上可以及时擦掉不被人看见😭👊🏻</div>
+      <div class="tw-stats">❤️ 94 &nbsp; 🔁 8 &nbsp;
+        💬 14 &nbsp; 🔖 20 &nbsp; 👁 40.0K
+        <a href="https://x.com/hazenlee/status/2078106796787749216" target="_blank" class="link">原帖 ↗</a></div>
+    </div><div class="sublbl">🕐 最新动态</div>
+    <div class="tw">
+      <div class="tw-head"><b>𝙃𝘼𝙕𝙀𝙉𝙇𝙀𝙀</b>
+        <a href="https://x.com/hazenlee" target="_blank" class="handle">@hazenlee</a>
+        <span class="score">热度 159</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 10:42 · 22小时前</b></div>
+      <div class="tw-text">如何用概率和动态系统，
+而不是故事和情绪，去理解市场。
+
+市场不是一个等待被预测的答案，
+而是一个持续演化的复杂系统；
+交易者的任务不是猜测未来，
+而是在每一次状态变化中，
+寻找能够长期重复、具有正期望值的概率优势。</div>
+      <div class="tw-stats">❤️ 46 &nbsp; 🔁 7 &nbsp;
+        💬 1 &nbsp; 🔖 6 &nbsp; 👁 9.1K
+        <a href="https://x.com/hazenlee/status/2078671691132330179" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>𝙃𝘼𝙕𝙀𝙉𝙇𝙀𝙀</b>
+        <a href="https://x.com/hazenlee" target="_blank" class="handle">@hazenlee</a>
+        <span class="score">热度 469</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 09:36 · 1天前</b></div>
+      <div class="tw-text">我一直认为，AI本质上不是商品，而是一种服务。
+
+商品可以囤积，可以库存，可以等待升值，因此天然具有投资和投机属性。
+
+而服务不能。
+
+今天没有使用的一小时AI算力，不会留到明天；今天没有卖出的AI回答，也不会变成未来更值钱的库存。</div>
+      <div class="tw-stats">❤️ 104 &nbsp; 🔁 7 &nbsp;
+        💬 61 &nbsp; 🔖 29 &nbsp; 👁 22.5K
+        <a href="https://x.com/hazenlee/status/2078655064848343537" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>𝙃𝘼𝙕𝙀𝙉𝙇𝙀𝙀</b>
+        <a href="https://x.com/hazenlee" target="_blank" class="handle">@hazenlee</a>
+        <span class="score">热度 450</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 09:23 · 1天前</b></div>
+      <div class="tw-text">很多人以为，三门问题争论的是概率。
+
+其实争论的是世界观。
+
+一派认为，世界是确定的，概率只是答案揭晓前的无知，所以概率不会变。
+
+另一派认为，世界是不确定的，概率代表的是认知。随着新信息出现，认知更新，概率也必须更新。</div>
+      <div class="tw-stats">❤️ 77 &nbsp; 🔁 14 &nbsp;
+        💬 109 &nbsp; 🔖 38 &nbsp; 👁 14.2K
+        <a href="https://x.com/hazenlee/status/2078651789109510312" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>𝙃𝘼𝙕𝙀𝙉𝙇𝙀𝙀</b>
+        <a href="https://x.com/hazenlee" target="_blank" class="handle">@hazenlee</a>
+        <span class="score">热度 215</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 08:54 · 1天前</b></div>
+      <div class="tw-text"></div>
+      <div class="tw-stats">❤️ 49 &nbsp; 🔁 4 &nbsp;
+        💬 8 &nbsp; 🔖 10 &nbsp; 👁 13.6K
+        <a href="https://x.com/hazenlee/status/2078644602207351248" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>J Keynes</b>
+            <a href="https://x.com/JKeynesAlpha" target="_blank" class="handle">@JKeynesAlpha</a>
+            <span class="kw-score">27.4K 粉丝</span></div>
+          <div class="bio">Not financial advice. Focused on compelling growth opportunities for high-alpha </div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>投研荟</b>
+            <a href="https://x.com/freearkshaw" target="_blank" class="handle">@freearkshaw</a>
+            <span class="kw-score">19.7K 粉丝</span></div>
+          <div class="bio">20多年A股专业投研经验，前私募总经理
+聚焦A股产业浪潮投资机会（AI、半导体、机器人、商业航天等）
+分享研究信息，记录投资琐碎
+仅知识分享，非投资建议</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>浪险</b>
+            <a href="https://x.com/sino_go_global" target="_blank" class="handle">@sino_go_global</a>
+            <span class="kw-score">1.7K 粉丝</span></div>
+          <div class="bio">🌏 出海基建原创博主 | 银行卡爱好者(13年)
+🇭🇰 19家港卡 🇺🇸 美卡·美股 📱 eSIM + AI工具
+🔥 坚持日更，欢迎围观</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>刘晓萍 Ephesus</b>
+            <a href="https://x.com/Margaux91717615" target="_blank" class="handle">@Margaux91717615</a>
+            <span class="kw-score">2.5K 粉丝</span></div>
+          <div class="bio">诗人，作家 ，艺术家。
+随身携带10000册藏书迁居3个国家，
+已出版多部诗集、思想笔记和电影笔记。
+在硅基席卷而来的时代，
+高度敏感的心灵是碳基惟一的堡垒。</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Sun Liao</b>
+            <a href="https://x.com/sunxliao" target="_blank" class="handle">@sunxliao</a>
+            <span class="kw-score">128.3K 粉丝</span></div>
+          <div class="bio">24/7 Trade Ideas. My Indicators: https://t.co/EhtZ5UZ4F4</div><p class="empty">近期无动态</p>
+        </div></div><div class="cat-h">🏷 科技/AI <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="0" data-time="0">
+          <div class="kol-head"><b>Lenovo</b>
+            <a href="https://x.com/Lenovo" target="_blank" class="handle">@Lenovo</a>
+            <span class="kw-score">717.5K 粉丝</span></div>
+          <div class="bio">Providing #smarter technology for all at the FIFA World Cup™. Need Help? Contact</div><p class="empty">近期无动态</p>
+        </div>
+        <div class="kol" data-score="94130" data-time="1784452284">
+          <div class="kol-head"><b>Moose</b>
+            <a href="https://x.com/Brownmoose" target="_blank" class="handle">@Brownmoose</a>
+            <span class="kw-score">23.4K 粉丝</span></div>
+          <div class="bio">Fulltime trader since 2017 🇨🇦
+I teach TA for amateur, you will become a pro trad</div><div class="sublbl">🔥 本周最热</div>
+    <div class="tw">
+      <div class="tw-head"><b>Qwen</b>
+        <a href="https://x.com/Alibaba_Qwen" target="_blank" class="handle">@Alibaba_Qwen</a>
+        <span class="score">热度 94.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 16:29 · 17小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078759124914098291" onclick="tg('2078759124914098291')">🌐 翻译</button></div><div class="tw-text" id="o2078759124914098291">Qwen3.8 is launching and going open-weight soon!🌐
+
+With a massive 2.4T parameters, this model is continuously evolving. We believe it’s one of the most powerful model available today, compatible to leading frontier AI models , second only to Fable 5.
+
+You don&#x27;t have to wait to</div><div class="tw-text tw-trans" id="t2078759124914098291" style="display:none">Qwen3.8即将发布并开放权重！🌐该模型拥有高达2.4万亿参数，持续迭代进化。我们认为它是目前最强大的模型之一，可与顶尖前沿AI模型媲美，仅次于Fable 5。你无需等待……</div>
+      <div class="tw-stats">❤️ 20.9K &nbsp; 🔁 2.9K &nbsp;
+        💬 1.1K &nbsp; 🔖 4.0K &nbsp; 👁 5.8M
+        <a href="https://x.com/Alibaba_Qwen/status/2078759124914098291" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>DiscusFish</b>
+        <a href="https://x.com/bitfish" target="_blank" class="handle">@bitfish</a>
+        <span class="score">热度 6.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 17:11 · 2天前</b></div>
+      <div class="tw-text">本周把海力士砸出十八年最大单日跌幅的，
+不是空头研报，是强平算法。
+首尔的追保线，就是你的波动率
+盯住 👇</div>
+      <div class="tw-stats">❤️ 860 &nbsp; 🔁 170 &nbsp;
+        💬 107 &nbsp; 🔖 935 &nbsp; 👁 417.0K
+        <a href="https://x.com/bitfish/status/2078044884817318264" target="_blank" class="link">原帖 ↗</a></div>
+    </div><div class="sublbl">🕐 最新动态</div>
+    <div class="tw">
+      <div class="tw-head"><b>美股混学家</b>
+        <a href="https://x.com/bitpanda88" target="_blank" class="handle">@bitpanda88</a>
+        <span class="score">热度 13</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 17:11 · 16小时前</b></div>
+      <div class="tw-text">Qwen 3.8 max preview 也端上来了
+
+2.4T 参数，开源
+
+宣传语是效果仅次于 Fable 5
+
+不过看佬友们实测效果好像......
+
+
+
+我图还没截完，这个帖主就把“效果不错”那句话删了
+
+哈哈哈哈
+
+害我又重新截</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 0 &nbsp; 👁 1.0K
+        <a href="https://x.com/bitpanda88/status/2078769664658915475" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>美股混学家</b>
+        <a href="https://x.com/bitpanda88" target="_blank" class="handle">@bitpanda88</a>
+        <span class="score">热度 199</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 10:04 · 23小时前</b></div>
+      <div class="tw-text">为什么要整理这几条非技术面和基本面的见顶信号？
+
+因为牛市基本面看不出顶部，技术面会让你卖在半山腰，而且这两类书中早就写过不知道多少遍。
+
+牛市后期去分析基本面，大概率越分析越上头，存储超强赚钱能力，低PE，长期订单锁定，AI</div>
+      <div class="tw-stats">❤️ 42 &nbsp; 🔁 9 &nbsp;
+        💬 23 &nbsp; 🔖 37 &nbsp; 👁 6.6K
+        <a href="https://x.com/bitpanda88/status/2078662207043448895" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>美股混学家</b>
+        <a href="https://x.com/bitpanda88" target="_blank" class="handle">@bitpanda88</a>
+        <span class="score">热度 470</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 00:06 · 1天前</b></div>
+      <div class="tw-text">收集了一些牛市见顶信号备用（非技术面，非基本面）:
+
+- 1. 0xWizard 提出的「top 玩家粉丝增长停滞」
+
+Serenity 是新晋股神，多次预测的股票大涨后，粉丝迅速增加，他粉丝快速增长到90万附近停住，就是短期警示信号。类似的，0xWizard的粉丝在上一次币圈熊市停止在11万，这一次熊市停止在22万。</div>
+      <div class="tw-stats">❤️ 94 &nbsp; 🔁 18 &nbsp;
+        💬 45 &nbsp; 🔖 103 &nbsp; 👁 16.4K
+        <a href="https://x.com/bitpanda88/status/2078511637284450644" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>美股混学家</b>
+        <a href="https://x.com/bitpanda88" target="_blank" class="handle">@bitpanda88</a>
+        <span class="score">热度 70</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-17 22:10 · 2天前</b></div>
+      <div class="tw-text">@WallStreet0Name Kova 老师 @kovainvest
+7 月 1 日明确清仓</div>
+      <div class="tw-stats">❤️ 6 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 1 &nbsp; 👁 6.2K
+        <a href="https://x.com/bitpanda88/status/2078120250714030492" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>

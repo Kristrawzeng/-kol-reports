@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-07-20</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-07-20 · 更新于 09:40</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-07-20.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-07-20.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<div class="summary">🧠 <b>今日讨论总览</b><p>今日讨论围绕美伊冲突升级、AI算力争夺、科技股震荡三条主线展开。战争情绪推高油价引发做空争议，Kimi K3爆火带出阿里算力博弈，半导体暴跌与大盘技术转空令市场情绪趋于谨慎，特斯拉Cybercab与FSD进展仍是多头信心支柱。</p></div><div class="vp-row">
+            <div class="vp-card">
+              <div class="vp-p">美军对伊朗发动新一轮空袭，地缘冲突再度升级</div>
+              <div class="vp-q">「Today at 6 p.m. ET, U.S. forces began launching new airstrikes against Iran at the Commander in Chief&#x27;s direction.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/CENTCOM" target="_blank">@CENTCOM</a> <a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">Kimi K3需求爆炸致GPU资源告急，AI算力竞争白热化</div>
+              <div class="vp-q">「Kimi K3 has received far more love than we expected, and our GPUs are feeling it.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/Kimi_Moonshot" target="_blank">@Kimi_Moonshot</a> <a class="hold" href="https://x.com/kevinsxu" target="_blank">@kevinsxu</a> <a class="hold" href="https://x.com/Balder13946731" target="_blank">@Balder13946731</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">阿里持股月之暗面并供给算力，Kimi上市预期推动云业务想象空间</div>
+              <div class="vp-q">「Alibaba is a major investor of Moonshot. Kimi, in turn, uses a big chunk of AliCloud GPUs, oftentimes competing away Qwen team&#x27;s resources.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/kevinsxu" target="_blank">@kevinsxu</a> <a class="hold" href="https://x.com/Balder13946731" target="_blank">@Balder13946731</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">半导体板块深度回调，日本铠侠两天暴跌31%，存储行业承压</div>
+              <div class="vp-q">「铠侠继上一个交易日暴跌15%后单日再次暴跌16%，两天跌掉31%，距最高点累计跌幅接近54%，市值蒸发了约30万亿日元。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/dongbimao" target="_blank">@dongbimao</a> <a class="hold" href="https://x.com/chenreason" target="_blank">@chenreason</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">QQQ技术结构转空，判断为牛市中期修正而非熊市开端</div>
+              <div class="vp-q">「楔形已破位，QQQ大概率反弹试探后再度探底——技术结构已经转空，这是牛市中期修正，不是熊市开端。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/ArtofSpecuycky" target="_blank">@ArtofSpecuycky</a> <a class="hold" href="https://x.com/cnfinancewatch" target="_blank">@cnfinancewatch</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">油价因美伊冲突上涨，做空者面临止损压力但多方仍坚守</div>
+              <div class="vp-q">「最起码要到100美元的保证金，然后依据自己的资金水平看是否还能继续逢高做空。油价上涨的主要原因就是美国和伊朗的冲突。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">特斯拉Cybercab预计2026年底以3万美元以内交付，多头持续看好</div>
+              <div class="vp-q">「Tesla will deliver a Cybercab to a customer for $30,000 or less by the end of 2026.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/niccruzpatane" target="_blank">@niccruzpatane</a> <a class="hold" href="https://x.com/GrindeOptions" target="_blank">@GrindeOptions</a> <a class="hold" href="https://x.com/KimJoonSung" target="_blank">@KimJoonSung</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">特斯拉柏林工厂预报2026年产量「大幅增长」，产能扩张预期强烈</div>
+              <div class="vp-q">「For the 2026 financial year, the company forecasts a significant increase in production volume.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/SawyerMerritt" target="_blank">@SawyerMerritt</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">NVIDIA历史上两度暴跌逾80%却终成全球最高市值，堪称资本市场奇迹</div>
+              <div class="vp-q">「NVIDIA is the only stock in history to crash by more than -80% twice and still become the world&#x27;s most valuable company.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/BullTheoryio" target="_blank">@BullTheoryio</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">Tesla Model X在40°C高温下续航8小时仅耗电12%，电车实用性获验证</div>
+              <div class="vp-q">「The car kept the cabin at 20°C for 8 hours and used only 12% battery during a brutal 40°C heat wave in Austria.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/cb_doge" target="_blank">@cb_doge</a> <a class="hold" href="https://x.com/elonmusk" target="_blank">@elonmusk</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">SpaceX向台湾富士康下单采购GB300服务器，马斯克旗下AI基建投入加速</div>
+              <div class="vp-q">「SpaceX has placed its first orders for Nvidia GB300-based AI servers to Taiwan&#x27;s Foxconn, amid plans to buy 13,000 of them in all.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/dnystedt" target="_blank">@dnystedt</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">抄底半导体需看基本面而非单纯依赖「跌幅够多」的直觉判断</div>
+              <div class="vp-q">「很多人判断是否值得抄底，只有一个标准：跌得够不够多。跌30%，觉得机会来了——这个逻辑本身值得警惕。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/chenreason" target="_blank">@chenreason</a></div>
+            </div></div>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 美股投资 <span>· 7 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="2096" data-time="1784465344">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>Dr. Moyu｜摸鱼局长</b>
+            <a href="https://x.com/Jason23818126" target="_blank" class="handle">@Jason23818126</a>
+            <span class="kw-score">活跃度 2.1K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Dr. Moyu｜摸鱼局长</b>
+        <a href="https://x.com/Jason23818126" target="_blank" class="handle">@Jason23818126</a>
+        <span class="score">热度 1.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 20:49 · 12小时前</b></div>
+      <div class="tw-text">推荐一个对投资新手非常友好的开源项目
+
+徐冲浪老师 @cyrilxuq 免费开源的《投资入门指南》
+
+适合想从零开始了解美股、期权和加密货币，却不知道应该先学什么、怎样建立完整知识框架的人</div>
+      <div class="tw-stats">❤️ 270 &nbsp; 🔁 86 &nbsp;
+        💬 45 &nbsp; 🔖 271 &nbsp; 👁 21.8K
+        <a href="https://x.com/Jason23818126/status/2078824444320260266" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Dr. Moyu｜摸鱼局长</b>
+        <a href="https://x.com/Jason23818126" target="_blank" class="handle">@Jason23818126</a>
+        <span class="score">热度 823</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 20:06 · 13小时前</b></div>
+      <div class="tw-text">没必要把几千只美股逐一研究，先看懂这 18 只主流 ETF，已经能搭出一套基础配置框架
+
+它们覆盖了美国核心、成长科技、海外市场、债券黄金，但其中不少定位相近，买得多未必更分散
+
+像 $VOO、$SPY、$IVV 同时持有，底层逻辑已经很接近
+再叠加 $QQQ、$VUG、$VGT、$XLK，成长和科技的权重往往会越加越高</div>
+      <div class="tw-stats">❤️ 164 &nbsp; 🔁 42 &nbsp;
+        💬 83 &nbsp; 🔖 133 &nbsp; 👁 31.5K
+        <a href="https://x.com/Jason23818126/status/2078813671665574217" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1956" data-time="1784509621">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>Cole Grinde</b>
+            <a href="https://x.com/GrindeOptions" target="_blank" class="handle">@GrindeOptions</a>
+            <span class="kw-score">活跃度 2.0K · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Cole Grinde</b>
+        <a href="https://x.com/GrindeOptions" target="_blank" class="handle">@GrindeOptions</a>
+        <span class="score">热度 1.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 10:59 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078313765431619728" onclick="tg('2078313765431619728')">🌐 翻译</button></div><div class="tw-text" id="o2078313765431619728">Be honest, what odds do you give $TSLA for achieving $1,000/share by 2027? 👀</div><div class="tw-text tw-trans" id="t2078313765431619728" style="display:none">说实话，你觉得$TSLA在2027年前涨到每股1000美元的概率有多大？👀</div>
+      <div class="tw-stats">❤️ 317 &nbsp; 🔁 13 &nbsp;
+        💬 372 &nbsp; 🔖 8 &nbsp; 👁 49.3K
+        <a href="https://x.com/GrindeOptions/status/2078313765431619728" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Cole Grinde</b>
+        <a href="https://x.com/GrindeOptions" target="_blank" class="handle">@GrindeOptions</a>
+        <span class="score">热度 80</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 08:36 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079002554999164956" onclick="tg('2079002554999164956')">🌐 翻译</button></div><div class="tw-text" id="o2079002554999164956">People who say zero percent chance on this are uneducated on the matter. 
+
+$TSLA has a pretty good chance to achieve $1,000/share in 2027.</div><div class="tw-text tw-trans" id="t2079002554999164956" style="display:none">说完全没可能的人根本不了解实情。$TSLA在2027年实现每股1000美元还是很有希望的。</div>
+      <div class="tw-stats">❤️ 19 &nbsp; 🔁 0 &nbsp;
+        💬 16 &nbsp; 🔖 0 &nbsp; 👁 3.5K
+        <a href="https://x.com/GrindeOptions/status/2079002554999164956" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1706" data-time="1784480454">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>Bull Theory</b>
+            <a href="https://x.com/BullTheoryio" target="_blank" class="handle">@BullTheoryio</a>
+            <span class="kw-score">活跃度 1.7K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Bull Theory</b>
+        <a href="https://x.com/BullTheoryio" target="_blank" class="handle">@BullTheoryio</a>
+        <span class="score">热度 1.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 01:00 · 8小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078887818030612564" onclick="tg('2078887818030612564')">🌐 翻译</button></div><div class="tw-text" id="o2078887818030612564">NVIDIA is the only stock in history to crash by more than -80% twice and still become the world&#x27;s most valuable company.</div><div class="tw-text tw-trans" id="t2078887818030612564" style="display:none">英伟达是历史上唯一一只曾两次暴跌逾80%、却最终成为全球市值最高公司的股票。</div>
+      <div class="tw-stats">❤️ 986 &nbsp; 🔁 71 &nbsp;
+        💬 50 &nbsp; 🔖 51 &nbsp; 👁 43.2K
+        <a href="https://x.com/BullTheoryio/status/2078887818030612564" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1472" data-time="1784420275">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>Joonsung Kim</b>
+            <a href="https://x.com/KimJoonSung" target="_blank" class="handle">@KimJoonSung</a>
+            <span class="kw-score">活跃度 1.5K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Joonsung Kim</b>
+        <a href="https://x.com/KimJoonSung" target="_blank" class="handle">@KimJoonSung</a>
+        <span class="score">热度 1.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 08:17 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078635411744891147" onclick="tg('2078635411744891147')">🌐 翻译</button></div><div class="tw-text" id="o2078635411744891147">300-500 per week starting anytime now</div><div class="tw-text tw-trans" id="t2078635411744891147" style="display:none">随时可能开始，每周300到500辆。</div>
+      <div class="tw-stats">❤️ 753 &nbsp; 🔁 85 &nbsp;
+        💬 27 &nbsp; 🔖 16 &nbsp; 👁 47.5K
+        <a href="https://x.com/KimJoonSung/status/2078635411744891147" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1245" data-time="1784449724">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>Art of Speculation</b>
+            <a href="https://x.com/ArtofSpecuycky" target="_blank" class="handle">@ArtofSpecuycky</a>
+            <span class="kw-score">活跃度 1.2K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Art of Speculation</b>
+        <a href="https://x.com/ArtofSpecuycky" target="_blank" class="handle">@ArtofSpecuycky</a>
+        <span class="score">热度 1.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 16:28 · 17小时前</b></div>
+      <div class="tw-text">下周分析：楔形已破位，QQQ大概率反弹试探后再度探底
+先说结论：技术结构已经转空，这是牛市中期修正，不是熊市开端</div>
+      <div class="tw-stats">❤️ 284 &nbsp; 🔁 49 &nbsp;
+        💬 118 &nbsp; 🔖 224 &nbsp; 👁 46.2K
+        <a href="https://x.com/ArtofSpecuycky/status/2078758927047819520" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="462" data-time="1784479920">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>爱吃折耳根的Ace</b>
+            <a href="https://x.com/_zheergen" target="_blank" class="handle">@_zheergen</a>
+            <span class="kw-score">活跃度 462 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>爱吃折耳根的Ace</b>
+        <a href="https://x.com/_zheergen" target="_blank" class="handle">@_zheergen</a>
+        <span class="score">热度 311</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 18:43 · 14小时前</b></div>
+      <div class="tw-text">🚨兄弟们！28K Star 的量化金融资源大全，基本把能用到的工具都收全了
+
+awesome-quant 是一个长期维护的 Awesome List，专门收集量化金融相关的优质资源。
+
+仓库里按类别整理了大量书籍、论文、工具库、数据源、课程和社区链接，覆盖了从入门到进阶的各个方向，
+
+核心亮点：
+
+&amp;gt;</div>
+      <div class="tw-stats">❤️ 73 &nbsp; 🔁 29 &nbsp;
+        💬 10 &nbsp; 🔖 74 &nbsp; 👁 8.9K
+        <a href="https://x.com/_zheergen/status/2078792740226375967" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>爱吃折耳根的Ace</b>
+        <a href="https://x.com/_zheergen" target="_blank" class="handle">@_zheergen</a>
+        <span class="score">热度 91</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 00:52 · 8小时前</b></div>
+      <div class="tw-text">遇到一位深耕量化金融多年的专家，他在  PyData 大会上，系统讲了一遍 Python 在 Quant Finance 里的实际用法。
+
+我问他，如果本身有数学、金融或物理背景，怎样才能更快把 Python 用成真正高效的量化工具？
+
+他给出的思路很清晰：
+&amp;gt; Python 语法接近数学公式，Black-Scholes</div>
+      <div class="tw-stats">❤️ 25 &nbsp; 🔁 3 &nbsp;
+        💬 3 &nbsp; 🔖 34 &nbsp; 👁 2.0K
+        <a href="https://x.com/_zheergen/status/2078885577877823683" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="331" data-time="1784453360">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>对冲积鲸Reason</b>
+            <a href="https://x.com/chenreason" target="_blank" class="handle">@chenreason</a>
+            <span class="kw-score">活跃度 331 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>对冲积鲸Reason</b>
+        <a href="https://x.com/chenreason" target="_blank" class="handle">@chenreason</a>
+        <span class="score">热度 331</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 17:29 · 16小时前</b></div>
+      <div class="tw-text">最近芯片跌了很多。
+
+有些龙头从高点明显回撤，费城半导体指数的调整幅度也越来越大，基本已经进入熊市。
+
+于是市场上又出现了那个熟悉的问题：现在是不是黄金坑？
+
+很多人判断是否值得抄底，只有一个标准：
+
+跌得够不够多。
+跌10%，觉得还不便宜。
+跌20%，开始心动。
+跌30%，觉得机会来了。</div>
+      <div class="tw-stats">❤️ 35 &nbsp; 🔁 0 &nbsp;
+        💬 83 &nbsp; 🔖 23 &nbsp; 👁 14.9K
+        <a href="https://x.com/chenreason/status/2078774179814666474" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 科技/商业 <span>· 4 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="271032" data-time="1784500641">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>Elon Musk</b>
+            <a href="https://x.com/elonmusk" target="_blank" class="handle">@elonmusk</a>
+            <span class="kw-score">活跃度 271.0K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Elon Musk</b>
+        <a href="https://x.com/elonmusk" target="_blank" class="handle">@elonmusk</a>
+        <span class="score">热度 183.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 06:37 · 3小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078972489925812454" onclick="tg('2078972489925812454')">🌐 翻译</button></div><div class="tw-text" id="o2078972489925812454">🇪🇸 🇪🇸 Congratulations Spain!! 🇪🇸 🇪🇸</div><div class="tw-text tw-trans" id="t2078972489925812454" style="display:none">🇪🇸 🇪🇸 恭喜西班牙!! 🇪🇸 🇪🇸</div>
+      <div class="tw-stats">❤️ 128.3K &nbsp; 🔁 12.3K &nbsp;
+        💬 4.9K &nbsp; 🔖 1.4K &nbsp; 👁 2.0M
+        <a href="https://x.com/elonmusk/status/2078972489925812454" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Elon Musk</b>
+        <a href="https://x.com/elonmusk" target="_blank" class="handle">@elonmusk</a>
+        <span class="score">热度 52.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 11:34 · 1天前</b></div>
+      <div class="tw-text"></div>
+      <div class="tw-stats">❤️ 18.0K &nbsp; 🔁 3.7K &nbsp;
+        💬 2.2K &nbsp; 🔖 1.1K &nbsp; 👁 2.2M
+        <a href="https://x.com/elonmusk/status/2078322392036790316" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="116394" data-time="1784426413">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>DogeDesigner</b>
+            <a href="https://x.com/cb_doge" target="_blank" class="handle">@cb_doge</a>
+            <span class="kw-score">活跃度 116.4K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>DogeDesigner</b>
+        <a href="https://x.com/cb_doge" target="_blank" class="handle">@cb_doge</a>
+        <span class="score">热度 116.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 10:00 · 23小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078661152989720976" onclick="tg('2078661152989720976')">🌐 翻译</button></div><div class="tw-text" id="o2078661152989720976">A Tesla owner slept overnight in his Model X Plaid during a brutal 40°C heat wave in Austria. The car kept the cabin at 20°C for 8 hours and used only 12% battery.
+
+Camp Mode is one of Tesla’s most underrated features.</div><div class="tw-text tw-trans" id="t2078661152989720976" style="display:none">一位特斯拉车主在奥地利40°C的极端热浪中在Model X Plaid里过了一夜。车厢在8小时内保持20°C，仅消耗12%的电量。露营模式是特斯拉最被低估的功能之一。</div>
+      <div class="tw-stats">❤️ 65.1K &nbsp; 🔁 3.9K &nbsp;
+        💬 792 &nbsp; 🔖 3.9K &nbsp; 👁 3.8M
+        <a href="https://x.com/cb_doge/status/2078661152989720976" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="2021" data-time="1784401868">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>Nic Cruz Patane</b>
+            <a href="https://x.com/niccruzpatane" target="_blank" class="handle">@niccruzpatane</a>
+            <span class="kw-score">活跃度 2.0K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Nic Cruz Patane</b>
+        <a href="https://x.com/niccruzpatane" target="_blank" class="handle">@niccruzpatane</a>
+        <span class="score">热度 2.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 03:11 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078558205999988767" onclick="tg('2078558205999988767')">🌐 翻译</button></div><div class="tw-text" id="o2078558205999988767">Elon Musk confirmed not too long ago that Tesla will deliver a Cybercab to a customer for $30,000 or less by the end of 2026.
+
+Even if it’s sometime next year, that would be pretty cool. At that price, it would sell like craaazy imo. 
+
+Many companies will buy them for their own</div><div class="tw-text tw-trans" id="t2078558205999988767" style="display:none">马斯克不久前确认，特斯拉将于2026年底前以3万美元或更低的价格向客户交付Cybercab。即便推迟到明年，这也相当令人期待。以那个价格，销量绝对会爆炸式增长。很多企业会批量采购用于自用。</div>
+      <div class="tw-stats">❤️ 1.0K &nbsp; 🔁 123 &nbsp;
+        💬 44 &nbsp; 🔖 36 &nbsp; 👁 65.2K
+        <a href="https://x.com/niccruzpatane/status/2078558205999988767" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="728" data-time="1784508762">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>Sawyer Merritt</b>
+            <a href="https://x.com/SawyerMerritt" target="_blank" class="handle">@SawyerMerritt</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼91%</span>
+            <span class="kw-score">活跃度 728 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Sawyer Merritt</b>
+        <a href="https://x.com/SawyerMerritt" target="_blank" class="handle">@SawyerMerritt</a>
+        <span class="score">热度 728</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 08:52 · 47分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079006549847253218" onclick="tg('2079006549847253218')">🌐 翻译</button></div><div class="tw-text" id="o2079006549847253218">Tesla in a new Giga Berlin report filed in recent weeks:
+
+&quot;For the 2026 financial year, the company forecasts a significant increase in production volume compared with the previous year and assumes a corresponding increase in capacity utilization; Currently, more than 30 markets</div><div class="tw-text tw-trans" id="t2079006549847253218" style="display:none">特斯拉在近几周提交的柏林超级工厂新报告中表示：「公司预计2026财年产量将较上年大幅提升，并相应提高产能利用率；目前已覆盖超过30个市场……」</div>
+      <div class="tw-stats">❤️ 365 &nbsp; 🔁 36 &nbsp;
+        💬 12 &nbsp; 🔖 18 &nbsp; 👁 24.7K
+        <a href="https://x.com/SawyerMerritt/status/2079006549847253218" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 科技/AI <span>· 3 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="98271" data-time="1784472775">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>Kimi.ai</b>
+            <a href="https://x.com/Kimi_Moonshot" target="_blank" class="handle">@Kimi_Moonshot</a>
+            <span class="kw-score">活跃度 98.3K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Kimi.ai</b>
+        <a href="https://x.com/Kimi_Moonshot" target="_blank" class="handle">@Kimi_Moonshot</a>
+        <span class="score">热度 98.3K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 22:52 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078855608565207130" onclick="tg('2078855608565207130')">🌐 翻译</button></div><div class="tw-text" id="o2078855608565207130">Kimi K3 has received far more love than we expected, and our GPUs are feeling it.
+
+Over the past 48 hours, demand has pushed close to the limits of our current capacity. To protect the experience of existing subscribers, we&#x27;re temporarily pausing new subscriptions and</div><div class="tw-text tw-trans" id="t2078855608565207130" style="display:none">Kimi K3 获得的关注远超我们的预期，GPU正在承受巨大压力。过去48小时内，需求已接近我们当前容量的上限。为保障现有订阅用户的使用体验，我们暂时暂停新用户订阅。</div>
+      <div class="tw-stats">❤️ 25.1K &nbsp; 🔁 1.8K &nbsp;
+        💬 1.1K &nbsp; 🔖 2.9K &nbsp; 👁 6.2M
+        <a href="https://x.com/Kimi_Moonshot/status/2078855608565207130" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="5732" data-time="1784474532">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>Kevin S. Xu</b>
+            <a href="https://x.com/kevinsxu" target="_blank" class="handle">@kevinsxu</a>
+            <span class="kw-score">活跃度 5.7K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Kevin S. Xu</b>
+        <a href="https://x.com/kevinsxu" target="_blank" class="handle">@kevinsxu</a>
+        <span class="score">热度 5.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 23:22 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078862978737402304" onclick="tg('2078862978737402304')">🌐 翻译</button></div><div class="tw-text" id="o2078862978737402304">Alibaba is a major investor of Moonshot. Kimi, in turn, uses a big chunk of AliCloud GPUs (oftentimes competing away Qwen team&#x27;s resources)
+
+10 days ago, Alibaba previewed quarterly earnings saying AliCloud is growing 40+%. This was ofc before K3
+
+Could be a monster quarter for</div><div class="tw-text tw-trans" id="t2078862978737402304" style="display:none">阿里巴巴是月之暗面的重要投资方。Kimi大量使用阿里云的GPU资源（有时甚至与通义千问团队争抢资源）。10天前，阿里巴巴在季度业绩预告中表示阿里云增速超40%，这还是在K3发布之前。对阿里云来说，这季度可能会非常亮眼。</div>
+      <div class="tw-stats">❤️ 2.0K &nbsp; 🔁 182 &nbsp;
+        💬 38 &nbsp; 🔖 422 &nbsp; 👁 279.6K
+        <a href="https://x.com/kevinsxu/status/2078862978737402304" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="293" data-time="1784504524">
+          <div class="kol-head"><span class="rank">#18</span>
+            <b>Dan Nystedt</b>
+            <a href="https://x.com/dnystedt" target="_blank" class="handle">@dnystedt</a>
+            <span class="kw-score">活跃度 293 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Dan Nystedt</b>
+        <a href="https://x.com/dnystedt" target="_blank" class="handle">@dnystedt</a>
+        <span class="score">热度 293</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 07:42 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078988776983114124" onclick="tg('2078988776983114124')">🌐 翻译</button></div><div class="tw-text" id="o2078988776983114124">SpaceX has placed its first orders for Nvidia GB300-based AI servers to Taiwan’s Foxconn, amid plans by Elon Musk’s company to buy 13,000 of them in all, worth an estimated US$52 billion, ($4M each), media report, citing unnamed industry sources. It’s the first time SpaceX has</div><div class="tw-text tw-trans" id="t2078988776983114124" style="display:none">据媒体援引不具名业内人士报道，SpaceX已向台湾富士康下达首批基于英伟达GB300的AI服务器订单，马斯克旗下公司计划共采购13000台，总价约520亿美元（每台约400万美元）。这也是SpaceX首次……</div>
+      <div class="tw-stats">❤️ 108 &nbsp; 🔁 13 &nbsp;
+        💬 4 &nbsp; 🔖 28 &nbsp; 👁 11.9K
+        <a href="https://x.com/dnystedt/status/2078988776983114124" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 社会时事 <span>· 1 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="72129" data-time="1784413028">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>U.S. Central Command</b>
+            <a href="https://x.com/CENTCOM" target="_blank" class="handle">@CENTCOM</a>
+            <span class="kw-score">活跃度 72.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>U.S. Central Command</b>
+        <a href="https://x.com/CENTCOM" target="_blank" class="handle">@CENTCOM</a>
+        <span class="score">热度 72.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 06:17 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078605013878710482" onclick="tg('2078605013878710482')">🌐 翻译</button></div><div class="tw-text" id="o2078605013878710482">Today at 6 p.m. ET, U.S. forces began launching new airstrikes against Iran at the Commander in Chief’s direction. The strikes are designed to further degrade Iran’s ability to threaten commercial shipping in the Strait of Hormuz and swiftly punish Islamic Revolutionary Guard</div><div class="tw-text tw-trans" id="t2078605013878710482" style="display:none">今日美东时间下午6时，美军按照总司令的指令，开始对伊朗发动新一轮空袭。此次打击旨在进一步削弱伊朗威胁霍尔木兹海峡商业航运的能力，并迅速惩戒伊斯兰革命卫队。</div>
+      <div class="tw-stats">❤️ 25.3K &nbsp; 🔁 4.5K &nbsp;
+        💬 2.5K &nbsp; 🔖 829 &nbsp; 👁 3.2M
+        <a href="https://x.com/CENTCOM/status/2078605013878710482" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 5 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="530" data-time="1784483026">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>Phyrex</b>
+            <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼36%</span>
+            <span class="kw-score">活跃度 530 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 330</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 03:39 · 1天前</b></div>
+      <div class="tw-text">今天很多小伙伴给我留言说油价还在上升，做空要不要割肉。我自己的观点一直都是一致的，最起码要到 100 美元的保证金，然后依据自己的资金水平看是否还能继续逢高做空，或者是保证自己的仓位。起码我个人是这么做的，油价上涨的主要原因就是美国和伊朗的冲突，这些大家都知道。</div>
+      <div class="tw-stats">❤️ 48 &nbsp; 🔁 2 &nbsp;
+        💬 44 &nbsp; 🔖 1 &nbsp; 👁 20.7K
+        <a href="https://x.com/PhyrexNi/status/2078565277915312473" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 131</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 01:43 · 7小时前</b></div>
+      <div class="tw-text">目前我自己主要做的交易就三块，第一个就是双币为主的 Bitcoin ，低买在 62,000 美元，高卖在 65,000 美元，低买估计没戏了，高卖有点风险，尤其高卖是周二结算，从现在来看达到 65,000 美元以上就是一口气的问题，而且能确实看到最近投资者对 bitcoin:native</div>
+      <div class="tw-stats">❤️ 25 &nbsp; 🔁 2 &nbsp;
+        💬 9 &nbsp; 🔖 1 &nbsp; 👁 8.8K
+        <a href="https://x.com/PhyrexNi/status/2078898608502706583" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="371" data-time="1784473029">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>BbayBbay</b>
+            <a href="https://x.com/BbayBbay1314" target="_blank" class="handle">@BbayBbay1314</a>
+            <span class="kw-score">活跃度 371 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>BbayBbay</b>
+        <a href="https://x.com/BbayBbay1314" target="_blank" class="handle">@BbayBbay1314</a>
+        <span class="score">热度 371</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 22:57 · 10小时前</b></div>
+      <div class="tw-text">大额出金，我最怕的不是亏手续费，而是钱卡在半路动不了。
+
+说实话，这几年试过不少路子，最后兜兜转转还是固定用 BiyaPay。不是因为它多花哨，就是图个省心。
+
+流程特别直给：交易所里的 USDT 提到 BiyaPay，站内直接换成美元或港币，然后转到 Wise、OCBC</div>
+      <div class="tw-stats">❤️ 30 &nbsp; 🔁 98 &nbsp;
+        💬 22 &nbsp; 🔖 0 &nbsp; 👁 11.2K
+        <a href="https://x.com/BbayBbay1314/status/2078856676288123310" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="310" data-time="1784472583">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>外｜ 狗宝真帅🐕 |预测世界杯就在Gate</b>
+            <a href="https://x.com/Love520Easy" target="_blank" class="handle">@Love520Easy</a>
+            <span class="kw-score">活跃度 310 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>外｜ 狗宝真帅🐕 |预测世界杯就在Gate</b>
+        <a href="https://x.com/Love520Easy" target="_blank" class="handle">@Love520Easy</a>
+        <span class="score">热度 310</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 22:49 · 10小时前</b></div>
+      <div class="tw-text">以前聊赚钱，大家都爱问：“怎么才能多搞点USDT？”
+但现在不一样了，真当手里攒下一定体量的资产之后，你会发现——
+光会赚不行，得学会怎么“管”。
+
+尤其是大额资金，你试试随便找个OTC去换？
+流程繁琐不说，动不动还遇上卡顿、风控，甚至莫名其妙的风险，心累得很。</div>
+      <div class="tw-stats">❤️ 58 &nbsp; 🔁 1 &nbsp;
+        💬 33 &nbsp; 🔖 0 &nbsp; 👁 20.0K
+        <a href="https://x.com/Love520Easy/status/2078854803472654544" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="259" data-time="1784465181">
+          <div class="kol-head"><span class="rank">#19</span>
+            <b>Manchurius Hao — Greeks.live首席赌狗</b>
+            <a href="https://x.com/AntonLaVay" target="_blank" class="handle">@AntonLaVay</a>
+            <span class="kw-score">活跃度 259 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Manchurius Hao — Greeks.live首席赌狗</b>
+        <a href="https://x.com/AntonLaVay" target="_blank" class="handle">@AntonLaVay</a>
+        <span class="score">热度 259</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 20:46 · 12小时前</b></div>
+      <div class="tw-text">我相信在此之前，很多朋友会觉得，为什么@JeffLia12309881 要去花大精力研究波动率交易而不是直接梭哈股市呢，那不是随便赚钱吗？我相信经过近期的行情之后，很多朋友会对此有更深刻的认知了。
+
+因为Jeff的波动率交易本质上是一门生意，追求凭借知识和 $BTC 的长期行情赚钱，而不是去搏斗市场的动能。</div>
+      <div class="tw-stats">❤️ 27 &nbsp; 🔁 7 &nbsp;
+        💬 28 &nbsp; 🔖 27 &nbsp; 👁 14.5K
+        <a href="https://x.com/AntonLaVay/status/2078823758752559269" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="215" data-time="1784367501">
+          <div class="kol-head"><span class="rank">#20</span>
+            <b>懂币猫</b>
+            <a href="https://x.com/dongbimao" target="_blank" class="handle">@dongbimao</a>
+            <span class="kw-score">活跃度 215 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>懂币猫</b>
+        <a href="https://x.com/dongbimao" target="_blank" class="handle">@dongbimao</a>
+        <span class="score">热度 215</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 17:38 · 1天前</b></div>
+      <div class="tw-text">存储女孩梦碎东京
+
+隔壁的首尔女孩随着海力士的暴跌失去了她们最美好的夏天
+
+东京女孩的梦也伴随铠侠的跳水“扑通一声”碎了一地
+
+昨天日经225下跌4%，前几天还是日本市值第一的铠侠继上一个交易日暴跌15%后单日再次暴跌16%，两天跌掉31%，距最高点累计跌幅接近54%，市值蒸发了约30万亿日元</div>
+      <div class="tw-stats">❤️ 26 &nbsp; 🔁 2 &nbsp;
+        💬 56 &nbsp; 🔖 2 &nbsp; 👁 9.9K
+        <a href="https://x.com/dongbimao/status/2078414058785808441" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><a class="trend" href="https://x.com/search?q=Seattle%20Raccoon%20Jimothy%20Waddles%20to%20Fame%20with%20Rare%20Spine%20Condition" target="_blank"><span class="rank">#1</span> Seattle Raccoon Jimothy Waddles to Fame with Rare Spine Condition<span class="meta"></span><span class="tmeta">西雅图浣熊吉莫西因罕见脊椎病走红</span></a>
+<a class="trend" href="https://x.com/search?q=Senate%20Poised%20for%20CLARITY%20Act%20Vote%20as%20Crypto%20Leaders%20Urge%20Action" target="_blank"><span class="rank">#2</span> Senate Poised for CLARITY Act Vote as Crypto Leaders Urge Action<span class="meta"></span><span class="tmeta">参议院即将就《CLARITY法案》投票，加密领袖呼吁行动</span></a>
+<a class="trend" href="https://x.com/search?q=German%20Fan%20Freddy%20Hits%2025%20States%20on%20World%20Cup%20Road%20Trip" target="_blank"><span class="rank">#3</span> German Fan Freddy Hits 25 States on World Cup Road Trip<span class="meta"></span><span class="tmeta">德国球迷弗雷迪驾车游历25个州观看世界杯</span></a>
+<a class="trend" href="https://x.com/search?q=GPUs" target="_blank"><span class="rank">#4</span> GPUs<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Bob%20Costas" target="_blank"><span class="rank">#5</span> Bob Costas<span class="meta"></span><span class="tmeta">鲍勃·科斯塔斯</span></a>
+<a class="trend" href="https://x.com/search?q=%23Trading" target="_blank"><span class="rank">#6</span> #Trading<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Logano" target="_blank"><span class="rank">#7</span> Logano<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%24PHG" target="_blank"><span class="rank">#8</span> $PHG<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Optimus" target="_blank"><span class="rank">#9</span> Optimus<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Lenovo%20x%20FIFA%20World%20Cup" target="_blank"><span class="rank">#10</span> Lenovo x FIFA World Cup<span class="meta"></span><span class="tmeta">联想×FIFA世界杯</span></a>
+<a class="trend" href="https://x.com/search?q=Spain" target="_blank"><span class="rank">#11</span> Spain<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Rodri" target="_blank"><span class="rank">#12</span> Rodri<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Enzo" target="_blank"><span class="rank">#13</span> Enzo<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23BaddiesUSA" target="_blank"><span class="rank">#14</span> #BaddiesUSA<span class="meta"></span><span class="tmeta">#BaddiesUSA真人秀</span></a>
+<a class="trend" href="https://x.com/search?q=Shakira" target="_blank"><span class="rank">#15</span> Shakira<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Usha" target="_blank"><span class="rank">#16</span> Usha<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%2390DayFiance" target="_blank"><span class="rank">#17</span> #90DayFiance<span class="meta"></span><span class="tmeta">#90天未婚夫</span></a>
+<a class="trend" href="https://x.com/search?q=Infantino" target="_blank"><span class="rank">#18</span> Infantino<span class="meta"></span><span class="tmeta">因凡蒂诺</span></a>
+<a class="trend" href="https://x.com/search?q=Volpe" target="_blank"><span class="rank">#19</span> Volpe<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23DemDragons" target="_blank"><span class="rank">#20</span> #DemDragons<span class="meta"></span><span class="tmeta">#龙之队加油</span></a>
+<a class="trend" href="https://x.com/search?q=%23NASCAR" target="_blank"><span class="rank">#21</span> #NASCAR<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Bowman" target="_blank"><span class="rank">#22</span> Bowman<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Martinez" target="_blank"><span class="rank">#23</span> Martinez<span class="meta"></span><span class="tmeta">马丁内斯</span></a>
+<a class="trend" href="https://x.com/search?q=Abuzah" target="_blank"><span class="rank">#24</span> Abuzah<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23ESPvsARG" target="_blank"><span class="rank">#25</span> #ESPvsARG<span class="meta"></span><span class="tmeta">#西班牙vs阿根廷</span></a>
+</div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>$TSLA</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲1400%</span>
+          <span class="kw-score">总热度 305.6K · 47 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Elon Musk</b>
+        <a href="https://x.com/elonmusk" target="_blank" class="handle">@elonmusk</a>
+        <span class="score">热度 183.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 06:37 · 3小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078972489925812454" onclick="tg('2078972489925812454')">🌐 翻译</button></div><div class="tw-text" id="o2078972489925812454">🇪🇸 🇪🇸 Congratulations Spain!! 🇪🇸 🇪🇸</div><div class="tw-text tw-trans" id="t2078972489925812454" style="display:none">🇪🇸 🇪🇸 恭喜西班牙!! 🇪🇸 🇪🇸</div>
+      <div class="tw-stats">❤️ 128.3K &nbsp; 🔁 12.3K &nbsp;
+        💬 4.9K &nbsp; 🔖 1.4K &nbsp; 👁 2.0M
+        <a href="https://x.com/elonmusk/status/2078972489925812454" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲46%</span>
+          <span class="kw-score">总热度 106.6K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Kimi.ai</b>
+        <a href="https://x.com/Kimi_Moonshot" target="_blank" class="handle">@Kimi_Moonshot</a>
+        <span class="score">热度 98.3K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 22:52 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078855608565207130" onclick="tg('2078855608565207130')">🌐 翻译</button></div><div class="tw-text" id="o2078855608565207130">Kimi K3 has received far more love than we expected, and our GPUs are feeling it.
+
+Over the past 48 hours, demand has pushed close to the limits of our current capacity. To protect the experience of existing subscribers, we&#x27;re temporarily pausing new subscriptions and</div><div class="tw-text tw-trans" id="t2078855608565207130" style="display:none">Kimi K3 获得的关注远超我们的预期，GPU正在承受巨大压力。过去48小时内，需求已接近我们当前容量的上限。为保障现有订阅用户的使用体验，我们暂时暂停新用户订阅。</div>
+      <div class="tw-stats">❤️ 25.1K &nbsp; 🔁 1.8K &nbsp;
+        💬 1.1K &nbsp; 🔖 2.9K &nbsp; 👁 6.2M
+        <a href="https://x.com/Kimi_Moonshot/status/2078855608565207130" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲1392%</span>
+          <span class="kw-score">总热度 72.8K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>U.S. Central Command</b>
+        <a href="https://x.com/CENTCOM" target="_blank" class="handle">@CENTCOM</a>
+        <span class="score">热度 72.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 06:17 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078605013878710482" onclick="tg('2078605013878710482')">🌐 翻译</button></div><div class="tw-text" id="o2078605013878710482">Today at 6 p.m. ET, U.S. forces began launching new airstrikes against Iran at the Commander in Chief’s direction. The strikes are designed to further degrade Iran’s ability to threaten commercial shipping in the Strait of Hormuz and swiftly punish Islamic Revolutionary Guard</div><div class="tw-text tw-trans" id="t2078605013878710482" style="display:none">今日美东时间下午6时，美军按照总司令的指令，开始对伊朗发动新一轮空袭。此次打击旨在进一步削弱伊朗威胁霍尔木兹海峡商业航运的能力，并迅速惩戒伊斯兰革命卫队。</div>
+      <div class="tw-stats">❤️ 25.3K &nbsp; 🔁 4.5K &nbsp;
+        💬 2.5K &nbsp; 🔖 829 &nbsp; 👁 3.2M
+        <a href="https://x.com/CENTCOM/status/2078605013878710482" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲197%</span>
+          <span class="kw-score">总热度 7.8K · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Kevin S. Xu</b>
+        <a href="https://x.com/kevinsxu" target="_blank" class="handle">@kevinsxu</a>
+        <span class="score">热度 5.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 23:22 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078862978737402304" onclick="tg('2078862978737402304')">🌐 翻译</button></div><div class="tw-text" id="o2078862978737402304">Alibaba is a major investor of Moonshot. Kimi, in turn, uses a big chunk of AliCloud GPUs (oftentimes competing away Qwen team&#x27;s resources)
+
+10 days ago, Alibaba previewed quarterly earnings saying AliCloud is growing 40+%. This was ofc before K3
+
+Could be a monster quarter for</div><div class="tw-text tw-trans" id="t2078862978737402304" style="display:none">阿里巴巴是月之暗面的重要投资方。Kimi大量使用阿里云的GPU资源（有时甚至与通义千问团队争抢资源）。10天前，阿里巴巴在季度业绩预告中表示阿里云增速超40%，这还是在K3发布之前。对阿里云来说，这季度可能会非常亮眼。</div>
+      <div class="tw-stats">❤️ 2.0K &nbsp; 🔁 183 &nbsp;
+        💬 38 &nbsp; 🔖 423 &nbsp; 👁 280.0K
+        <a href="https://x.com/kevinsxu/status/2078862978737402304" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲382%</span>
+          <span class="kw-score">总热度 4.7K · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Art of Speculation</b>
+        <a href="https://x.com/ArtofSpecuycky" target="_blank" class="handle">@ArtofSpecuycky</a>
+        <span class="score">热度 1.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-19 16:28 · 17小时前</b></div>
+      <div class="tw-text">下周分析：楔形已破位，QQQ大概率反弹试探后再度探底
+先说结论：技术结构已经转空，这是牛市中期修正，不是熊市开端</div>
+      <div class="tw-stats">❤️ 284 &nbsp; 🔁 49 &nbsp;
+        💬 118 &nbsp; 🔖 224 &nbsp; 👁 46.2K
+        <a href="https://x.com/ArtofSpecuycky/status/2078758927047819520" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼42%</span>
+          <span class="kw-score">总热度 565 · 22 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>懂币猫</b>
+        <a href="https://x.com/dongbimao" target="_blank" class="handle">@dongbimao</a>
+        <span class="score">热度 215</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-18 17:38 · 1天前</b></div>
+      <div class="tw-text">存储女孩梦碎东京
+
+隔壁的首尔女孩随着海力士的暴跌失去了她们最美好的夏天
+
+东京女孩的梦也伴随铠侠的跳水“扑通一声”碎了一地
+
+昨天日经225下跌4%，前几天还是日本市值第一的铠侠继上一个交易日暴跌15%后单日再次暴跌16%，两天跌掉31%，距最高点累计跌幅接近54%，市值蒸发了约30万亿日元</div>
+      <div class="tw-stats">❤️ 26 &nbsp; 🔁 2 &nbsp;
+        💬 56 &nbsp; 🔖 2 &nbsp; 👁 9.9K
+        <a href="https://x.com/dongbimao/status/2078414058785808441" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼99%</span>
+          <span class="kw-score">总热度 281 · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>辻</b>
+        <a href="https://x.com/JPTOPIX" target="_blank" class="handle">@JPTOPIX</a>
+        <span class="score">热度 69</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 08:14 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2078997056983912549" onclick="tg('2078997056983912549')">🌐 翻译</button></div><div class="tw-text" id="o2078997056983912549">7月20日　3連休月曜日　日本休場
+今後を考えて韓国株式市場リアルタイムウォッチ
+KOSPI　寄り付き後に-4%強まで下落・安値6528から戻り-1%強に
+サムスン　SKハイニックス　PreMarket下落から上昇
+AI半導体株以外も堅調で
+MKeconomyTV（URL他前述）韓国語実況を視聴中
+日経平均先物 +2%近い</div><div class="tw-text tw-trans" id="t2078997056983912549" style="display:none">7月20日 三连休周一 日本市场休市。着眼未来，实时关注韩国股市：KOSPI开盘后一度下跌逾4%，从低点6528回升至跌幅收窄至逾1%；三星、SK海力士从盘前下跌转为上涨；AI芯片股以外的板块也表现坚挺。正在收听MKeconomyTV（链接见前文）韩语直播。日经225期货上涨近2%。</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 0 &nbsp; 👁 5.9K
+        <a href="https://x.com/JPTOPIX/status/2078997056983912549" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼63%</span>
+          <span class="kw-score">总热度 233 · 40 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>pandaWL/买美股上币安</b>
+        <a href="https://x.com/dajingou1" target="_blank" class="handle">@dajingou1</a>
+        <span class="score">热度 68</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 09:11 · 28分钟前</b></div>
+      <div class="tw-text">当大多数人的目光被满屏的 AI 叙事、美股狂欢和 Meme 币的暴涨暴跌所吸引时，
+
+@ethena 又完成了一件大事：@monad宣布了登陆高性能公链 Monad，并同步接入了 Aave。
+
+很多人将这解读为“Ethena 又多支持了一条新链”，或者欣慰于“这个团队在踏实做事”。
+
+但这其实低估了 Ethena 的战略意图。
+
+如果我们将</div>
+      <div class="tw-stats">❤️ 11 &nbsp; 🔁 0 &nbsp;
+        💬 31 &nbsp; 🔖 0 &nbsp; 👁 1.0K
+        <a href="https://x.com/dajingou1/status/2079011347292143734" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
