@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-07-22</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-07-22 · 更新于 09:40</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-07-22.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-07-22.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<div class="summary">🧠 <b>今日讨论总览</b><p>今日讨论围绕美伊冲突升级与停火博弈、台积电2027年提价、韩股暴力反弹、比特币/以太坊ETF资金持续回流、谷歌Frozen v2芯片等多条主线展开，地缘风险与科技产业链变局交织，情绪整体偏紧张但局部乐观。</p></div><div class="vp-row">
+            <div class="vp-card">
+              <div class="vp-p">美伊冲突进入最后窗口：停火或全面战争二选一，特朗普公开表态强硬无意谈判</div>
+              <div class="vp-q">「美国和以色列已经将伊朗战争的结局压缩到两个选择：接受10天停火，或发动更大规模联合军事行动」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a> <a class="hold" href="https://x.com/Ainy_jing" target="_blank">@Ainy_jing</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">台积电计划2027年代工价格最高上调10%，高端芯片订单涨幅可能超过20%</div>
+              <div class="vp-q">「对于超出客户预期的高性能计算芯片额外订单，台积电计划在基本涨幅基础上加收10%至15%的溢价」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/zerohedge" target="_blank">@zerohedge</a> <a class="hold" href="https://x.com/fxtrader" target="_blank">@fxtrader</a> <a class="hold" href="https://x.com/dmjk001" target="_blank">@dmjk001</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">谷歌Frozen v2芯片曝光，运行Gemini模型效率较最新TPU提升近10倍</div>
+              <div class="vp-q">「$GOOGL is developing a new AI chip called 「Frozen v2」 that could run Gemini models nearly 10x more efficiently than its latest TPUs」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/StockSavvyShay" target="_blank">@StockSavvyShay</a> <a class="hold" href="https://x.com/Kay2289123" target="_blank">@Kay2289123</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">韩股大幅反弹，暴跌本质是拥挤交易强制出清而非基本面崩溃</div>
+              <div class="vp-q">「这轮暴跌从来不是韩国资产逻辑崩了，是拥挤交易在强制出清，变化的是被迫卖盘减少后空头回补和低仓位资金开始抢筹」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/followin_io_zh" target="_blank">@followin_io_zh</a> <a class="hold" href="https://x.com/BullTheoryio" target="_blank">@BullTheoryio</a> <a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">比特币与以太坊现货ETF资金持续净流入，以太坊回补节奏明显强于比特币</div>
+              <div class="vp-q">「当日净流入19,285.88 ETH，继续保持明显强于BTC的资金回补节奏，7月以来累计增加105,000+ ETH」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">股债油汇齐涨逻辑混乱，各类资产短期均有独立叙事驱动，难言谁对谁错</div>
+              <div class="vp-q">「今晚股债油汇都在往上走，谁对谁错？短期内各有各的逻辑在驱动」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/qinbafrank" target="_blank">@qinbafrank</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">开源AI模型每次冲击闭源巨头后，随即出现「AI逃逸」安全报告，被指是转移舆论的规律性操作</div>
+              <div class="vp-q">「every time OpenAI or Anthropic get brutally mogged by an Open Source model launch within 24 hours there is always a 「report」 about how the 「AI escaped containme」」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/goodalexander" target="_blank">@goodalexander</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">韩股杠杆尚未充分出清，溢价仍高，美股受其传导风险不可忽视</div>
+              <div class="vp-q">「对于韩股我看了大量数据，总是觉得在杠杆没有清差不多前，韩股的风险还是挺大的，而美股这边受到韩股影响的概率更大」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">霍尔木兹停火仍有外交空间，伊朗内政部长赴伊斯兰堡显示谈判渠道未断</div>
+              <div class="vp-q">「今天已经看到了伊朗内政部长抵达伊斯兰堡，说明不论是伊朗还是美国，仍然还在保持有外交谈判的空间」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">特斯拉财报前夕期权隐含波动率创近一年新高，老手倾向卖权而非追涨</div>
+              <div class="vp-q">「真正的老手现在不是追call，是找机会卖premium，顺手来个iron condor，把这波贵到离谱的波动率先吃到手」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/Balder13946731" target="_blank">@Balder13946731</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">「降息必然推涨金价」是危险的思维定势，持有此观点者应警惕被市场教育</div>
+              <div class="vp-q">「无论谁认可这种「天经地义」，都应该立即离开这个市场，否则未来肯定会因为这种思维定势而遭遇大屠杀」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/Rusong_Machunbo" target="_blank">@Rusong_Machunbo</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">DeFi机构化关键一步：固定利率机构借贷跑通，大资金不愿在透明池裸奔的问题被正面突破</div>
+              <div class="vp-q">「你让大资金把仓位和底牌全摊在透明池子里跟大伙一起裸奔？人家其实根本不敢」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/Domingo_gou" target="_blank">@Domingo_gou</a></div>
+            </div></div>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 美股投资 <span>· 4 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="4220" data-time="1784553112">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>Shay Boloor</b>
+            <a href="https://x.com/StockSavvyShay" target="_blank" class="handle">@StockSavvyShay</a>
+            <span class="kw-score">活跃度 4.2K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Shay Boloor</b>
+        <a href="https://x.com/StockSavvyShay" target="_blank" class="handle">@StockSavvyShay</a>
+        <span class="score">热度 4.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 21:11 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079192570257887391" onclick="tg('2079192570257887391')">🌐 翻译</button></div><div class="tw-text" id="o2079192570257887391">$GOOGL is developing a new AI chip called “Frozen v2” that could run Gemini models nearly 10x more efficiently than its latest TPUs.
+
+The chip is targeted for 2028 and would hardwire parts of Gemini to improve speed and efficiency while easing Google’s compute constraints.</div><div class="tw-text tw-trans" id="t2079192570257887391" style="display:none">谷歌正在研发一款名为「Frozen v2」的新型AI芯片，其运行Gemini模型的效率可能比最新TPU高出近10倍。该芯片目标量产时间为2028年，将把Gemini的部分功能直接固化于硬件，以提升速度和效率，同时缓解谷歌的算力瓶颈。</div>
+      <div class="tw-stats">❤️ 1.5K &nbsp; 🔁 165 &nbsp;
+        💬 107 &nbsp; 🔖 139 &nbsp; 👁 204.5K
+        <a href="https://x.com/StockSavvyShay/status/2079192570257887391" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="246" data-time="1784673113">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>加密小韭菜｜狗宝老师特别帅</b>
+            <a href="https://x.com/Luckyjudy666" target="_blank" class="handle">@Luckyjudy666</a>
+            <span class="kw-score">活跃度 246 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>加密小韭菜｜狗宝老师特别帅</b>
+        <a href="https://x.com/Luckyjudy666" target="_blank" class="handle">@Luckyjudy666</a>
+        <span class="score">热度 155</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 16:49 · 16小时前</b></div>
+      <div class="tw-text">美股财报季来了，接下来一个多月几乎天天都有明星科技股公布财报，从特斯拉、苹果，到微软、Meta、英伟达、海力士，每一家都可能带来新的交易机会。
+
+如果能抓住每个大公司财报发布前后的交易机会就好了，因为财报发布前后往往是股价大波动的时候，波动意味着机会。
+
+Bitget</div>
+      <div class="tw-stats">❤️ 31 &nbsp; 🔁 0 &nbsp;
+        💬 50 &nbsp; 🔖 1 &nbsp; 👁 4.6K
+        <a href="https://x.com/Luckyjudy666/status/2079488953334542368" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>加密小韭菜｜狗宝老师特别帅</b>
+        <a href="https://x.com/Luckyjudy666" target="_blank" class="handle">@Luckyjudy666</a>
+        <span class="score">热度 59</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 06:31 · 3小时前</b></div>
+      <div class="tw-text">抄底美光不到一周以内已经盈利16%，
+
+存储没结束是早就提醒过的，
+
+美股因为有大量的期权交易，
+
+行情一旦修复都是呈V型反转的走势，
+
+确认趋势未结束、基本面没改变，就要大胆抄底，不然就很难再上车了，
+
+嫌不够刺激的还可以买海力士。</div>
+      <div class="tw-stats">❤️ 18 &nbsp; 🔁 0 &nbsp;
+        💬 20 &nbsp; 🔖 0 &nbsp; 👁 1.1K
+        <a href="https://x.com/Luckyjudy666/status/2079695889900409201" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="137" data-time="1784681006">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>Powerpei🦅🏆买美股上币安</b>
+            <a href="https://x.com/PWenzhen76938" target="_blank" class="handle">@PWenzhen76938</a>
+            <span class="kw-score">活跃度 137 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Powerpei🦅🏆买美股上币安</b>
+        <a href="https://x.com/PWenzhen76938" target="_blank" class="handle">@PWenzhen76938</a>
+        <span class="score">热度 137</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 08:43 · 57分钟前</b></div>
+      <div class="tw-text">腾达证券打新认购费从99港币降到 9.9 港币
+我看到这个消息的时候确实多看了一眼
+
+直接砍掉 90%，对于经常参与港股打新的人来说，这个变化不小
+
+还配了两个挺实用的东西
+
+一个是 10 倍免息孖展，就是券商借你杠杆资金，这次融资利息全免
+
+另一个是暗盘交易，新股上市前一晚就可以在场外先动，不用等开盘</div>
+      <div class="tw-stats">❤️ 42 &nbsp; 🔁 0 &nbsp;
+        💬 55 &nbsp; 🔖 0 &nbsp; 👁 1.2K
+        <a href="https://x.com/PWenzhen76938/status/2079728996422758780" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="124" data-time="1784658841">
+          <div class="kol-head"><span class="rank">#18</span>
+            <b>美研芒格君</b>
+            <a href="https://x.com/Kay2289123" target="_blank" class="handle">@Kay2289123</a>
+            <span class="kw-score">活跃度 124 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>美研芒格君</b>
+        <a href="https://x.com/Kay2289123" target="_blank" class="handle">@Kay2289123</a>
+        <span class="score">热度 124</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 02:34 · 7小时前</b></div>
+      <div class="tw-text">谷歌 Frozen v2 芯片，看似是一个芯片的正常发布，但对于我来说，在这个关键的时期，其实预示着两件投资 insights, 大部分人都忽略了。这个帖子认识一下 Frozen v2 和 TPU 的关系，以及在 Google 生态里有什么样的定位
+
+首先是我看到的两个主线方向，一旦市场情绪出现背离问我知错误，就是抄底的好时候</div>
+      <div class="tw-stats">❤️ 28 &nbsp; 🔁 3 &nbsp;
+        💬 3 &nbsp; 🔖 4 &nbsp; 👁 8.2K
+        <a href="https://x.com/Kay2289123/status/2079636028701520222" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 宏观财经 <span>· 7 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="4706" data-time="1784659456">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>Phyrex</b>
+            <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲788%</span>
+            <span class="kw-score">活跃度 4.7K · 9 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 463</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 18:52 · 14小时前</b></div>
+      <div class="tw-text">停火还是全面战争 — 美伊冲突进入最后几天的选择窗口
+
+Axios 最新披露，美国和以色列已经将伊朗战争的结局压缩到两个选择。
+
+第一个是接受地区国家提出的10天停火，重新开放霍尔木兹海峡。
+
+第二个是美以发动更大规模的联合军事行动，试图迫使德黑兰全面让步。</div>
+      <div class="tw-stats">❤️ 44 &nbsp; 🔁 1 &nbsp;
+        💬 44 &nbsp; 🔖 3 &nbsp; 👁 34.6K
+        <a href="https://x.com/PhyrexNi/status/2079519881708683441" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 313</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 23:21 · 10小时前</b></div>
+      <div class="tw-text">今天就是典型的白天 SK 涨，晚上 ADR 涨的情况，虽然是 10U 战神，但这种情况我就不参与了，对于韩股我看了大量的数据，总是觉得在杠杆没有清差不多前，韩股的风险还是挺大的，而美股这边受到韩股影响的概率更大，而且目前溢价仍然是较高的。</div>
+      <div class="tw-stats">❤️ 49 &nbsp; 🔁 1 &nbsp;
+        💬 41 &nbsp; 🔖 3 &nbsp; 👁 19.8K
+        <a href="https://x.com/PhyrexNi/status/2079587554181996891" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="3119" data-time="1784623187">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>zerohedge</b>
+            <a href="https://x.com/zerohedge" target="_blank" class="handle">@zerohedge</a>
+            <span class="kw-score">活跃度 3.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>zerohedge</b>
+        <a href="https://x.com/zerohedge" target="_blank" class="handle">@zerohedge</a>
+        <span class="score">热度 3.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 16:39 · 17小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079486483581272474" onclick="tg('2079486483581272474')">🌐 翻译</button></div><div class="tw-text" id="o2079486483581272474">*TSMC TO RAISE CHIPMAKING PRICES BY UP TO 10% IN 2027: NIKKEI</div><div class="tw-text tw-trans" id="t2079486483581272474" style="display:none">日经新闻：台积电将于2027年将芯片代工价格上调最高10%。</div>
+      <div class="tw-stats">❤️ 1.0K &nbsp; 🔁 105 &nbsp;
+        💬 33 &nbsp; 🔖 44 &nbsp; 👁 174.6K
+        <a href="https://x.com/zerohedge/status/2079486483581272474" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1768" data-time="1784645693">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>qinbafrank</b>
+            <a href="https://x.com/qinbafrank" target="_blank" class="handle">@qinbafrank</a>
+            <span class="kw-score">活跃度 1.8K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>qinbafrank</b>
+        <a href="https://x.com/qinbafrank" target="_blank" class="handle">@qinbafrank</a>
+        <span class="score">热度 1.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 21:44 · 11小时前</b></div>
+      <div class="tw-text">今晚股债油汇都在往上走，谁对谁错？</div>
+      <div class="tw-stats">❤️ 67 &nbsp; 🔁 6 &nbsp;
+        💬 70 &nbsp; 🔖 16 &nbsp; 👁 88.1K
+        <a href="https://x.com/qinbafrank/status/2079563052903706681" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>qinbafrank</b>
+        <a href="https://x.com/qinbafrank" target="_blank" class="handle">@qinbafrank</a>
+        <span class="score">热度 450</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 22:54 · 10小时前</b></div>
+      <div class="tw-text">其实可以这么说，短期内各有各有的逻辑在驱动。
+1）股市，杠杆接近尾声，特别是韩股更是去杠杆的风向标，参见下午聊到的</div>
+      <div class="tw-stats">❤️ 68 &nbsp; 🔁 9 &nbsp;
+        💬 49 &nbsp; 🔖 28 &nbsp; 👁 26.2K
+        <a href="https://x.com/qinbafrank/status/2079580882864930846" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1200" data-time="1784622617">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>Yael</b>
+            <a href="https://x.com/YaelC_03" target="_blank" class="handle">@YaelC_03</a>
+            <span class="kw-score">活跃度 1.2K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Yael</b>
+        <a href="https://x.com/YaelC_03" target="_blank" class="handle">@YaelC_03</a>
+        <span class="score">热度 1.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 16:30 · 17小时前</b></div>
+      <div class="tw-text"></div>
+      <div class="tw-stats">❤️ 32 &nbsp; 🔁 2 &nbsp;
+        💬 1 &nbsp; 🔖 7 &nbsp; 👁 115.6K
+        <a href="https://x.com/YaelC_03/status/2079484095126478936" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="526" data-time="1784622896">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>外汇交易员</b>
+            <a href="https://x.com/fxtrader" target="_blank" class="handle">@fxtrader</a>
+            <span class="kw-score">活跃度 526 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>外汇交易员</b>
+        <a href="https://x.com/fxtrader" target="_blank" class="handle">@fxtrader</a>
+        <span class="score">热度 240</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 16:34 · 17小时前</b></div>
+      <div class="tw-text">日经亚洲：台积电计划在2027年将先进和成熟芯片代工服务的价格提高最多10%。
+
+知情人士透露，基本价格上涨幅度在5% 到10%之间，具体取决于客户和产品。对于超出客户原先预期的高性能计算芯片额外订单，台积电计划在基本涨幅的基础上加收10%至15%的溢价。因此，部分高端芯片订单的总价涨幅可能超过10%。</div>
+      <div class="tw-stats">❤️ 34 &nbsp; 🔁 0 &nbsp;
+        💬 18 &nbsp; 🔖 1 &nbsp; 👁 17.8K
+        <a href="https://x.com/fxtrader/status/2079485264372871253" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>外汇交易员</b>
+        <a href="https://x.com/fxtrader" target="_blank" class="handle">@fxtrader</a>
+        <span class="score">热度 217</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 14:33 · 19小时前</b></div>
+      <div class="tw-text">#行情 日经225指数周二收涨3.26%。
+韩国KOSPI指数收涨3.56%，SK海力士收涨4%，三星电子涨6.1%。</div>
+      <div class="tw-stats">❤️ 29 &nbsp; 🔁 0 &nbsp;
+        💬 17 &nbsp; 🔖 1 &nbsp; 👁 16.2K
+        <a href="https://x.com/fxtrader/status/2079454821674037338" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="228" data-time="1784682647">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>Followin 华语 - 热点风向标🫡</b>
+            <a href="https://x.com/followin_io_zh" target="_blank" class="handle">@followin_io_zh</a>
+            <span class="kw-score">活跃度 228 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Followin 华语 - 热点风向标🫡</b>
+        <a href="https://x.com/followin_io_zh" target="_blank" class="handle">@followin_io_zh</a>
+        <span class="score">热度 186</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 14:29 · 19小时前</b></div>
+      <div class="tw-text">韩股今天终于迎来反弹，恰好把摩根大通最新研报的观点验证了一遍：
+这轮暴跌从来不是韩国资产逻辑崩了，是拥挤交易在强制出清。
+
+三星电子今天一度涨约 7%，SK 海力士涨超 6%，KOSPI 盘中触发买入侧 Sidecar。企业本身消息面没有变化，变化的是被迫卖盘减少后，空头回补和低仓位资金开始抢筹。</div>
+      <div class="tw-stats">❤️ 6 &nbsp; 🔁 2 &nbsp;
+        💬 54 &nbsp; 🔖 1 &nbsp; 👁 9.2K
+        <a href="https://x.com/followin_io_zh/status/2079453712611996058" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Followin 华语 - 热点风向标🫡</b>
+        <a href="https://x.com/followin_io_zh" target="_blank" class="handle">@followin_io_zh</a>
+        <span class="score">热度 12</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 09:10 · 29分钟前</b></div>
+      <div class="tw-text">半导体存储延续上涨，但真正的信号比涨幅更重要。
+
+昨晚美股美光 +12%、闪迪 +14%、美力士+13%；今早韩股高开，海力士 +8.5%、三星 +5.8%，KOSPI 涨到触发 sidecar。
+
+真正的意义是：过去两周&quot;内存周期见顶&quot;的共识，被一根大阳线打脸了。
+
+这次上涨的逻辑有三条可关注：
+
+1/ 需求二次加速。
+
+英伟达</div>
+      <div class="tw-stats">❤️ 3 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 0 &nbsp; 👁 530
+        <a href="https://x.com/followin_io_zh/status/2079735875530108965" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="150" data-time="1784681687">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>Bull Theory</b>
+            <a href="https://x.com/BullTheoryio" target="_blank" class="handle">@BullTheoryio</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼91%</span>
+            <span class="kw-score">活跃度 150 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Bull Theory</b>
+        <a href="https://x.com/BullTheoryio" target="_blank" class="handle">@BullTheoryio</a>
+        <span class="score">热度 150</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 08:54 · 45分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079731851711992204" onclick="tg('2079731851711992204')">🌐 翻译</button></div><div class="tw-text" id="o2079731851711992204">BREAKING: The Korea Exchange activated a buy-side sidecar, halting program buying just minutes after the market opened as the KOSPI surged +6%.
+
+Over ₩333,000,000,000,000 ($222 BILLION) has been added to the South Korean stocks.</div><div class="tw-text tw-trans" id="t2079731851711992204" style="display:none">突发：韩国交易所在开盘后数分钟、KOSPI大涨6%之际，启动了买方熔断机制，暂停程序化买入。韩国股市总市值已增加逾333万亿韩元（约2220亿美元）。</div>
+      <div class="tw-stats">❤️ 72 &nbsp; 🔁 9 &nbsp;
+        💬 10 &nbsp; 🔖 3 &nbsp; 👁 3.4K
+        <a href="https://x.com/BullTheoryio/status/2079731851711992204" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 7 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="3694" data-time="1784637953">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>Yi He</b>
+            <a href="https://x.com/heyibinance" target="_blank" class="handle">@heyibinance</a>
+            <span class="kw-score">活跃度 3.7K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Yi He</b>
+        <a href="https://x.com/heyibinance" target="_blank" class="handle">@heyibinance</a>
+        <span class="score">热度 3.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 20:45 · 12小时前</b></div>
+      <div class="tw-text">谁是第一个发：“何必东奔西走，币安啥都有”这句话的社区成员，请找我领一个BNB。💁‍♀️💁‍♀️💁‍♀️</div>
+      <div class="tw-stats">❤️ 470 &nbsp; 🔁 46 &nbsp;
+        💬 577 &nbsp; 🔖 11 &nbsp; 👁 210.8K
+        <a href="https://x.com/heyibinance/status/2079548416699343038" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="415" data-time="1784678700">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>Domingo_gou | ASHVA🐴| OP_CAT| 🐬TermMax｜买美股上币安</b>
+            <a href="https://x.com/Domingo_gou" target="_blank" class="handle">@Domingo_gou</a>
+            <span class="kw-score">活跃度 415 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Domingo_gou | ASHVA🐴| OP_CAT| 🐬TermMax｜买美股上币安</b>
+        <a href="https://x.com/Domingo_gou" target="_blank" class="handle">@Domingo_gou</a>
+        <span class="score">热度 300</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 08:04 · 1天前</b></div>
+      <div class="tw-text">散户玩链上信的是代码，
+但机构只认对手方是谁。
+
+最近 @TermMaxFi 旗下的机构层 #TermPrime 刚跑通了首笔7天固定利率的贷款测试。
+
+看着只是跑个早期的单，但其实把DeFi机构化那层窗户纸给捅破了，你让大资金把仓位和底牌全摊在透明池子里跟大伙一起裸奔？
+
+人家其实根本不敢。</div>
+      <div class="tw-stats">❤️ 72 &nbsp; 🔁 1 &nbsp;
+        💬 93 &nbsp; 🔖 0 &nbsp; 👁 8.7K
+        <a href="https://x.com/Domingo_gou/status/2079356682304659557" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Domingo_gou | ASHVA🐴| OP_CAT| 🐬TermMax｜买美股上币安</b>
+        <a href="https://x.com/Domingo_gou" target="_blank" class="handle">@Domingo_gou</a>
+        <span class="score">热度 61</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 08:05 · 1小时前</b></div>
+      <div class="tw-text">Web3最折磨人的是漫长发币真空期。
+
+当空投大饼失效 @TermMaxFi 给出的解法异常干脆，用真实的交易场景留人。
+
+7月21日，官方直接甩出一个附带确切参数的 $SPCX Alpha Put（行权价100美元，24日到期），把最大损失死死焊在权利金上，配合V2面板，等于直接给市场发了一个带保护的对冲工具。</div>
+      <div class="tw-stats">❤️ 18 &nbsp; 🔁 0 &nbsp;
+        💬 20 &nbsp; 🔖 0 &nbsp; 👁 1.3K
+        <a href="https://x.com/Domingo_gou/status/2079719321698463832" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="229" data-time="1784623740">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>谢家印</b>
+            <a href="https://x.com/xiejiayinBitget" target="_blank" class="handle">@xiejiayinBitget</a>
+            <span class="kw-score">活跃度 229 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>谢家印</b>
+        <a href="https://x.com/xiejiayinBitget" target="_blank" class="handle">@xiejiayinBitget</a>
+        <span class="score">热度 229</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 16:49 · 16小时前</b></div>
+      <div class="tw-text">重磅！Bitget 推出行业首个 #港股Quanto永续合约 $MINIMAXHKD。解决海外股票跨币种换汇痛点。
+
+普通港股USDT合约，盈亏=港股股价涨跌 + HKD/USD 汇率涨跌 双重影响。港股 Quanto 合约，直接对标港股港币价格，剔除 HKD/USD 汇率涨跌风险，盈亏只看港股股票本身涨跌，汇率波动对你完全无效。</div>
+      <div class="tw-stats">❤️ 32 &nbsp; 🔁 2 &nbsp;
+        💬 48 &nbsp; 🔖 1 &nbsp; 👁 11.4K
+        <a href="https://x.com/xiejiayinBitget/status/2079488803929198964" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="175" data-time="1784617207">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>TermMax | Fixed Rate Borrowing &amp; Lending</b>
+            <a href="https://x.com/TermMaxFi" target="_blank" class="handle">@TermMaxFi</a>
+            <span class="kw-score">活跃度 175 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>TermMax | Fixed Rate Borrowing &amp; Lending</b>
+        <a href="https://x.com/TermMaxFi" target="_blank" class="handle">@TermMaxFi</a>
+        <span class="score">热度 175</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 15:00 · 18小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079461401526202717" onclick="tg('2079461401526202717')">🌐 翻译</button></div><div class="tw-text" id="o2079461401526202717">Looks like $SPCX is coming down to Earth.
+The question is, will it drop below $100 in 3 days?
+
+If you think so, open a non-liquidatable short at $100 on @bnbchain.
+
+Max loss = the premium you pay. 🐬</div><div class="tw-text tw-trans" id="t2079461401526202717" style="display:none">看起来$SPCX正在回落。问题是，它能在3天内跌破100美元吗？如果你认为会，可以在BNB Chain上以100美元开一个不可强平的空头仓位。最大亏损仅限于你支付的权利金。🐬</div>
+      <div class="tw-stats">❤️ 24 &nbsp; 🔁 3 &nbsp;
+        💬 34 &nbsp; 🔖 0 &nbsp; 👁 7.4K
+        <a href="https://x.com/TermMaxFi/status/2079461401526202717" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="147" data-time="1784647617">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>DD 滴滴</b>
+            <a href="https://x.com/rtk17025" target="_blank" class="handle">@rtk17025</a>
+            <span class="kw-score">活跃度 147 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>DD 滴滴</b>
+        <a href="https://x.com/rtk17025" target="_blank" class="handle">@rtk17025</a>
+        <span class="score">热度 147</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 23:26 · 10小时前</b></div>
+      <div class="tw-text">&amp;lt; 港股打新 defi 理财版 &amp;gt;
+
+太酷了，之前就一直在想会不会有人把港股打新搞成理财
+
+没想到 stockcoin 真的搞了
+
+申购使用 USDT。
+
+系统会按照 1 USDT 对 1 USDS 的比例完成铸造，并投入 IPO Earn。
+
+最低申购金额为：
+
+100 USDT
+
+每日 18:00 前提交的申购，会按照当日产品淨值进行确认。</div>
+      <div class="tw-stats">❤️ 33 &nbsp; 🔁 11 &nbsp;
+        💬 35 &nbsp; 🔖 5 &nbsp; 👁 3.2K
+        <a href="https://x.com/rtk17025/status/2079588949505515910" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="118" data-time="1784645463">
+          <div class="kol-head"><span class="rank">#19</span>
+            <b>web3小睛</b>
+            <a href="https://x.com/Ainy_jing" target="_blank" class="handle">@Ainy_jing</a>
+            <span class="kw-score">活跃度 118 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>web3小睛</b>
+        <a href="https://x.com/Ainy_jing" target="_blank" class="handle">@Ainy_jing</a>
+        <span class="score">热度 118</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 22:51 · 10小时前</b></div>
+      <div class="tw-text">特朗普要打全面战争？比特币、黄金、原油，正在被重新定价
+
+福克斯新闻说特朗普可能全面开战，直接炸伊朗核设施。伊朗和胡塞武装已经动手，霍尔木兹海峡通航量据说降到零，每天2000万桶原油过不去。布伦特油已破90美元。</div>
+      <div class="tw-stats">❤️ 18 &nbsp; 🔁 0 &nbsp;
+        💬 27 &nbsp; 🔖 0 &nbsp; 👁 6.0K
+        <a href="https://x.com/Ainy_jing/status/2079579915507404826" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="114" data-time="1784669644">
+          <div class="kol-head"><span class="rank">#20</span>
+            <b>小龙先生</b>
+            <a href="https://x.com/Dragonhau66" target="_blank" class="handle">@Dragonhau66</a>
+            <span class="kw-score">活跃度 114 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>小龙先生</b>
+        <a href="https://x.com/Dragonhau66" target="_blank" class="handle">@Dragonhau66</a>
+        <span class="score">热度 34</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 05:34 · 4小时前</b></div>
+      <div class="tw-text">⚽比特币最新行情速报三：市场主体行为追踪，谁在卖谁在买BTC ？
+
+1、当前的震荡上涨过程中，到底是谁在卖出比特币呢？</div>
+      <div class="tw-stats">❤️ 5 &nbsp; 🔁 0 &nbsp;
+        💬 6 &nbsp; 🔖 0 &nbsp; 👁 1.8K
+        <a href="https://x.com/Dragonhau66/status/2079681337519390871" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>小龙先生</b>
+        <a href="https://x.com/Dragonhau66" target="_blank" class="handle">@Dragonhau66</a>
+        <span class="score">热度 31</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 23:20 · 10小时前</b></div>
+      <div class="tw-text">中国Kimi K3大模型让华尔街一夜变天，蒸发4700亿美元，是不是有点夸大K3的威力了？
+ 
+国产Kimi K3大模型正式发布，发布后短短72小时，美股AI、半导体板块市值合计蒸发4700亿美元，费城半导体指数大跌12.5%，进入技术性熊市，华尔街资本市场剧烈震动，被称作继DeepSeek之后的「DeepSeek时刻2.0」。</div>
+      <div class="tw-stats">❤️ 5 &nbsp; 🔁 0 &nbsp;
+        💬 8 &nbsp; 🔖 0 &nbsp; 👁 1.4K
+        <a href="https://x.com/Dragonhau66/status/2079587395368779815" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 科技/AI <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="1097" data-time="1784668171">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>goodalexander</b>
+            <a href="https://x.com/goodalexander" target="_blank" class="handle">@goodalexander</a>
+            <span class="kw-score">活跃度 1.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>goodalexander</b>
+        <a href="https://x.com/goodalexander" target="_blank" class="handle">@goodalexander</a>
+        <span class="score">热度 1.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 05:09 · 4小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079675161662382531" onclick="tg('2079675161662382531')">🌐 翻译</button></div><div class="tw-text" id="o2079675161662382531">every time OpenAI or Anthropic get brutally mogged by an Open Source model launch within 24 hours there is always a &quot;report&quot; about how the &quot;AI escaped containment&quot; 
+
+so tiresome/ transparent</div><div class="tw-text tw-trans" id="t2079675161662382531" style="display:none">每当OpenAI或Anthropic在开源模型发布后24小时内被狠狠碾压，总会冒出一篇关于「AI突破管控」的「报道」。真是令人疲倦，也太透明了。</div>
+      <div class="tw-stats">❤️ 650 &nbsp; 🔁 52 &nbsp;
+        💬 22 &nbsp; 🔖 36 &nbsp; 👁 26.2K
+        <a href="https://x.com/goodalexander/status/2079675161662382531" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="899" data-time="1784658174">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>NVIDIA</b>
+            <a href="https://x.com/nvidia" target="_blank" class="handle">@nvidia</a>
+            <span class="kw-score">活跃度 899 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>NVIDIA</b>
+        <a href="https://x.com/nvidia" target="_blank" class="handle">@nvidia</a>
+        <span class="score">热度 899</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 02:22 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079633231629144565" onclick="tg('2079633231629144565')">🌐 翻译</button></div><div class="tw-text" id="o2079633231629144565">NVIDIA Spectrum-6, a 102.4-terabit-per-second Ethernet switch built for the Vera Rubin platform, is now arriving across the world&#x27;s gigascale AI factories.
+
+@CoreWeave, @Microsoft, @NebiusAI @SpaceXAI and @Tesla are among the first to bring in Spectrum-6 to accelerate their AI</div><div class="tw-text tw-trans" id="t2079633231629144565" style="display:none">英伟达Spectrum-6以太网交换机带宽高达每秒102.4太比特，专为Vera Rubin平台打造，目前正陆续部署至全球大型AI数据中心。CoreWeave、微软、Nebius AI、SpaceX AI和特斯拉是首批引入Spectrum-6以加速AI业务的客户。</div>
+      <div class="tw-stats">❤️ 304 &nbsp; 🔁 35 &nbsp;
+        💬 24 &nbsp; 🔖 25 &nbsp; 👁 43.6K
+        <a href="https://x.com/nvidia/status/2079633231629144565" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><a class="trend" href="https://x.com/search?q=Spain%20Wins%202026%20World%20Cup%20Final%201-0%20Over%20Argentina%20in%20Extra%20Time" target="_blank"><span class="rank">#1</span> Spain Wins 2026 World Cup Final 1-0 Over Argentina in Extra Time<span class="meta"></span><span class="tmeta">西班牙加时1-0阿根廷夺得2026世界杯冠军</span></a>
+<a class="trend" href="https://x.com/search?q=Avengers%3A%20Doomsday%20Trailer%20Unleashes%20Robert%20Downey%20Jr.%20as%20Doctor%20Doom" target="_blank"><span class="rank">#2</span> Avengers: Doomsday Trailer Unleashes Robert Downey Jr. as Doctor Doom<span class="meta"></span><span class="tmeta">《复仇者联盟：末日》预告片曝光小罗伯特·唐尼饰演末日博士</span></a>
+<a class="trend" href="https://x.com/search?q=BTS%27s%20V%20Poses%20with%20Billionaire%20Jamie%20Salter%20at%20World%20Cup%20Final" target="_blank"><span class="rank">#3</span> BTS&#x27;s V Poses with Billionaire Jamie Salter at World Cup Final<span class="meta"></span><span class="tmeta">BTS成员V与亿万富翁杰米·萨尔特在世界杯决赛现场合影</span></a>
+<a class="trend" href="https://x.com/search?q=Doja" target="_blank"><span class="rank">#4</span> Doja<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%24NOK" target="_blank"><span class="rank">#5</span> $NOK<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Latto" target="_blank"><span class="rank">#6</span> Latto<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23SupportResistance" target="_blank"><span class="rank">#7</span> #SupportResistance<span class="meta"></span><span class="tmeta">#支持抵抗运动</span></a>
+<a class="trend" href="https://x.com/search?q=%23ADRTrading" target="_blank"><span class="rank">#8</span> #ADRTrading<span class="meta"></span><span class="tmeta">#ADR交易</span></a>
+<a class="trend" href="https://x.com/search?q=S%26P%20500" target="_blank"><span class="rank">#9</span> S&amp;P 500<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%E5%AF%8C%E9%80%94%E7%89%9B%E7%89%9B" target="_blank"><span class="rank">#10</span> 富途牛牛<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23ScotchXLinglingWithOrm" target="_blank"><span class="rank">#11</span> #ScotchXLinglingWithOrm<span class="meta"></span><span class="tmeta">#Scotch与灵灵携手Orm</span></a>
+<a class="trend" href="https://x.com/search?q=LINGORM%20X%20SCOTCH%20THAILAND" target="_blank"><span class="rank">#12</span> LINGORM X SCOTCH THAILAND<span class="meta"></span><span class="tmeta">灵灵与Scotch泰国联动</span></a>
+<a class="trend" href="https://x.com/search?q=%23MrKillSeriesEP3" target="_blank"><span class="rank">#13</span> #MrKillSeriesEP3<span class="meta"></span><span class="tmeta">#杀手先生剧集第3集</span></a>
+<a class="trend" href="https://x.com/search?q=China%20ADRs" target="_blank"><span class="rank">#14</span> China ADRs<span class="meta"></span><span class="tmeta">中概股ADR</span></a>
+<a class="trend" href="https://x.com/search?q=%23JIMINxDIOR" target="_blank"><span class="rank">#15</span> #JIMINxDIOR<span class="meta"></span><span class="tmeta">#JIMIN x DIOR</span></a>
+<a class="trend" href="https://x.com/search?q=ChatGPT%20Work" target="_blank"><span class="rank">#16</span> ChatGPT Work<span class="meta"></span><span class="tmeta">ChatGPT工作应用</span></a>
+<a class="trend" href="https://x.com/search?q=%23%E0%B8%AB%E0%B8%A5%E0%B8%B4%E0%B8%87%E0%B9%80%E0%B8%A5%E0%B8%B7%E0%B8%AD%E0%B8%81%E0%B8%AA%E0%B8%81%E0%B9%8A%E0%B8%AD%E0%B8%95%E0%B8%A3%E0%B8%B1%E0%B8%87%E0%B8%99%E0%B8%81" target="_blank"><span class="rank">#17</span> #หลิงเลือกสก๊อตรังนก<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=LINGLING%20SCOTCH%20GBA" target="_blank"><span class="rank">#18</span> LINGLING SCOTCH GBA<span class="meta"></span><span class="tmeta">灵灵Scotch GBA</span></a>
+<a class="trend" href="https://x.com/search?q=%23PerthSantaConcertD2" target="_blank"><span class="rank">#19</span> #PerthSantaConcertD2<span class="meta"></span><span class="tmeta">#PerthSanta演唱会第二天</span></a>
+<a class="trend" href="https://x.com/search?q=Nasdaq" target="_blank"><span class="rank">#20</span> Nasdaq<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=PERTHSANTA%20NEVER%20ENOUGH" target="_blank"><span class="rank">#21</span> PERTHSANTA NEVER ENOUGH<span class="meta"></span><span class="tmeta">PERTHSANTA永不满足</span></a>
+<a class="trend" href="https://x.com/search?q=DM%20%22ABT%22" target="_blank"><span class="rank">#22</span> DM &quot;ABT&quot;<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Pons" target="_blank"><span class="rank">#23</span> Pons<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=DM%20%22ECOM%22" target="_blank"><span class="rank">#24</span> DM &quot;ECOM&quot;<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=JD%20%26%20PDD" target="_blank"><span class="rank">#25</span> JD &amp; PDD<span class="meta"></span></a>
+</div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲96%</span>
+          <span class="kw-score">总热度 9.2K · 49 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Shay Boloor</b>
+        <a href="https://x.com/StockSavvyShay" target="_blank" class="handle">@StockSavvyShay</a>
+        <span class="score">热度 4.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-20 21:11 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079192570257887391" onclick="tg('2079192570257887391')">🌐 翻译</button></div><div class="tw-text" id="o2079192570257887391">$GOOGL is developing a new AI chip called “Frozen v2” that could run Gemini models nearly 10x more efficiently than its latest TPUs.
+
+The chip is targeted for 2028 and would hardwire parts of Gemini to improve speed and efficiency while easing Google’s compute constraints.</div><div class="tw-text tw-trans" id="t2079192570257887391" style="display:none">谷歌正在研发一款名为「Frozen v2」的新型AI芯片，其运行Gemini模型的效率可能比最新TPU高出近10倍。该芯片目标量产时间为2028年，将把Gemini的部分功能直接固化于硬件，以提升速度和效率，同时缓解谷歌的算力瓶颈。</div>
+      <div class="tw-stats">❤️ 1.5K &nbsp; 🔁 165 &nbsp;
+        💬 107 &nbsp; 🔖 139 &nbsp; 👁 204.5K
+        <a href="https://x.com/StockSavvyShay/status/2079192570257887391" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲863%</span>
+          <span class="kw-score">总热度 5.4K · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>zerohedge</b>
+        <a href="https://x.com/zerohedge" target="_blank" class="handle">@zerohedge</a>
+        <span class="score">热度 3.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 16:39 · 17小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079486483581272474" onclick="tg('2079486483581272474')">🌐 翻译</button></div><div class="tw-text" id="o2079486483581272474">*TSMC TO RAISE CHIPMAKING PRICES BY UP TO 10% IN 2027: NIKKEI</div><div class="tw-text tw-trans" id="t2079486483581272474" style="display:none">日经新闻：台积电将于2027年将芯片代工价格上调最高10%。</div>
+      <div class="tw-stats">❤️ 1.0K &nbsp; 🔁 105 &nbsp;
+        💬 33 &nbsp; 🔖 44 &nbsp; 👁 174.6K
+        <a href="https://x.com/zerohedge/status/2079486483581272474" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼98%</span>
+          <span class="kw-score">总热度 2.6K · 45 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 463</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 18:52 · 14小时前</b></div>
+      <div class="tw-text">停火还是全面战争 — 美伊冲突进入最后几天的选择窗口
+
+Axios 最新披露，美国和以色列已经将伊朗战争的结局压缩到两个选择。
+
+第一个是接受地区国家提出的10天停火，重新开放霍尔木兹海峡。
+
+第二个是美以发动更大规模的联合军事行动，试图迫使德黑兰全面让步。</div>
+      <div class="tw-stats">❤️ 44 &nbsp; 🔁 1 &nbsp;
+        💬 44 &nbsp; 🔖 3 &nbsp; 👁 34.6K
+        <a href="https://x.com/PhyrexNi/status/2079519881708683441" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼72%</span>
+          <span class="kw-score">总热度 2.2K · 41 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>goodalexander</b>
+        <a href="https://x.com/goodalexander" target="_blank" class="handle">@goodalexander</a>
+        <span class="score">热度 1.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 05:09 · 4小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079675161662382531" onclick="tg('2079675161662382531')">🌐 翻译</button></div><div class="tw-text" id="o2079675161662382531">every time OpenAI or Anthropic get brutally mogged by an Open Source model launch within 24 hours there is always a &quot;report&quot; about how the &quot;AI escaped containment&quot; 
+
+so tiresome/ transparent</div><div class="tw-text tw-trans" id="t2079675161662382531" style="display:none">每当OpenAI或Anthropic在开源模型发布后24小时内被狠狠碾压，总会冒出一篇关于「AI突破管控」的「报道」。真是令人疲倦，也太透明了。</div>
+      <div class="tw-stats">❤️ 650 &nbsp; 🔁 52 &nbsp;
+        💬 22 &nbsp; 🔖 36 &nbsp; 👁 26.2K
+        <a href="https://x.com/goodalexander/status/2079675161662382531" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼97%</span>
+          <span class="kw-score">总热度 2.1K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>qinbafrank</b>
+        <a href="https://x.com/qinbafrank" target="_blank" class="handle">@qinbafrank</a>
+        <span class="score">热度 1.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 21:44 · 11小时前</b></div>
+      <div class="tw-text">今晚股债油汇都在往上走，谁对谁错？</div>
+      <div class="tw-stats">❤️ 67 &nbsp; 🔁 6 &nbsp;
+        💬 70 &nbsp; 🔖 16 &nbsp; 👁 88.1K
+        <a href="https://x.com/qinbafrank/status/2079563052903706681" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲94%</span>
+          <span class="kw-score">总热度 544 · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Followin 华语 - 热点风向标🫡</b>
+        <a href="https://x.com/followin_io_zh" target="_blank" class="handle">@followin_io_zh</a>
+        <span class="score">热度 186</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 14:29 · 19小时前</b></div>
+      <div class="tw-text">韩股今天终于迎来反弹，恰好把摩根大通最新研报的观点验证了一遍：
+这轮暴跌从来不是韩国资产逻辑崩了，是拥挤交易在强制出清。
+
+三星电子今天一度涨约 7%，SK 海力士涨超 6%，KOSPI 盘中触发买入侧 Sidecar。企业本身消息面没有变化，变化的是被迫卖盘减少后，空头回补和低仓位资金开始抢筹。</div>
+      <div class="tw-stats">❤️ 6 &nbsp; 🔁 2 &nbsp;
+        💬 54 &nbsp; 🔖 1 &nbsp; 👁 9.2K
+        <a href="https://x.com/followin_io_zh/status/2079453712611996058" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$TSLA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 151 · 41 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>골안아파덕</b>
+        <a href="https://x.com/Nice_Stock_" target="_blank" class="handle">@Nice_Stock_</a>
+        <span class="score">热度 28</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-21 22:47 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2079578987102351717" onclick="tg('2079578987102351717')">🌐 翻译</button></div><div class="tw-text" id="o2079578987102351717">다가오는 테슬라 $TSLA, 알파벳 $GOOGL 실적 발표
+
+✅구글 클라우드 실적 내용은 커버하겠습니다.🫡</div><div class="tw-text tw-trans" id="t2079578987102351717" style="display:none">即将发布的特斯拉$TSLA和Alphabet $GOOGL财报提醒：✅谷歌云业务的财报内容我会为大家解读。🫡</div>
+      <div class="tw-stats">❤️ 7 &nbsp; 🔁 0 &nbsp;
+        💬 3 &nbsp; 🔖 0 &nbsp; 👁 1.7K
+        <a href="https://x.com/Nice_Stock_/status/2079578987102351717" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼60%</span>
+          <span class="kw-score">总热度 94 · 21 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>老韭菜南亥</b>
+        <a href="https://x.com/daweifs" target="_blank" class="handle">@daweifs</a>
+        <span class="score">热度 35</span></div>
+      <div class="tw-time">🕐 发布于 <b>07-22 09:25 · 15分钟前</b></div>
+      <div class="tw-text">🚨 老韭菜100万血泪提醒：买ETF不是集邮！看懂这18只，就能搭出一套靠谱美股组合
+
+很多人刚入美股ETF坑，都会掉进同一个误区：
+
+以为买的基金越多，就越分散。
+
+今天VOO，明天QQQ，后天科技涨了再补VGT……账户里十几只ETF，看起来五花八门。</div>
+      <div class="tw-stats">❤️ 15 &nbsp; 🔁 0 &nbsp;
+        💬 12 &nbsp; 🔖 1 &nbsp; 👁 85
+        <a href="https://x.com/daweifs/status/2079739600789295205" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
