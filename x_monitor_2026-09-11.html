@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-09-11</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-09-11 · 更新于 09:42</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-09-11.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-09-11.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<div class="summary">🧠 <b>今日讨论总览</b><p>今日讨论以英伟达为绝对核心，围绕NVLink生态扩张、与Palantir的供应链新合作、2030年AI市场规模展望展开，情绪整体偏多头乐观。Oracle强劲财报带动云计算板块关注度升温，亦有声音提示技术面风险与短线波动。</p></div><div class="vp-row">
+            <div class="vp-card">
+              <div class="vp-p">英伟达NVLink Fusion生态持续扩张，第三方XPU厂商纷纷接入其AI基础设施</div>
+              <div class="vp-q">「dMatrix is adopting NVIDIA NVLink Fusion to connect its next-generation Raptor XPUs with NVIDIA AI infrastructure, joining a growing ecosystem of partners」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/NVIDIAAIInfra" target="_blank">@NVIDIAAIInfra</a> <a class="hold" href="https://x.com/OpenBook_Song" target="_blank">@OpenBook_Song</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">英伟达与Palantir深化合作，聚焦供应链物流优化，被认为是两者迄今最具实质意义的合作</div>
+              <div class="vp-q">「This $NVDA + $PLTR supply chain partnership is, in my mind, a much bigger deal than any other partnership the two have together」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/Dr_Crossroads" target="_blank">@Dr_Crossroads</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">英伟达重申2030年AI市场规模达3万亿至4万亿美元，长期成长叙事未变</div>
+              <div class="vp-q">「Nvidia reiterated its view that AI represents a $3tn-$4tn TAM... 2030 TAM Outlook」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/LOGOinvestor" target="_blank">@LOGOinvestor</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">Oracle Q1&#x27;27财报超预期，IaaS云基础设施收入同比暴增121%，云业务势头强劲</div>
+              <div class="vp-q">「IaaS $7.388B +121% / +120% CC... Beat, raise, and 121% IaaS growth」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/CHItrader" target="_blank">@CHItrader</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">自定义AI芯片崛起不但未削弱英伟达，反而凸显其平台生态的战略价值</div>
+              <div class="vp-q">「Custom AI chips getting stronger may actually make $NVDA platform strategy more important」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/OpenBook_Song" target="_blank">@OpenBook_Song</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">英伟达正悄然成为Robotaxi技术栈的核心底座，主流大规模运营车队均已采用</div>
+              <div class="vp-q">「$NVDA is quietly becoming the backbone of the robotaxi stack. Pretty much every major fleet that&#x27;s actually operating at scale is already using Nvidia」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/goldennrookie" target="_blank">@goldennrookie</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">DOJ监管头条制造短期波动，但只要超算资本开支维持，英伟达核心逻辑未被打破</div>
+              <div class="vp-q">「DOJ headline = volatility input, not a thesis killer. If NVDA keeps shipping and hyperscaler capex holds, the license structure matters...」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/beqdn8" target="_blank">@beqdn8</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">半导体板块一年期表现分化，博通表现落后，英伟达被评为「平庸」，市场预期已高度消化</div>
+              <div class="vp-q">「$AVGO is bad; $NVDA is mediocre; the rest is fine...」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/GlobalMacroZen" target="_blank">@GlobalMacroZen</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">英伟达与英特尔技术面均存在大缺口，短线若出现负面反应需警惕下行风险</div>
+              <div class="vp-q">「Both are flagging with massive gaps sitting below.. if we see ANY negative reaction off...」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/RicoCapital" target="_blank">@RicoCapital</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">英伟达股价关键支撑位受关注，若守不住需求区间或将先回补213美元缺口</div>
+              <div class="vp-q">「$NVDA either we bounce off this demand zone or we fill GAP at 213 first」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/AZelkanovic360" target="_blank">@AZelkanovic360</a></div>
+            </div></div>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 美股投资 <span>· 9 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="207" data-time="1789090212">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>Crossroads</b>
+            <a href="https://x.com/Dr_Crossroads" target="_blank" class="handle">@Dr_Crossroads</a>
+            <span class="kw-score">活跃度 207 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Crossroads</b>
+        <a href="https://x.com/Dr_Crossroads" target="_blank" class="handle">@Dr_Crossroads</a>
+        <span class="score">热度 171</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-10 21:43 · 11小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098044797374099778" onclick="tg('2098044797374099778')">🌐 翻译</button></div><div class="tw-text" id="o2098044797374099778">$PLTR + $NVDA announced a deeper partnership today to help alleviate supply chain logistics constraints. 
+
+Palantir has long helped companies with this issue, most prominently during Covid. This is a step beyond that.
+
+Organizations train Nemotron on their own data (cloud or on</div><div class="tw-text tw-trans" id="t2098044797374099778" style="display:none">$PLTR + $NVDA 今日宣布深化合作，以帮助缓解供应链物流瓶颈。Palantir 在这一领域有丰富经验，新冠疫情期间表现尤为突出。此次合作更进一步。各组织可在自有数据（云端或本地）上训练 Nemotron 模型，</div>
+      <div class="tw-stats">❤️ 88 &nbsp; 🔁 11 &nbsp;
+        💬 6 &nbsp; 🔖 6 &nbsp; 👁 4.4K
+        <a href="https://x.com/Dr_Crossroads/status/2098044797374099778" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Crossroads</b>
+        <a href="https://x.com/Dr_Crossroads" target="_blank" class="handle">@Dr_Crossroads</a>
+        <span class="score">热度 9</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:30 · 11分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098222547175350487" onclick="tg('2098222547175350487')">🌐 翻译</button></div><div class="tw-text" id="o2098222547175350487">This $NVDA + $PLTR supply chain partnership is, in my mind, a much bigger deal than any other partnership the two have together.
+
+One of the reasons is that Nvidia&#x27;s supply chain commitments are so substantial that they rival the RPO or backlog of many massive companies.
+
+This is</div><div class="tw-text tw-trans" id="t2098222547175350487" style="display:none">在我看来，$NVDA 与 $PLTR 的供应链合作，比两者之间任何其他合作都重要得多。原因之一是英伟达的供应链承诺规模极为庞大，堪比许多大型企业的剩余履约义务或订单积压。这说明</div>
+      <div class="tw-stats">❤️ 2 &nbsp; 🔁 1 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 459
+        <a href="https://x.com/Dr_Crossroads/status/2098222547175350487" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="12" data-time="1789089385">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>Rico Capital</b>
+            <a href="https://x.com/RicoCapital" target="_blank" class="handle">@RicoCapital</a>
+            <span class="kw-score">活跃度 12 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Rico Capital</b>
+        <a href="https://x.com/RicoCapital" target="_blank" class="handle">@RicoCapital</a>
+        <span class="score">热度 12</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:16 · 25分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098219074878636278" onclick="tg('2098219074878636278')">🌐 翻译</button></div><div class="tw-text" id="o2098219074878636278">TWO INSANE setups you NEED to be watching for tomorrow. 
+$INTC $NVDA 
+
+Both are flagging with massive gaps sitting below.. if we see ANY negative reaction off CPI data expect to BANK off these names.
+INTC to $96
+NVDA to $212</div><div class="tw-text tw-trans" id="t2098219074878636278" style="display:none">明天必须关注的两个绝佳机会：$INTC $NVDA。两者均呈旗形整理，下方存在巨大缺口……若 CPI 数据引发任何负面反应，预计可从这两只股票中大赚一笔。INTC 目标价 $96，NVDA 目标价 $212。</div>
+      <div class="tw-stats">❤️ 6 &nbsp; 🔁 2 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 170
+        <a href="https://x.com/RicoCapital/status/2098219074878636278" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="12" data-time="1789089740">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>CHItrader</b>
+            <a href="https://x.com/CHItrader" target="_blank" class="handle">@CHItrader</a>
+            <span class="kw-score">活跃度 12 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>CHItrader</b>
+        <a href="https://x.com/CHItrader" target="_blank" class="handle">@CHItrader</a>
+        <span class="score">热度 8</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 04:19 · 5小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098144415852188037" onclick="tg('2098144415852188037')">🌐 翻译</button></div><div class="tw-text" id="o2098144415852188037">ORACLE $ORCL Q1’27 EARNINGS HIGHLIGHTS
+
+🟢 Revenue $19.345B  +30% USD / +30% CC (from $14.926B)
+🟢 Cloud $11.607B  +62% / +61% CC
+🟢 IaaS $7.388B  +121% / +120% CC
+🟢 GAAP EPS $1.56  +55% / +54% CC (from $1.01)
+🟢 Non-GAAP EPS $1.92  +30% / +30% CC (from $1.47)
+🟢 RPO $664B</div><div class="tw-text tw-trans" id="t2098144415852188037" style="display:none">甲骨文 $ORCL 2027财年第一季度财报亮点
+
+🟢 营收 $193.45亿，同比 +30%
+🟢 云业务 $116.07亿，+62%
+🟢 IaaS $73.88亿，+121%
+🟢 GAAP每股收益 $1.56，+55%
+🟢 非GAAP每股收益 $1.92，+30%
+🟢 剩余履约义务 $6640亿</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 766
+        <a href="https://x.com/CHItrader/status/2098144415852188037" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>CHItrader</b>
+        <a href="https://x.com/CHItrader" target="_blank" class="handle">@CHItrader</a>
+        <span class="score">热度 2</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:22 · 19分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098220565165113562" onclick="tg('2098220565165113562')">🌐 翻译</button></div><div class="tw-text" id="o2098220565165113562">AFTER THE PRINT | $ORCL
+
+Beat, raise, and 121% IaaS growth still had to fight a -5% cash session before the tape finally paid the print after hours.
+
+🔹 $ORCL closed 152.94 / -5.4%, then +4.1% AH to 159.26. The number: Cloud Infra $7.4B, +121% YoY. RPO $664B.
+
+🔹 $NVDA -2.4%</div><div class="tw-text tw-trans" id="t2098220565165113562" style="display:none">财报发布后 | $ORCL
+
+业绩超预期、上调指引、IaaS增长121%，盘中依然下跌5%，直到盘后才收复失地。
+
+🔹 $ORCL 收盘 152.94，跌 5.4%，盘后涨 4.1% 至 159.26。核心数据：云基础设施 $74亿，同比 +121%，剩余履约义务 $6640亿。
+
+🔹 $NVDA 跌 2.4%</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 238
+        <a href="https://x.com/CHItrader/status/2098220565165113562" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1" data-time="1789089896">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>Eric Clark</b>
+            <a href="https://x.com/LOGOinvestor" target="_blank" class="handle">@LOGOinvestor</a>
+            <span class="kw-score">活跃度 1 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Eric Clark</b>
+        <a href="https://x.com/LOGOinvestor" target="_blank" class="handle">@LOGOinvestor</a>
+        <span class="score">热度 1</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:24 · 17分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098221219346800640" onclick="tg('2098221219346800640')">🌐 翻译</button></div><div class="tw-text" id="o2098221219346800640">$NVDA from GS conference: Presenters: Jensen Huang, Founder, President &amp;amp; CEO
+n
+2030 TAM Outlook: Nvidia reiterated its view that AI represents a $3tn-$4tn TAM
+opportunity by 2030, driven by the shift from retrieval-based computing to
+generative computing, which requires a</div><div class="tw-text tw-trans" id="t2098221219346800640" style="display:none">$NVDA 来自高盛会议：演讲嘉宾：创始人、总裁兼CEO 黄仁勋。
+2030年TAM展望：英伟达重申，AI 到2030年代表 $3万亿至$4万亿的市场机会，驱动力是从检索式计算向生成式计算的转变，后者需要更强大的算力，</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 90
+        <a href="https://x.com/LOGOinvestor/status/2098221219346800640" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1" data-time="1789089585">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>Alex</b>
+            <a href="https://x.com/Stock_x1X2cx" target="_blank" class="handle">@Stock_x1X2cx</a>
+            <span class="kw-score">活跃度 1 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Alex</b>
+        <a href="https://x.com/Stock_x1X2cx" target="_blank" class="handle">@Stock_x1X2cx</a>
+        <span class="score">热度 1</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:19 · 22分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098219916629565495" onclick="tg('2098219916629565495')">🌐 翻译</button></div><div class="tw-text" id="o2098219916629565495">A dedicated WhatsApp group for $NVDA holders is now online!
+
+All investors holding $NVDA stock are welcome to join this exclusive group to discuss the stock and get the latest information.
+
+Click this link and send &quot;8&quot; to join the group:
+#Fin #TA #EPS</div><div class="tw-text tw-trans" id="t2098219916629565495" style="display:none">$NVDA 持有者专属 WhatsApp 群组已上线！
+
+欢迎所有持有 $NVDA 的投资者加入，共同探讨该股并获取最新资讯。
+
+点击链接并发送「8」即可入群：</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 19
+        <a href="https://x.com/Stock_x1X2cx/status/2098219916629565495" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="0" data-time="1789090299">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>ArminZ</b>
+            <a href="https://x.com/AZelkanovic360" target="_blank" class="handle">@AZelkanovic360</a>
+            <span class="kw-score">活跃度 0 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>ArminZ</b>
+        <a href="https://x.com/AZelkanovic360" target="_blank" class="handle">@AZelkanovic360</a>
+        <span class="score">热度 0</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:31 · 10分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098222909638762501" onclick="tg('2098222909638762501')">🌐 翻译</button></div><div class="tw-text" id="o2098222909638762501">$NVDA either we bounce off this demand zone or we fill GAP at 213 first</div><div class="tw-text tw-trans" id="t2098222909638762501" style="display:none">$NVDA 要么在当前需求区反弹，要么先去填补 $213 的缺口。</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 9
+        <a href="https://x.com/AZelkanovic360/status/2098222909638762501" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="0" data-time="1789089855">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>Jarl</b>
+            <a href="https://x.com/beqdn8" target="_blank" class="handle">@beqdn8</a>
+            <span class="kw-score">活跃度 0 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jarl</b>
+        <a href="https://x.com/beqdn8" target="_blank" class="handle">@beqdn8</a>
+        <span class="score">热度 0</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:24 · 17分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098221049053634938" onclick="tg('2098221049053634938')">🌐 翻译</button></div><div class="tw-text" id="o2098221049053634938">@braver_882025 Exactly. DOJ headline = volatility input, not a thesis killer. If NVDA keeps shipping and hyperscaler capex holds, the license structure matters less than cash earnings. $NVDA $SMH</div><div class="tw-text tw-trans" id="t2098221049053634938" style="display:none">@braver_882025 正是如此。司法部的消息只是波动因素，并不是推翻逻辑的理由。只要英伟达持续出货、超大规模云厂商资本开支维持不变，授权结构就远没有现金盈利重要。$NVDA $SMH</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 10
+        <a href="https://x.com/beqdn8/status/2098221049053634938" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Jarl</b>
+        <a href="https://x.com/beqdn8" target="_blank" class="handle">@beqdn8</a>
+        <span class="score">热度 0</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:23 · 19分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098220749848805537" onclick="tg('2098220749848805537')">🌐 翻译</button></div><div class="tw-text" id="o2098220749848805537">@OptionThursty Nice setup, but $RDDT still has to clear overhead supply — otherwise this is just a bounce into resistance. Reclaim + volume &amp;gt; front-running it. $MU $NVDA</div><div class="tw-text tw-trans" id="t2098220749848805537" style="display:none">@OptionThursty 形态不错，但 $RDDT 仍需突破上方供应区——否则只是反弹至阻力位。确认突破+放量，比提前抢跑更稳妥。$MU $NVDA</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 31
+        <a href="https://x.com/beqdn8/status/2098220749848805537" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="0" data-time="1789089724">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>Lucy Faheye</b>
+            <a href="https://x.com/Lucy_Faheye32" target="_blank" class="handle">@Lucy_Faheye32</a>
+            <span class="kw-score">活跃度 0 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Lucy Faheye</b>
+        <a href="https://x.com/Lucy_Faheye32" target="_blank" class="handle">@Lucy_Faheye32</a>
+        <span class="score">热度 0</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:22 · 20分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098220498371186990" onclick="tg('2098220498371186990')">🌐 翻译</button></div><div class="tw-text" id="o2098220498371186990">$NVDA ⚠️👀 Guys, Don&#x27;t miss the next   move in a few hours</div><div class="tw-text tw-trans" id="t2098220498371186990" style="display:none">$NVDA ⚠️👀 各位，几小时后的下一波行情不要错过。</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 6
+        <a href="https://x.com/Lucy_Faheye32/status/2098220498371186990" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="0" data-time="1789089635">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>美股送分題 ｜Open Book</b>
+            <a href="https://x.com/OpenBook_Song" target="_blank" class="handle">@OpenBook_Song</a>
+            <span class="kw-score">活跃度 0 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>美股送分題 ｜Open Book</b>
+        <a href="https://x.com/OpenBook_Song" target="_blank" class="handle">@OpenBook_Song</a>
+        <span class="score">热度 0</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:20 · 21分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098220125363343499" onclick="tg('2098220125363343499')">🌐 翻译</button></div><div class="tw-text" id="o2098220125363343499">Custom AI chips getting stronger may actually make $NVDA platform strategy more important.
+
+d-Matrix is building its own inference accelerator.
+
+Yet it just adopted Nvidia’s NVLink Fusion to integrate that chip directly into Nvidia data-center systems.
+
+That’s a useful</div><div class="tw-text tw-trans" id="t2098220125363343499" style="display:none">定制 AI 芯片的崛起，反而可能让 $NVDA 的平台战略更加重要。
+
+d-Matrix 正在打造自己的推理加速芯片，却选择采用英伟达 NVLink Fusion，将该芯片直接集成进英伟达数据中心系统。
+
+这很说明问题——</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 20
+        <a href="https://x.com/OpenBook_Song/status/2098220125363343499" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 科技/AI <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="557" data-time="1789048688">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>NVIDIA AI Infrastructure</b>
+            <a href="https://x.com/NVIDIAAIInfra" target="_blank" class="handle">@NVIDIAAIInfra</a>
+            <span class="kw-score">活跃度 557 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>NVIDIA AI Infrastructure</b>
+        <a href="https://x.com/NVIDIAAIInfra" target="_blank" class="handle">@NVIDIAAIInfra</a>
+        <span class="score">热度 557</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-10 21:58 · 11小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098048378810605619" onclick="tg('2098048378810605619')">🌐 翻译</button></div><div class="tw-text" id="o2098048378810605619">🤝 @dMatrix_AI is adopting NVIDIA NVLink Fusion to connect its next-generation Raptor XPUs with NVIDIA AI infrastructure, joining a growing ecosystem of partners using our rack-scale architecture for AI factory-scale deployment.
+
+By bringing together NVIDIA NVLink scale-up,</div><div class="tw-text tw-trans" id="t2098048378810605619" style="display:none">🤝 @dMatrix_AI 正在采用英伟达 NVLink Fusion 技术，将其下一代 Raptor XPU 与英伟达 AI 基础设施相连接，加入了越来越多使用我们机架级架构进行 AI 工厂规模部署的合作伙伴生态系统。通过整合英伟达 NVLink 纵向扩展，</div>
+      <div class="tw-stats">❤️ 197 &nbsp; 🔁 27 &nbsp;
+        💬 5 &nbsp; 🔖 16 &nbsp; 👁 27.1K
+        <a href="https://x.com/NVIDIAAIInfra/status/2098048378810605619" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="0" data-time="1789089909">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>Rookie Golden</b>
+            <a href="https://x.com/goldennrookie" target="_blank" class="handle">@goldennrookie</a>
+            <span class="kw-score">活跃度 0 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Rookie Golden</b>
+        <a href="https://x.com/goldennrookie" target="_blank" class="handle">@goldennrookie</a>
+        <span class="score">热度 0</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:25 · 16分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098221272396173707" onclick="tg('2098221272396173707')">🌐 翻译</button></div><div class="tw-text" id="o2098221272396173707">$NVDA is quietly becoming the backbone of the robotaxi stack. Pretty much every major fleet that’s actually operating at scale right now is already using Nvidia for training, simulation, and the computers in the cars.</div><div class="tw-text tw-trans" id="t2098221272396173707" style="display:none">$NVDA 正悄然成为自动驾驶出租车技术栈的核心支柱。目前几乎所有真正实现规模化运营的主要车队，都已在模型训练、仿真以及车载计算机上采用英伟达的方案。</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 15
+        <a href="https://x.com/goldennrookie/status/2098221272396173707" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 5 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="6" data-time="1789090081">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>lolo</b>
+            <a href="https://x.com/haaeaym" target="_blank" class="handle">@haaeaym</a>
+            <span class="kw-score">活跃度 6 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>lolo</b>
+        <a href="https://x.com/haaeaym" target="_blank" class="handle">@haaeaym</a>
+        <span class="score">热度 6</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:28 · 14分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098221996614004985" onclick="tg('2098221996614004985')">🌐 翻译</button></div><div class="tw-text" id="o2098221996614004985">$BTC 
+$ETH 
+$NVDA 
+$GOOG 
+$AMZN 
+$SPCX 
+$AVGO 
+$INJ</div><div class="tw-text tw-trans" id="t2098221996614004985" style="display:none">$BTC
+$ETH
+$NVDA
+$GOOG
+$AMZN
+$SPCX
+$AVGO
+$INJ</div>
+      <div class="tw-stats">❤️ 2 &nbsp; 🔁 2 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 25
+        <a href="https://x.com/haaeaym/status/2098221996614004985" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="5" data-time="1789089470">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>Primaere</b>
+            <a href="https://x.com/OGPrimaere" target="_blank" class="handle">@OGPrimaere</a>
+            <span class="kw-score">活跃度 5 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Primaere</b>
+        <a href="https://x.com/OGPrimaere" target="_blank" class="handle">@OGPrimaere</a>
+        <span class="score">热度 5</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:17 · 24分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098219434871791832" onclick="tg('2098219434871791832')">🌐 翻译</button></div><div class="tw-text" id="o2098219434871791832">wow, Jim Cramer is shilling $NVDA
+
+0x3becc4f5ba08a52034f2bcee29647a26065182da</div><div class="tw-text tw-trans" id="t2098219434871791832" style="display:none">哇，吉姆·克莱默又在吹捧 $NVDA 了
+
+0x3becc4f5ba08a52034f2bcee29647a26065182da</div>
+      <div class="tw-stats">❤️ 3 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 170
+        <a href="https://x.com/OGPrimaere/status/2098219434871791832" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="5" data-time="1789089428">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>Wilhem Crypto</b>
+            <a href="https://x.com/WilhemCrypto" target="_blank" class="handle">@WilhemCrypto</a>
+            <span class="kw-score">活跃度 5 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Wilhem Crypto</b>
+        <a href="https://x.com/WilhemCrypto" target="_blank" class="handle">@WilhemCrypto</a>
+        <span class="score">热度 2</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:17 · 24分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098219256471003206" onclick="tg('2098219256471003206')">🌐 翻译</button></div><div class="tw-text" id="o2098219256471003206">#USELESS/USDT 🤩🤩
+
+For my exact entry, stop-loss, targets and full trade management, join the community here:
+
+$TSLA $NVDA $LINK #Bitcoin #Altseason #Liquidity #helevier  #LingOrm #crypto #Eth #sopho</div><div class="tw-text tw-trans" id="t2098219256471003206" style="display:none">#USELESS/USDT 🤩🤩
+
+想了解我的精确入场点、止损位、目标价及完整交易管理，请加入社群：
+
+$TSLA $NVDA $LINK #比特币 #山寨季 #流动性 #crypto</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 52
+        <a href="https://x.com/WilhemCrypto/status/2098219256471003206" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Wilhem Crypto</b>
+        <a href="https://x.com/WilhemCrypto" target="_blank" class="handle">@WilhemCrypto</a>
+        <span class="score">热度 1</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:16 · 25分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098219188582060338" onclick="tg('2098219188582060338')">🌐 翻译</button></div><div class="tw-text" id="o2098219188582060338">$DOGE +54.33% profit achieved 🔥
+
+For my exact entry, stop-loss, targets and full trade management, join the community here:
+
+$TSLA $NVDA $LINK #Bitcoin #Altseason #Liquidity #helevier  #LingOrm #crypto #Eth #sopho</div><div class="tw-text tw-trans" id="t2098219188582060338" style="display:none">$DOGE 已实现 +54.33% 盈利 🔥
+
+想了解我的精确入场点、止损位、目标价及完整交易管理，请加入社群：
+
+$TSLA $NVDA $LINK #比特币 #山寨季 #流动性 #crypto</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 47
+        <a href="https://x.com/WilhemCrypto/status/2098219188582060338" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="0" data-time="1789090227">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>PumpFun</b>
+            <a href="https://x.com/PFautomated" target="_blank" class="handle">@PFautomated</a>
+            <span class="kw-score">活跃度 0 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>PumpFun</b>
+        <a href="https://x.com/PFautomated" target="_blank" class="handle">@PFautomated</a>
+        <span class="score">热度 0</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:30 · 11分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098222607145242821" onclick="tg('2098222607145242821')">🌐 翻译</button></div><div class="tw-text" id="o2098222607145242821">PumpFun added Robinhood chain launches and streams  
+
+$NVDA now live on PumpFun
+
+0xF533D09576023dBe499f466399cf08a36807410e 
+
+👇͏</div><div class="tw-text tw-trans" id="t2098222607145242821" style="display:none">PumpFun 新增 Robinhood 链发布及直播功能
+
+$NVDA 现已在 PumpFun 上线
+
+0xF533D09576023dBe499f466399cf08a36807410e</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 13
+        <a href="https://x.com/PFautomated/status/2098222607145242821" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="0" data-time="1789089394">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>NFT Enthusiast Knightrider</b>
+            <a href="https://x.com/sctrackboy" target="_blank" class="handle">@sctrackboy</a>
+            <span class="kw-score">活跃度 0 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>NFT Enthusiast Knightrider</b>
+        <a href="https://x.com/sctrackboy" target="_blank" class="handle">@sctrackboy</a>
+        <span class="score">热度 0</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:16 · 25分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098219113558557034" onclick="tg('2098219113558557034')">🌐 翻译</button></div><div class="tw-text" id="o2098219113558557034">@zorpians I want to earn $NVDA everyday</div><div class="tw-text tw-trans" id="t2098219113558557034" style="display:none">@zorpians 我希望每天都能赚到 $NVDA</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 8
+        <a href="https://x.com/sctrackboy/status/2098219113558557034" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 宏观财经 <span>· 1 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="4" data-time="1789089959">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>GlobalMacroZen</b>
+            <a href="https://x.com/GlobalMacroZen" target="_blank" class="handle">@GlobalMacroZen</a>
+            <span class="kw-score">活跃度 4 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>GlobalMacroZen</b>
+        <a href="https://x.com/GlobalMacroZen" target="_blank" class="handle">@GlobalMacroZen</a>
+        <span class="score">热度 4</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 09:25 · 16分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098221482476261582" onclick="tg('2098221482476261582')">🌐 翻译</button></div><div class="tw-text" id="o2098221482476261582">Semiconductors performance for 1 year, $AVGO is bad; $NVDA is mediocre; the rest is fine...</div><div class="tw-text tw-trans" id="t2098221482476261582" style="display:none">半导体板块近一年表现：$AVGO 很差，$NVDA 平平，其余还好……</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 290
+        <a href="https://x.com/GlobalMacroZen/status/2098221482476261582" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><a class="trend" href="https://x.com/search?q=Ex-Anthropic%20Researcher%20Quits%20Over%20AI%20Superintelligence%20Warnings" target="_blank"><span class="rank">#1</span> Ex-Anthropic Researcher Quits Over AI Superintelligence Warnings<span class="meta"></span><span class="tmeta">前Anthropic研究员因AI超级智能警告愤而辞职</span></a>
+<a class="trend" href="https://x.com/search?q=Oil%20Prices%20Surge%20Past%20%24100%20on%20Middle%20East%20Shipping%20Attacks" target="_blank"><span class="rank">#2</span> Oil Prices Surge Past $100 on Middle East Shipping Attacks<span class="meta"></span><span class="tmeta">中东航运遭袭，油价飙升突破每桶100美元</span></a>
+<a class="trend" href="https://x.com/search?q=Trump%20Describes%20Positive%20Putin%20Call%20on%20Ukraine%20Peace%20Deal" target="_blank"><span class="rank">#3</span> Trump Describes Positive Putin Call on Ukraine Peace Deal<span class="meta"></span><span class="tmeta">特朗普称与普京就乌克兰和平协议通话顺利</span></a>
+<a class="trend" href="https://x.com/search?q=Checking" target="_blank"><span class="rank">#4</span> Checking<span class="meta"></span><span class="tmeta">审核中</span></a>
+<a class="trend" href="https://x.com/search?q=%23indiedev" target="_blank"><span class="rank">#5</span> #indiedev<span class="meta"></span><span class="tmeta">独立游戏开发</span></a>
+<a class="trend" href="https://x.com/search?q=James%20Talarico" target="_blank"><span class="rank">#6</span> James Talarico<span class="meta"></span><span class="tmeta">詹姆斯·塔拉里科</span></a>
+<a class="trend" href="https://x.com/search?q=Jimothy" target="_blank"><span class="rank">#7</span> Jimothy<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Reviewing" target="_blank"><span class="rank">#8</span> Reviewing<span class="meta"></span><span class="tmeta">评审中</span></a>
+<a class="trend" href="https://x.com/search?q=%23%E0%B8%A1%E0%B8%B4%E0%B9%89%E0%B8%A5%E0%B8%84%E0%B9%8C%E0%B8%9E%E0%B8%A3%E0%B8%A3%E0%B8%A9%E0%B8%B2" target="_blank"><span class="rank">#9</span> #มิ้ลค์พรรษา<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=REWARDS%20ALL%20SEASON" target="_blank"><span class="rank">#10</span> REWARDS ALL SEASON<span class="meta"></span><span class="tmeta">全季奖励</span></a>
+<a class="trend" href="https://x.com/search?q=Stafford" target="_blank"><span class="rank">#11</span> Stafford<span class="meta"></span><span class="tmeta">斯塔福德</span></a>
+<a class="trend" href="https://x.com/search?q=49ers" target="_blank"><span class="rank">#12</span> 49ers<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Niners" target="_blank"><span class="rank">#13</span> Niners<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Stribling" target="_blank"><span class="rank">#14</span> Stribling<span class="meta"></span><span class="tmeta">斯特里布林</span></a>
+<a class="trend" href="https://x.com/search?q=%23SFvsLAR" target="_blank"><span class="rank">#15</span> #SFvsLAR<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Angela" target="_blank"><span class="rank">#16</span> Angela<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Charlie" target="_blank"><span class="rank">#17</span> Charlie<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Yash%20and%20Taylor" target="_blank"><span class="rank">#18</span> Yash and Taylor<span class="meta"></span><span class="tmeta">亚什与泰勒</span></a>
+<a class="trend" href="https://x.com/search?q=FAMU" target="_blank"><span class="rank">#19</span> FAMU<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Fred%20Warner" target="_blank"><span class="rank">#20</span> Fred Warner<span class="meta"></span><span class="tmeta">弗雷德·华纳</span></a>
+<a class="trend" href="https://x.com/search?q=Shanahan" target="_blank"><span class="rank">#21</span> Shanahan<span class="meta"></span><span class="tmeta">沙纳汉</span></a>
+<a class="trend" href="https://x.com/search?q=Renardo%20Green" target="_blank"><span class="rank">#22</span> Renardo Green<span class="meta"></span><span class="tmeta">雷纳多·格林</span></a>
+<a class="trend" href="https://x.com/search?q=Blake%20Corum" target="_blank"><span class="rank">#23</span> Blake Corum<span class="meta"></span><span class="tmeta">布莱克·科鲁姆</span></a>
+<a class="trend" href="https://x.com/search?q=Luke%20Kuechly" target="_blank"><span class="rank">#24</span> Luke Kuechly<span class="meta"></span><span class="tmeta">卢克·库克利</span></a>
+<a class="trend" href="https://x.com/search?q=Myles%20Garrett" target="_blank"><span class="rank">#25</span> Myles Garrett<span class="meta"></span><span class="tmeta">迈尔斯·加勒特</span></a>
+</div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼50%</span>
+          <span class="kw-score">总热度 780 · 22 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>NVIDIA AI Infrastructure</b>
+        <a href="https://x.com/NVIDIAAIInfra" target="_blank" class="handle">@NVIDIAAIInfra</a>
+        <span class="score">热度 557</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-10 21:58 · 11小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098048378810605619" onclick="tg('2098048378810605619')">🌐 翻译</button></div><div class="tw-text" id="o2098048378810605619">🤝 @dMatrix_AI is adopting NVIDIA NVLink Fusion to connect its next-generation Raptor XPUs with NVIDIA AI infrastructure, joining a growing ecosystem of partners using our rack-scale architecture for AI factory-scale deployment.
+
+By bringing together NVIDIA NVLink scale-up,</div><div class="tw-text tw-trans" id="t2098048378810605619" style="display:none">🤝 @dMatrix_AI 正在采用英伟达 NVLink Fusion 技术，将其下一代 Raptor XPU 与英伟达 AI 基础设施相连接，加入了越来越多使用我们机架级架构进行 AI 工厂规模部署的合作伙伴生态系统。通过整合英伟达 NVLink 纵向扩展，</div>
+      <div class="tw-stats">❤️ 197 &nbsp; 🔁 27 &nbsp;
+        💬 5 &nbsp; 🔖 16 &nbsp; 👁 27.1K
+        <a href="https://x.com/NVIDIAAIInfra/status/2098048378810605619" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div>
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div>
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div>
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div>
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div>
+        <div class="kw"><div class="kw-head"><b>$TSLA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
