@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-09-13</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-09-13 · 更新于 09:41</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-09-13.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-09-13.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<div class="summary">🧠 <b>今日讨论总览</b><p>今日讨论核心是AI头部CEO集体释放「放缓节奏」信号，引发市场对英伟达等AI股的恐慌性预期；同时霍尔木兹局势持续升温推高油价，美联储加息预期博弈白热化，特斯拉新品发布消息提振情绪。</p></div><div class="vp-row">
+            <div class="vp-card">
+              <div class="vp-p">OpenAI与Anthropic CEO同声呼吁放缓AI前沿发展节奏，引发市场震动</div>
+              <div class="vp-q">「I agree with Dario that we need to pace the frontier. This has been a primary topic of discussions we&#x27;ve had at OpenAI in recent weeks.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/sama" target="_blank">@sama</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">市场担忧三大LLM厂商CEO集体放缓表态将引发周一AI板块暴跌</div>
+              <div class="vp-q">「I don&#x27;t think anyone is prepared for the market crash that will come Monday after this AI slowdown messaging from the CEOs of the 3 largest LLM providers.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/bourscheid" target="_blank">@bourscheid</a> <a class="hold" href="https://x.com/jimcramer" target="_blank">@jimcramer</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">英伟达传将参与Anthropic超级IPO投资，Anthropic算力采购规模高达5170亿美元</div>
+              <div class="vp-q">「Nvidia in talks to invest in Anthropic&#x27;s mega IPO, per Reuters」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/unusual_whales" target="_blank">@unusual_whales</a> <a class="hold" href="https://x.com/theinformation" target="_blank">@theinformation</a> <a class="hold" href="https://x.com/pesshun" target="_blank">@pesshun</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">霍尔木兹海峡从封锁转向受控通行，伊朗与海湾各国9月14日会议或签署共同航线协议</div>
+              <div class="vp-q">「伊朗外交部表示，伊拉克和海湾国家将在9月14日于阿曼举行会议，讨论霍尔木兹海峡商船航线。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">油气价格飙升迫使各国央行和政府重新评估伊朗与乌克兰战争的经济冲击</div>
+              <div class="vp-q">「The surge in oil, gas and diesel prices is forcing central banks and governments to reassess the impact of the wars in Iran and Ukraine」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/business" target="_blank">@business</a> <a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">美联储加息概率虽达80%+，但存在「逼空陷阱」，真实决策或与市场预期相反</div>
+              <div class="vp-q">「看近期通胀数据反弹、原油高位震荡，再加上CME期货倒推出来的加息概率高达80%+，但真正读懂沃什的态度转变……你会发现宏观博弈的本质」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/davemacromatrix" target="_blank">@davemacromatrix</a> <a class="hold" href="https://x.com/ShanghaoJin" target="_blank">@ShanghaoJin</a> <a class="hold" href="https://x.com/TJ_Research" target="_blank">@TJ_Research</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">特斯拉10月1日发布新款Roadster，马斯克为旗下产品线造势</div>
+              <div class="vp-q">「New Tesla Roadster Unveil 10.01」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/elonmusk" target="_blank">@elonmusk</a> <a class="hold" href="https://x.com/SawyerMerritt" target="_blank">@SawyerMerritt</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">特斯拉刻意延迟Optimus V3发布，以防竞争对手逐帧拆解复制</div>
+              <div class="vp-q">「Elon Musk said Tesla is deliberately holding back on unveiling Optimus V3. Competitors will analyze the robot frame by frame and copy whatever they can」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/niccruzpatane" target="_blank">@niccruzpatane</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">iPhone Duo锁定价已炒至2万元以上，溢价超35%，抢到即等于打新赚钱</div>
+              <div class="vp-q">「现在所有人都知道，这设备抢到就是赚到，跟股票打新一样。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/_FORAB" target="_blank">@_FORAB</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">中国银行业净息差降至历史低位，企业居民借贷意愿未见恢复，信用收缩加剧</div>
+              <div class="vp-q">「中国银行业的净息差已经降到1.4%左右，处于历史低位，较2012年前后收窄了接近一半。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/PhyrexNi" target="_blank">@PhyrexNi</a> <a class="hold" href="https://x.com/LMDFinance" target="_blank">@LMDFinance</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">打工本质是做空自己健康、做多老板，工资不过是资金费用</div>
+              <div class="vp-q">「打工就是在Short自己的健康，Long自己的老板，而工资，只是资金费用罢了」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/MengLayer" target="_blank">@MengLayer</a></div>
+            </div></div>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 美股投资 <span>· 5 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="4586" data-time="1789175760">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>unusual_whales</b>
+            <a href="https://x.com/unusual_whales" target="_blank" class="handle">@unusual_whales</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲499%</span>
+            <span class="kw-score">活跃度 4.6K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>unusual_whales</b>
+        <a href="https://x.com/unusual_whales" target="_blank" class="handle">@unusual_whales</a>
+        <span class="score">热度 4.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 09:16 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098581358469611549" onclick="tg('2098581358469611549')">🌐 翻译</button></div><div class="tw-text" id="o2098581358469611549">BREAKING: Nvidia in talks to invest in Anthropic’s mega IPO, per Reuters</div><div class="tw-text tw-trans" id="t2098581358469611549" style="display:none">突发：据路透社报道，英伟达正洽谈投资Anthropic的大规模IPO</div>
+      <div class="tw-stats">❤️ 2.0K &nbsp; 🔁 71 &nbsp;
+        💬 112 &nbsp; 🔖 50 &nbsp; 👁 220.1K
+        <a href="https://x.com/unusual_whales/status/2098581358469611549" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="3906" data-time="1789247940">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>John Bourscheid 🇺🇸 🚀</b>
+            <a href="https://x.com/bourscheid" target="_blank" class="handle">@bourscheid</a>
+            <span class="kw-score">活跃度 3.9K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>John Bourscheid 🇺🇸 🚀</b>
+        <a href="https://x.com/bourscheid" target="_blank" class="handle">@bourscheid</a>
+        <span class="score">热度 3.9K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 05:19 · 4小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098884103474958730" onclick="tg('2098884103474958730')">🌐 翻译</button></div><div class="tw-text" id="o2098884103474958730">I don’t think anyone is prepared for the market crash that will come Monday after this AI slowdown messaging from the CEOs of the 3 largest LLM providers.
+
+This is the sound of the AI bubble bursting.</div><div class="tw-text tw-trans" id="t2098884103474958730" style="display:none">我觉得没有人做好准备迎接周一的市场崩盘——三大LLM提供商CEO释放的AI放缓信号将引发这一局面。
+
+这是AI泡沫破裂的声音。</div>
+      <div class="tw-stats">❤️ 2.0K &nbsp; 🔁 347 &nbsp;
+        💬 182 &nbsp; 🔖 161 &nbsp; 👁 67.9K
+        <a href="https://x.com/bourscheid/status/2098884103474958730" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="2050" data-time="1789251352">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>Jim Cramer</b>
+            <a href="https://x.com/jimcramer" target="_blank" class="handle">@jimcramer</a>
+            <span class="kw-score">活跃度 2.0K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jim Cramer</b>
+        <a href="https://x.com/jimcramer" target="_blank" class="handle">@jimcramer</a>
+        <span class="score">热度 2.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 06:15 · 3小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098898414071103870" onclick="tg('2098898414071103870')">🌐 翻译</button></div><div class="tw-text" id="o2098898414071103870">Oh, and yes, Dario&#x27;s comments send Nvidia&#x27;s stock down four and then it works its way lower and then stabilizes. Yes, it&#x27;s a buy. But let it come down. The buyback&#x27;s not big enough. This stuff now happens in what seems like slow motion for me...</div><div class="tw-text tw-trans" id="t2098898414071103870" style="display:none">而且，是的，达里奥的言论导致英伟达股价下跌四个点，随后继续走低，最终企稳。没错，这是买入机会，但先等它跌下来再说。回购规模不够大。这种事现在在我看来仿佛是慢动作上演……</div>
+      <div class="tw-stats">❤️ 505 &nbsp; 🔁 31 &nbsp;
+        💬 103 &nbsp; 🔖 51 &nbsp; 👁 124.7K
+        <a href="https://x.com/jimcramer/status/2098898414071103870" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1656" data-time="1789260623">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>Cantonese Cat 🐱🐈</b>
+            <a href="https://x.com/cantonmeow" target="_blank" class="handle">@cantonmeow</a>
+            <span class="kw-score">活跃度 1.7K · 6 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Cantonese Cat 🐱🐈</b>
+        <a href="https://x.com/cantonmeow" target="_blank" class="handle">@cantonmeow</a>
+        <span class="score">热度 584</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 05:02 · 4小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098880062380527662" onclick="tg('2098880062380527662')">🌐 翻译</button></div><div class="tw-text" id="o2098880062380527662">40 names. Some #Palantired. 
+Many more maybe getting ready to go #Palantiring. 
+
+I have re-examined and refined my #Palantiring strategy and wanted to scratch the surface of what I found. I share with you my strategy to find the next $PLTR $MU $HOOD $AMD and #Silver.</div><div class="tw-text tw-trans" id="t2098880062380527662" style="display:none">40个标的，有些已经「帕兰提亚化」，更多的也在准备「帕兰提亚化」。
+
+我重新审视并完善了自己的「帕兰提亚化」策略，想初步分享一下我的发现。我将与大家分享如何寻找下一个$PLTR、$MU、$HOOD、$AMD以及白银标的的策略。</div>
+      <div class="tw-stats">❤️ 175 &nbsp; 🔁 11 &nbsp;
+        💬 15 &nbsp; 🔖 138 &nbsp; 👁 21.7K
+        <a href="https://x.com/cantonmeow/status/2098880062380527662" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Cantonese Cat 🐱🐈</b>
+        <a href="https://x.com/cantonmeow" target="_blank" class="handle">@cantonmeow</a>
+        <span class="score">热度 101</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 08:37 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098934155123773700" onclick="tg('2098934155123773700')">🌐 翻译</button></div><div class="tw-text" id="o2098934155123773700">Putting them altogether into one video would put into perspective in terms of how I think about them rather than posting all 40 of them individually.
+
+This is especially true when all 40 of them are at different stages and variations of the same theme.</div><div class="tw-text tw-trans" id="t2098934155123773700" style="display:none">把所有40个标的放进一个视频，能更清楚地呈现我对它们的整体看法，而不是逐一单独发布。尤其是这40个标的处于同一主题的不同阶段和变体时，放在一起看更有意义。</div>
+      <div class="tw-stats">❤️ 28 &nbsp; 🔁 2 &nbsp;
+        💬 5 &nbsp; 🔖 8 &nbsp; 👁 5.3K
+        <a href="https://x.com/cantonmeow/status/2098934155123773700" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1190" data-time="1789144903">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>投资TALK君</b>
+            <a href="https://x.com/TJ_Research" target="_blank" class="handle">@TJ_Research</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲61%</span>
+            <span class="kw-score">活跃度 1.2K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>投资TALK君</b>
+        <a href="https://x.com/TJ_Research" target="_blank" class="handle">@TJ_Research</a>
+        <span class="score">热度 1.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 00:41 · 1天前</b></div>
+      <div class="tw-text">说一些我的判断标准和理解：
+1. 股市和债市可以有滞后，参考22年，债市开始加速定价加息，股市一开始事没有跟的
+2. 现在债市定价3.6次加息，我个人主观判断是过于悲观了，我不认为通胀（PCE）能回到2%，但2.5%-3%的区间，3次加息到4.4%？很高了
+3.</div>
+      <div class="tw-stats">❤️ 416 &nbsp; 🔁 14 &nbsp;
+        💬 55 &nbsp; 🔖 59 &nbsp; 👁 60.0K
+        <a href="https://x.com/TJ_Research/status/2098451937125413251" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 科技/AI <span>· 9 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="294096" data-time="1789260131">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>Elon Musk</b>
+            <a href="https://x.com/elonmusk" target="_blank" class="handle">@elonmusk</a>
+            <span class="kw-score">活跃度 294.1K · 5 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Elon Musk</b>
+        <a href="https://x.com/elonmusk" target="_blank" class="handle">@elonmusk</a>
+        <span class="score">热度 75.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 12:24 · 21小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098628727164846490" onclick="tg('2098628727164846490')">🌐 翻译</button></div><div class="tw-text" id="o2098628727164846490">Starlink</div><div class="tw-text tw-trans" id="t2098628727164846490" style="display:none">星链</div>
+      <div class="tw-stats">❤️ 19.2K &nbsp; 🔁 2.3K &nbsp;
+        💬 1.8K &nbsp; 🔖 432 &nbsp; 👁 4.9M
+        <a href="https://x.com/elonmusk/status/2098628727164846490" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Elon Musk</b>
+        <a href="https://x.com/elonmusk" target="_blank" class="handle">@elonmusk</a>
+        <span class="score">热度 59.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 23:03 · 10小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098789559093858580" onclick="tg('2098789559093858580')">🌐 翻译</button></div><div class="tw-text" id="o2098789559093858580">Another AI attack</div><div class="tw-text tw-trans" id="t2098789559093858580" style="display:none">又一次AI攻击</div>
+      <div class="tw-stats">❤️ 14.0K &nbsp; 🔁 2.2K &nbsp;
+        💬 2.5K &nbsp; 🔖 1.1K &nbsp; 👁 3.5M
+        <a href="https://x.com/elonmusk/status/2098789559093858580" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="172224" data-time="1789230645">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>Sam Altman</b>
+            <a href="https://x.com/sama" target="_blank" class="handle">@sama</a>
+            <span class="kw-score">活跃度 172.2K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Sam Altman</b>
+        <a href="https://x.com/sama" target="_blank" class="handle">@sama</a>
+        <span class="score">热度 172.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 00:30 · 9小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098811563415150910" onclick="tg('2098811563415150910')">🌐 翻译</button></div><div class="tw-text" id="o2098811563415150910">I agree with Dario that we need to pace the frontier. This has been a primary topic of discussions we&#x27;ve had at OpenAI in recent weeks.
+
+Committing to having independent evaluators with employee-like access is a great idea, and we will do the same. We&#x27;ll have more to share soon.</div><div class="tw-text tw-trans" id="t2098811563415150910" style="display:none">我同意达里奥的观点，我们需要放缓前沿发展步伐。这也是过去几周OpenAI内部讨论的核心议题之一。
+
+承诺让独立评估方获得类似员工级别的访问权限是个好主意，我们也将效仿。更多细节近期将对外公布。</div>
+      <div class="tw-stats">❤️ 46.9K &nbsp; 🔁 4.9K &nbsp;
+        💬 3.6K &nbsp; 🔖 7.9K &nbsp; 👁 9.6M
+        <a href="https://x.com/sama/status/2098811563415150910" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="5240" data-time="1789221020">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>Nic Cruz Patane</b>
+            <a href="https://x.com/niccruzpatane" target="_blank" class="handle">@niccruzpatane</a>
+            <span class="kw-score">活跃度 5.2K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Nic Cruz Patane</b>
+        <a href="https://x.com/niccruzpatane" target="_blank" class="handle">@niccruzpatane</a>
+        <span class="score">热度 5.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 21:50 · 11小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098771192517665051" onclick="tg('2098771192517665051')">🌐 翻译</button></div><div class="tw-text" id="o2098771192517665051">Elon Musk said Tesla is deliberately holding back on unveiling Optimus V3. Competitors will analyze the robot frame by frame and copy whatever they can, so Tesla would rather show it closer to production.
+
+I think this is very smart.</div><div class="tw-text tw-trans" id="t2098771192517665051" style="display:none">埃隆·马斯克表示，特斯拉正在刻意延迟Optimus V3的发布。竞争对手会逐帧分析机器人并尽可能复制，因此特斯拉宁愿在更接近量产时再公开展示。
+
+我认为这非常明智。</div>
+      <div class="tw-stats">❤️ 3.3K &nbsp; 🔁 231 &nbsp;
+        💬 121 &nbsp; 🔖 102 &nbsp; 👁 112.8K
+        <a href="https://x.com/niccruzpatane/status/2098771192517665051" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="2116" data-time="1789175748">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>Whole Mars Catalog</b>
+            <a href="https://x.com/wholemars" target="_blank" class="handle">@wholemars</a>
+            <span class="kw-score">活跃度 2.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Whole Mars Catalog</b>
+        <a href="https://x.com/wholemars" target="_blank" class="handle">@wholemars</a>
+        <span class="score">热度 2.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 09:15 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098581310134771904" onclick="tg('2098581310134771904')">🌐 翻译</button></div><div class="tw-text" id="o2098581310134771904">Tesla Semi couldn’t be launching at a better time</div><div class="tw-text tw-trans" id="t2098581310134771904" style="display:none">特斯拉Semi的推出时机再好不过了</div>
+      <div class="tw-stats">❤️ 1.3K &nbsp; 🔁 45 &nbsp;
+        💬 42 &nbsp; 🔖 11 &nbsp; 👁 64.1K
+        <a href="https://x.com/wholemars/status/2098581310134771904" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1024" data-time="1789259408">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>Sawyer Merritt</b>
+            <a href="https://x.com/SawyerMerritt" target="_blank" class="handle">@SawyerMerritt</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼94%</span>
+            <span class="kw-score">活跃度 1.0K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Sawyer Merritt</b>
+        <a href="https://x.com/SawyerMerritt" target="_blank" class="handle">@SawyerMerritt</a>
+        <span class="score">热度 1.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 08:30 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098932205422604756" onclick="tg('2098932205422604756')">🌐 翻译</button></div><div class="tw-text" id="o2098932205422604756">Hyundai Motor Group says it is “deliberately delaying” the timeline of its autonomous driving system, betting that a slower rollout focused on data collection and machine learning will let it overtake Tesla&#x27;s FSD &quot;within five years.&quot;
+
+“We believe Atria AI could move faster if we</div><div class="tw-text tw-trans" id="t2098932205422604756" style="display:none">现代汽车集团表示正「刻意延迟」自动驾驶系统的推进时间表，押注以数据采集和机器学习为核心的缓慢落地策略，认为这能让其在「五年内」超越特斯拉FSD。
+
+「我们认为Atria AI如果……本可以跑得更快」</div>
+      <div class="tw-stats">❤️ 265 &nbsp; 🔁 14 &nbsp;
+        💬 147 &nbsp; 🔖 22 &nbsp; 👁 43.6K
+        <a href="https://x.com/SawyerMerritt/status/2098932205422604756" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="935" data-time="1789259195">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>Ashok Elluswamy</b>
+            <a href="https://x.com/aelluswamy" target="_blank" class="handle">@aelluswamy</a>
+            <span class="kw-score">活跃度 935 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Ashok Elluswamy</b>
+        <a href="https://x.com/aelluswamy" target="_blank" class="handle">@aelluswamy</a>
+        <span class="score">热度 935</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 08:26 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098931312279404544" onclick="tg('2098931312279404544')">🌐 翻译</button></div><div class="tw-text" id="o2098931312279404544">@IShowSpeedHQ bro you should take one of those bad boys around austin</div><div class="tw-text tw-trans" id="t2098931312279404544" style="display:none">@IShowSpeedHQ 兄弟你应该开那些好车在奥斯汀转一圈</div>
+      <div class="tw-stats">❤️ 690 &nbsp; 🔁 31 &nbsp;
+        💬 30 &nbsp; 🔖 10 &nbsp; 👁 12.4K
+        <a href="https://x.com/aelluswamy/status/2098931312279404544" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="846" data-time="1789239605">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>The Information</b>
+            <a href="https://x.com/theinformation" target="_blank" class="handle">@theinformation</a>
+            <span class="kw-score">活跃度 846 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>The Information</b>
+        <a href="https://x.com/theinformation" target="_blank" class="handle">@theinformation</a>
+        <span class="score">热度 846</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 03:00 · 6小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098849145188418001" onclick="tg('2098849145188418001')">🌐 翻译</button></div><div class="tw-text" id="o2098849145188418001">Anthropic has lined up compute deals that could cost as much as $517 billion, far above the $180 billion it told investors it expected to spend through 2029. 
+
+The commitments underscore how aggressively it is preparing for growth ahead of a possible IPO. 
+
+More insights:</div><div class="tw-text tw-trans" id="t2098849145188418001" style="display:none">Anthropic已签署的算力协议总额高达5170亿美元，远超其此前告知投资者的2029年前预计支出1800亿美元。
+
+这些承诺凸显了公司在可能IPO前正积极备战扩张。
+
+更多详情：</div>
+      <div class="tw-stats">❤️ 93 &nbsp; 🔁 13 &nbsp;
+        💬 2 &nbsp; 🔖 45 &nbsp; 👁 64.9K
+        <a href="https://x.com/theinformation/status/2098849145188418001" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="730" data-time="1789218097">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>James Cat</b>
+            <a href="https://x.com/TSLAFanMtl" target="_blank" class="handle">@TSLAFanMtl</a>
+            <span class="kw-score">活跃度 730 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>James Cat</b>
+        <a href="https://x.com/TSLAFanMtl" target="_blank" class="handle">@TSLAFanMtl</a>
+        <span class="score">热度 730</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 21:01 · 12小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098758932655116552" onclick="tg('2098758932655116552')">🌐 翻译</button></div><div class="tw-text" id="o2098758932655116552">The idea is, quite frankly, brilliant.
+
+The question remains: why could Tesla not apply this same technology to a car sold with a wheel? The answer = Elon does not see a need for it, as he is convinced robotaxi will displace the consumer&#x27;s desire for vehicle ownership.</div><div class="tw-text tw-trans" id="t2098758932655116552" style="display:none">这个想法坦率地说非常精彩。
+
+问题在于：为什么特斯拉不能将同样的技术应用于带方向盘销售的汽车？答案是：埃隆认为没有必要，他坚信Robotaxi将取代消费者对私家车拥有权的需求。</div>
+      <div class="tw-stats">❤️ 276 &nbsp; 🔁 13 &nbsp;
+        💬 58 &nbsp; 🔖 14 &nbsp; 👁 32.3K
+        <a href="https://x.com/TSLAFanMtl/status/2098758932655116552" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="640" data-time="1789203162">
+          <div class="kol-head"><span class="rank">#20</span>
+            <b>AB Kuai.Dong</b>
+            <a href="https://x.com/_FORAB" target="_blank" class="handle">@_FORAB</a>
+            <span class="kw-score">活跃度 640 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>AB Kuai.Dong</b>
+        <a href="https://x.com/_FORAB" target="_blank" class="handle">@_FORAB</a>
+        <span class="score">热度 640</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 16:52 · 16小时前</b></div>
+      <div class="tw-text">虽然还没有发售，但 iPhone Duo 的提前锁定售价，已经炒到 2 万元上方了，溢价率超 35%，叠加之前日经爆料的，因良品率导致的初期产量超级受限。
+
+现在所有人都知道，这设备抢到就是赚到，跟股票打新一样。</div>
+      <div class="tw-stats">❤️ 85 &nbsp; 🔁 5 &nbsp;
+        💬 46 &nbsp; 🔖 10 &nbsp; 👁 46.4K
+        <a href="https://x.com/_FORAB/status/2098696292524507182" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 宏观财经 <span>· 4 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="3827" data-time="1789128060">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>日经中文网/日經中文網</b>
+            <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼36%</span>
+            <span class="kw-score">活跃度 3.8K · 12 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日经中文网/日經中文網</b>
+        <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a>
+        <span class="score">热度 216</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 14:54 · 1天前</b></div>
+      <div class="tw-text">【日本央行拟9月将政策利率上调至1.25%】此次加息距离6月会议仅3个月，是开启加息周期以来间隔最短的一次，此前日本银行大致每隔半年加息一次……</div>
+      <div class="tw-stats">❤️ 18 &nbsp; 🔁 5 &nbsp;
+        💬 17 &nbsp; 🔖 4 &nbsp; 👁 15.8K
+        <a href="https://x.com/rijingzhongwen/status/2098304098097672365" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>日经中文网/日經中文網</b>
+        <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a>
+        <span class="score">热度 154</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 15:19 · 1天前</b></div>
+      <div class="tw-text">【日本長期利率再升至3%區間】受中東局勢緊張導致原油價格高漲影響，市場對通膨的擔憂加劇……</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 4 &nbsp; 🔖 0 &nbsp; 👁 14.7K
+        <a href="https://x.com/rijingzhongwen/status/2098310429235925194" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="3563" data-time="1789233588">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>Phyrex</b>
+            <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼74%</span>
+            <span class="kw-score">活跃度 3.6K · 6 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 607</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 22:49 · 1天前</b></div>
+      <div class="tw-text">霍尔木兹可能正在从封锁转向受控通行
+
+伊朗外交部表示，伊拉克和海湾国家将在 9月14日 于阿曼举行会议，讨论霍尔木兹海峡商船航线。
+
+之前伊朗和阿曼已经就建立临时安全航道达成谅解，这次会议相当于把原本伊朗和阿曼之间的方案，扩大到整个海湾地区讨论。</div>
+      <div class="tw-stats">❤️ 35 &nbsp; 🔁 2 &nbsp;
+        💬 27 &nbsp; 🔖 2 &nbsp; 👁 52.4K
+        <a href="https://x.com/PhyrexNi/status/2098423792192348415" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 409</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 02:06 · 1天前</b></div>
+      <div class="tw-text">昨天喝多了困成汪汪了，还好昨天没有太重要的数据，最大的就是 PPI 数据的爆高让市场有些担心，而今天的 CPI 数据年率来看还算是不错的，就在市场的预期之内，并且也没有超过前值，但 CPI 的月率增涨的有点高，还是让投资者担心美联储会在九月加息。</div>
+      <div class="tw-stats">❤️ 60 &nbsp; 🔁 0 &nbsp;
+        💬 55 &nbsp; 🔖 4 &nbsp; 👁 25.8K
+        <a href="https://x.com/PhyrexNi/status/2098473270723129487" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="898" data-time="1789218885">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>陈小萌</b>
+            <a href="https://x.com/MengLayer" target="_blank" class="handle">@MengLayer</a>
+            <span class="kw-score">活跃度 898 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>陈小萌</b>
+        <a href="https://x.com/MengLayer" target="_blank" class="handle">@MengLayer</a>
+        <span class="score">热度 898</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 21:14 · 12小时前</b></div>
+      <div class="tw-text">说个暴论
+
+打工就是在Short自己的健康，Long自己的老板
+
+而工资，只是资金费用罢了</div>
+      <div class="tw-stats">❤️ 405 &nbsp; 🔁 27 &nbsp;
+        💬 62 &nbsp; 🔖 75 &nbsp; 👁 26.7K
+        <a href="https://x.com/MengLayer/status/2098762240078017010" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="706" data-time="1789220602">
+          <div class="kol-head"><span class="rank">#18</span>
+            <b>Herman Jin</b>
+            <a href="https://x.com/ShanghaoJin" target="_blank" class="handle">@ShanghaoJin</a>
+            <span class="kw-score">活跃度 706 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Herman Jin</b>
+        <a href="https://x.com/ShanghaoJin" target="_blank" class="handle">@ShanghaoJin</a>
+        <span class="score">热度 706</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 21:43 · 11小时前</b></div>
+      <div class="tw-text">我坚决地认为即使加息也不是问题
+
+一方面，是下面说的市场预期完全相反
+
+另一方面，过去二十年惯性思维觉得经济增长靠赢钱，联储收一下自然全掉；现在是40年来宏观经济第一次真的在提效，绝对不能低估这个本质的改变</div>
+      <div class="tw-stats">❤️ 185 &nbsp; 🔁 13 &nbsp;
+        💬 26 &nbsp; 🔖 56 &nbsp; 👁 38.4K
+        <a href="https://x.com/ShanghaoJin/status/2098769441106604515" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 1 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="1589" data-time="1789207200">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>WEEX</b>
+            <a href="https://x.com/WEEX_Official" target="_blank" class="handle">@WEEX_Official</a>
+            <span class="kw-score">活跃度 1.6K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>WEEX</b>
+        <a href="https://x.com/WEEX_Official" target="_blank" class="handle">@WEEX_Official</a>
+        <span class="score">热度 1.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 18:00 · 15小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098713228083888533" onclick="tg('2098713228083888533')">🌐 翻译</button></div><div class="tw-text" id="o2098713228083888533">Are You Ready? 
+
+🎁 50 USDT / 5 winners
+⚫️ Reply with your #1 stock pick + UID
+⚫️ Quote this post with your reason why
+
+Ends in 5 days 👇</div><div class="tw-text tw-trans" id="t2098713228083888533" style="display:none">准备好了吗？
+
+🎁 奖励50 USDT，共5名获奖者
+⚫️ 回复你最看好的一只股票 + 用户ID
+⚫️ 引用本帖并说明理由
+
+5天后截止 👇</div>
+      <div class="tw-stats">❤️ 305 &nbsp; 🔁 203 &nbsp;
+        💬 250 &nbsp; 🔖 39 &nbsp; 👁 15.8K
+        <a href="https://x.com/WEEX_Official/status/2098713228083888533" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 社会时事 <span>· 1 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="681" data-time="1789212927">
+          <div class="kol-head"><span class="rank">#19</span>
+            <b>文北</b>
+            <a href="https://x.com/wenbei2022" target="_blank" class="handle">@wenbei2022</a>
+            <span class="kw-score">活跃度 681 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>文北</b>
+        <a href="https://x.com/wenbei2022" target="_blank" class="handle">@wenbei2022</a>
+        <span class="score">热度 419</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 12:51 · 1天前</b></div>
+      <div class="tw-text">2026年9月9日美国🇺🇸#司法部：🇨🇳#中共 运营的13处马达加斯加🇲🇬诈骗中心被美国🇺🇸协助端了</div>
+      <div class="tw-stats">❤️ 114 &nbsp; 🔁 88 &nbsp;
+        💬 28 &nbsp; 🔖 5 &nbsp; 👁 7.8K
+        <a href="https://x.com/wenbei2022/status/2098273139864346683" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>文北</b>
+        <a href="https://x.com/wenbei2022" target="_blank" class="handle">@wenbei2022</a>
+        <span class="score">热度 173</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 19:35 · 14小时前</b></div>
+      <div class="tw-text">🇨🇳#习近平 和🇨🇳#孟建柱 算经济账：孟的触手火幣創辦人 🇨🇳#李林 以 1.9 億英鎊賣倫敦🇬🇧豪宅，新主🇦🇪迪拜富豪之子，李林目前是港股上市公司第一大股東，持股 30%。這家公司的前身是新火科技，再往前是火幣科技，今年 3 月底才改名成 Bitfire。Bitfire 的執行長是 🇨🇳#翁曉奇 2025 年 8 月上任</div>
+      <div class="tw-stats">❤️ 33 &nbsp; 🔁 34 &nbsp;
+        💬 4 &nbsp; 🔖 2 &nbsp; 👁 6.2K
+        <a href="https://x.com/wenbei2022/status/2098737248279965734" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><a class="trend" href="https://x.com/search?q=Massive%20Pit%20Road%20Pile-Up%20Halts%20NASCAR%20Nu%20Way%20225" target="_blank"><span class="rank">#1</span> Massive Pit Road Pile-Up Halts NASCAR Nu Way 225<span class="meta"></span><span class="tmeta">NASCAR Nu Way 225维修区发生大规模连环撞车事故</span></a>
+<a class="trend" href="https://x.com/search?q=Tesla%20Teases%20Next-Gen%20Roadster%20Reveal%20on%20October%201" target="_blank"><span class="rank">#2</span> Tesla Teases Next-Gen Roadster Reveal on October 1<span class="meta"></span><span class="tmeta">特斯拉预告将于10月1日发布下一代Roadster</span></a>
+<a class="trend" href="https://x.com/search?q=Anthropic%20CEO%20Calls%20for%20Slower%20AI%20Development%20to%20Ensure%20Safety" target="_blank"><span class="rank">#3</span> Anthropic CEO Calls for Slower AI Development to Ensure Safety<span class="meta"></span><span class="tmeta">Anthropic CEO呼吁放慢AI发展速度以确保安全</span></a>
+<a class="trend" href="https://x.com/search?q=Jeremiah%20Smith" target="_blank"><span class="rank">#4</span> Jeremiah Smith<span class="meta"></span><span class="tmeta">杰里迈亚·史密斯</span></a>
+<a class="trend" href="https://x.com/search?q=Open%20Source" target="_blank"><span class="rank">#5</span> Open Source<span class="meta"></span><span class="tmeta">开源</span></a>
+<a class="trend" href="https://x.com/search?q=%23HookEm" target="_blank"><span class="rank">#6</span> #HookEm<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Sark" target="_blank"><span class="rank">#7</span> Sark<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23AEWCollision" target="_blank"><span class="rank">#8</span> #AEWCollision<span class="meta"></span><span class="tmeta">#AEW碰撞赛</span></a>
+<a class="trend" href="https://x.com/search?q=DeSean%20Bishop" target="_blank"><span class="rank">#9</span> DeSean Bishop<span class="meta"></span><span class="tmeta">德肖恩·毕晓普</span></a>
+<a class="trend" href="https://x.com/search?q=New%20DraftKings%20Customers" target="_blank"><span class="rank">#10</span> New DraftKings Customers<span class="meta"></span><span class="tmeta">DraftKings新用户</span></a>
+<a class="trend" href="https://x.com/search?q=Texas" target="_blank"><span class="rank">#11</span> Texas<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Oregon" target="_blank"><span class="rank">#12</span> Oregon<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Sam%20Leavitt" target="_blank"><span class="rank">#13</span> Sam Leavitt<span class="meta"></span><span class="tmeta">萨姆·莱维特</span></a>
+<a class="trend" href="https://x.com/search?q=Arthur%20Smith" target="_blank"><span class="rank">#14</span> Arthur Smith<span class="meta"></span><span class="tmeta">亚瑟·史密斯</span></a>
+<a class="trend" href="https://x.com/search?q=Jean%20Silva" target="_blank"><span class="rank">#15</span> Jean Silva<span class="meta"></span><span class="tmeta">让·席尔瓦</span></a>
+<a class="trend" href="https://x.com/search?q=LA%20Tech" target="_blank"><span class="rank">#16</span> LA Tech<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Julian%20Sayin" target="_blank"><span class="rank">#17</span> Julian Sayin<span class="meta"></span><span class="tmeta">朱利安·赛因</span></a>
+<a class="trend" href="https://x.com/search?q=Ryan%20Day" target="_blank"><span class="rank">#18</span> Ryan Day<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Louisiana%20Tech" target="_blank"><span class="rank">#19</span> Louisiana Tech<span class="meta"></span><span class="tmeta">路易斯安那理工大学</span></a>
+<a class="trend" href="https://x.com/search?q=Muschamp" target="_blank"><span class="rank">#20</span> Muschamp<span class="meta"></span><span class="tmeta">穆斯坎普</span></a>
+<a class="trend" href="https://x.com/search?q=Bama" target="_blank"><span class="rank">#21</span> Bama<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23Svengoolie" target="_blank"><span class="rank">#22</span> #Svengoolie<span class="meta"></span><span class="tmeta">#Svengoolie恐怖节目</span></a>
+<a class="trend" href="https://x.com/search?q=%23LAMH" target="_blank"><span class="rank">#23</span> #LAMH<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Stein" target="_blank"><span class="rank">#24</span> Stein<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Colin%20Simmons" target="_blank"><span class="rank">#25</span> Colin Simmons<span class="meta"></span><span class="tmeta">科林·西蒙斯</span></a>
+</div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲47977%</span>
+          <span class="kw-score">总热度 173.1K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Sam Altman</b>
+        <a href="https://x.com/sama" target="_blank" class="handle">@sama</a>
+        <span class="score">热度 172.3K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 00:30 · 9小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098811563415150910" onclick="tg('2098811563415150910')">🌐 翻译</button></div><div class="tw-text" id="o2098811563415150910">I agree with Dario that we need to pace the frontier. This has been a primary topic of discussions we&#x27;ve had at OpenAI in recent weeks.
+
+Committing to having independent evaluators with employee-like access is a great idea, and we will do the same. We&#x27;ll have more to share soon.</div><div class="tw-text tw-trans" id="t2098811563415150910" style="display:none">我同意达里奥的观点，我们需要放缓前沿发展步伐。这也是过去几周OpenAI内部讨论的核心议题之一。
+
+承诺让独立评估方获得类似员工级别的访问权限是个好主意，我们也将效仿。更多细节近期将对外公布。</div>
+      <div class="tw-stats">❤️ 46.9K &nbsp; 🔁 4.9K &nbsp;
+        💬 3.6K &nbsp; 🔖 7.9K &nbsp; 👁 9.6M
+        <a href="https://x.com/sama/status/2098811563415150910" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$TSLA</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲110%</span>
+          <span class="kw-score">总热度 40.8K · 49 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Elon Musk</b>
+        <a href="https://x.com/elonmusk" target="_blank" class="handle">@elonmusk</a>
+        <span class="score">热度 22.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 08:31 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098932438055469451" onclick="tg('2098932438055469451')">🌐 翻译</button></div><div class="tw-text" id="o2098932438055469451">New Tesla Roadster Unveil 10.01</div><div class="tw-text tw-trans" id="t2098932438055469451" style="display:none">新款特斯拉Roadster将于10月1日发布</div>
+      <div class="tw-stats">❤️ 10.1K &nbsp; 🔁 1.1K &nbsp;
+        💬 1.1K &nbsp; 🔖 255 &nbsp; 👁 830.3K
+        <a href="https://x.com/elonmusk/status/2098932438055469451" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲1013%</span>
+          <span class="kw-score">总热度 33.1K · 47 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Elon Musk</b>
+        <a href="https://x.com/elonmusk" target="_blank" class="handle">@elonmusk</a>
+        <span class="score">热度 23.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-13 08:42 · 59分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098935235446551022" onclick="tg('2098935235446551022')">🌐 翻译</button></div><div class="tw-text" id="o2098935235446551022">I’ve been sounding the alarm on AI for a long time</div><div class="tw-text tw-trans" id="t2098935235446551022" style="display:none">我对AI发出警告已经很久了</div>
+      <div class="tw-stats">❤️ 8.9K &nbsp; 🔁 1.0K &nbsp;
+        💬 1.4K &nbsp; 🔖 448 &nbsp; 👁 967.1K
+        <a href="https://x.com/elonmusk/status/2098935235446551022" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲3%</span>
+          <span class="kw-score">总热度 4.6K · 41 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>投资TALK君</b>
+        <a href="https://x.com/TJ_Research" target="_blank" class="handle">@TJ_Research</a>
+        <span class="score">热度 1.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 00:41 · 1天前</b></div>
+      <div class="tw-text">说一些我的判断标准和理解：
+1. 股市和债市可以有滞后，参考22年，债市开始加速定价加息，股市一开始事没有跟的
+2. 现在债市定价3.6次加息，我个人主观判断是过于悲观了，我不认为通胀（PCE）能回到2%，但2.5%-3%的区间，3次加息到4.4%？很高了
+3.</div>
+      <div class="tw-stats">❤️ 416 &nbsp; 🔁 14 &nbsp;
+        💬 55 &nbsp; 🔖 59 &nbsp; 👁 60.0K
+        <a href="https://x.com/TJ_Research/status/2098451937125413251" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼65%</span>
+          <span class="kw-score">总热度 3.4K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Phyrex</b>
+        <a href="https://x.com/PhyrexNi" target="_blank" class="handle">@PhyrexNi</a>
+        <span class="score">热度 607</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-11 22:49 · 1天前</b></div>
+      <div class="tw-text">霍尔木兹可能正在从封锁转向受控通行
+
+伊朗外交部表示，伊拉克和海湾国家将在 9月14日 于阿曼举行会议，讨论霍尔木兹海峡商船航线。
+
+之前伊朗和阿曼已经就建立临时安全航道达成谅解，这次会议相当于把原本伊朗和阿曼之间的方案，扩大到整个海湾地区讨论。</div>
+      <div class="tw-stats">❤️ 35 &nbsp; 🔁 2 &nbsp;
+        💬 27 &nbsp; 🔖 2 &nbsp; 👁 52.4K
+        <a href="https://x.com/PhyrexNi/status/2098423792192348415" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲6%</span>
+          <span class="kw-score">总热度 1.4K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>陈小萌</b>
+        <a href="https://x.com/MengLayer" target="_blank" class="handle">@MengLayer</a>
+        <span class="score">热度 898</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 21:14 · 12小时前</b></div>
+      <div class="tw-text">说个暴论
+
+打工就是在Short自己的健康，Long自己的老板
+
+而工资，只是资金费用罢了</div>
+      <div class="tw-stats">❤️ 405 &nbsp; 🔁 27 &nbsp;
+        💬 62 &nbsp; 🔖 75 &nbsp; 👁 26.7K
+        <a href="https://x.com/MengLayer/status/2098762240078017010" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼84%</span>
+          <span class="kw-score">总热度 1.1K · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Bloomberg</b>
+        <a href="https://x.com/business" target="_blank" class="handle">@business</a>
+        <span class="score">热度 626</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 19:05 · 14小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098729601782395231" onclick="tg('2098729601782395231')">🌐 翻译</button></div><div class="tw-text" id="o2098729601782395231">The surge in oil, gas and diesel prices is forcing central banks and governments to reassess the impact of the wars in Iran and Ukraine</div><div class="tw-text tw-trans" id="t2098729601782395231" style="display:none">油气和柴油价格的飙升正迫使各国央行和政府重新评估伊朗和乌克兰战争的经济冲击</div>
+      <div class="tw-stats">❤️ 95 &nbsp; 🔁 19 &nbsp;
+        💬 10 &nbsp; 🔖 11 &nbsp; 👁 45.3K
+        <a href="https://x.com/business/status/2098729601782395231" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼69%</span>
+          <span class="kw-score">总热度 539 · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Tajo_Onchain</b>
+        <a href="https://x.com/Bansss_" target="_blank" class="handle">@Bansss_</a>
+        <span class="score">热度 131</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-12 12:45 · 20小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2098634112743755951" onclick="tg('2098634112743755951')">🌐 翻译</button></div><div class="tw-text" id="o2098634112743755951">🎫KBW 티켓 1장 나눔함
+이번 KBW 가고 싶은데 아직 티켓을 못 구한 사람 한명 보내드림
+
+참여방법 
+
+1⃣ @Bansss_ 팔로우
+2⃣ 이 글 좋아요 + 리트윗 (인용이면 더 감사)
+3⃣ 댓글에 KBW에서 제일 보고 싶은 프로젝트나 분야 적기
+하이퍼리퀴드 / RWAPERP / RWA / AI / 트레이딩 뭐든 상관X
+
+마감 9월</div><div class="tw-text tw-trans" id="t2098634112743755951" style="display:none">🎫赠送一张KBW门票
+想去这届KBW但还没抢到票的朋友，送一位
+
+参与方式
+
+1⃣ 关注 @Bansss_
+2⃣ 点赞 + 转推本帖（引用转推更佳）
+3⃣ 在评论区写下你在KBW最想了解的项目或领域
+Hyperliquid / RWAPERP / RWA / AI / 交易 均可
+
+截止日期：9月</div>
+      <div class="tw-stats">❤️ 40 &nbsp; 🔁 13 &nbsp;
+        💬 21 &nbsp; 🔖 1 &nbsp; 👁 1.9K
+        <a href="https://x.com/Bansss_/status/2098634112743755951" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
