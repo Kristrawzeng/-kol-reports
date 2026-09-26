@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-09-26</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-09-26 · 更新于 09:40</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-09-26.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-09-26.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<div class="summary">🧠 <b>今日讨论总览</b><p>今日讨论主线聚焦于中美首脑会晤的历史隐喻与地缘博弈、美债收益率飙升引发的全球资产重新定价恐慌，以及特斯拉Semi量产与甲骨文财务造假疑云。市场情绪在地缘危机与高息压力下偏向避险与恐慌。</p></div><div class="vp-row">
+            <div class="vp-card">
+              <div class="vp-p">特朗普称中美曾为二战盟国，呼应中国抗日历史观。</div>
+              <div class="vp-q">「特朗普称中国是「第二次世界大战时的盟国」，还提及曾与日军作战的美国志愿兵。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/nikkei" target="_blank">@nikkei</a> <a class="hold" href="https://x.com/rijingzhongwen" target="_blank">@rijingzhongwen</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">习近平在白宫晚宴直接点名日本，强调中美并肩抗击日本军国主义。</div>
+              <div class="vp-q">「中美两国人民并肩作战，抗击日本军国主义侵略者」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/rijingzhongwen" target="_blank">@rijingzhongwen</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">中国以贸易、伊朗和朝鲜为三张王牌，迫使美国在台湾问题上做出让步。</div>
+              <div class="vp-q">「中国以贸易、伊朗和朝鲜为王牌，迫使美国在台湾问题上做出让步」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/rijingzhongwen" target="_blank">@rijingzhongwen</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">美债收益率飙升破5%，无风险利率压制全球风险资产。</div>
+              <div class="vp-q">「通胀没死，加息没完...无风险躺着拿5%以上，谁还愿意去股市里挨刀？全球资产重新定价。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/qtdevlop" target="_blank">@qtdevlop</a> <a class="hold" href="https://x.com/DLNHLGSN" target="_blank">@DLNHLGSN</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">甲骨文使用客户预付款等安然式财技，疑引发雷曼式崩盘担忧。</div>
+              <div class="vp-q">「Larry Ellison used the Enron trick... of Customer Pre-Payments... Oracle is Lehman 2026.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/rdd147" target="_blank">@rdd147</a> <a class="hold" href="https://x.com/Tazerface16" target="_blank">@Tazerface16</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">特朗普拒绝伊朗7天停火提议，预计在中期选举后开始轰炸伊朗。</div>
+              <div class="vp-q">「President Trump has rejected Iran’s proposal for a 7-day ceasefire... expects to begin bombing Iran」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/KobeissiLetter" target="_blank">@KobeissiLetter</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">特斯拉正式启动Semi高产量生产，并在全美铺设Megacharger充电网络。</div>
+              <div class="vp-q">「Today, we&#x27;re launching high volume production... Wherever we’re going to put trucks, we will also have chargers.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/tesla_semi" target="_blank">@tesla_semi</a> <a class="hold" href="https://x.com/Teslaconomics" target="_blank">@Teslaconomics</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">韩国股市近两月仅有单一神秘买家，单枪匹马支撑芯片和内存贸易。</div>
+              <div class="vp-q">「You&#x27;ll never guess who is the only buyer of stocks in Korea... singlehandedly propping up the chip/memory trade」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/zerohedge" target="_blank">@zerohedge</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">日元跌势不止逼近160关口，干预预期再起。</div>
+              <div class="vp-q">「日元贬值、美元升值的趋势仍未得到遏制...随着具有心理意义的1美元兑160日元关口再次逼近，也有再次干预的预测」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/rijingzhongwen" target="_blank">@rijingzhongwen</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">中美首脑晚宴再现1972年尼克松访华时「为和平干杯」的历史场景。</div>
+              <div class="vp-q">「晚宴提供了与1972年时任美国总统尼克松访华时...进行「为和平干杯」有关联的葡萄酒」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/rijingzhongwen" target="_blank">@rijingzhongwen</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">贝莱德推出超低费率纳指100 ETF，打破QQQ长期垄断格局。</div>
+              <div class="vp-q">「贝莱德推出纳指 100 ETF（代码：IQQ），打破了 QQQ 长期垄断的格局...明显低于 QQQ 的 0.15%」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/WangNextDoor2" target="_blank">@WangNextDoor2</a></div>
+            </div></div>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 美股投资 <span>· 8 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="5831" data-time="1790345340">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>Trader Theory</b>
+            <a href="https://x.com/tradertheory" target="_blank" class="handle">@tradertheory</a>
+            <span class="kw-score">活跃度 5.8K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Trader Theory</b>
+        <a href="https://x.com/tradertheory" target="_blank" class="handle">@tradertheory</a>
+        <span class="score">热度 5.8K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 22:09 · 11小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103486932554842289" onclick="tg('2103486932554842289')">🌐 翻译</button></div><div class="tw-text" id="o2103486932554842289">Michael Lewis on how the stock market is rigged.</div><div class="tw-text tw-trans" id="t2103486932554842289" style="display:none">迈克尔·刘易斯谈股市是如何被操纵的。</div>
+      <div class="tw-stats">❤️ 2.2K &nbsp; 🔁 500 &nbsp;
+        💬 59 &nbsp; 🔖 1.3K &nbsp; 👁 114.1K
+        <a href="https://x.com/tradertheory/status/2103486932554842289" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="2315" data-time="1790365708">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>Roger</b>
+            <a href="https://x.com/rdd147" target="_blank" class="handle">@rdd147</a>
+            <span class="kw-score">活跃度 2.3K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Roger</b>
+        <a href="https://x.com/rdd147" target="_blank" class="handle">@rdd147</a>
+        <span class="score">热度 2.3K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 03:48 · 5小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103572361572426139" onclick="tg('2103572361572426139')">🌐 翻译</button></div><div class="tw-text" id="o2103572361572426139">$ORCL bonds crossing 8.3% for the first time after Larry Ellison used the Enron trick (first time anyone did since Enron) of “Customer Pre-Payments with a Significant Interest Component” to hide Operating Cash Flow Problems.
+
+Notably Oracle also was the first Publicly Listed US</div><div class="tw-text tw-trans" id="t2103572361572426139" style="display:none">$ORCL债券收益率突破8.3%，创下历史新高。此前，拉里·埃里森使用了安然公司的把戏（自安然事件以来首次有人使用）——即「附带重大利息要素的客户预付款」——来掩盖经营性现金流问题。
+
+值得注意的是，甲骨文也是美国第一家上市</div>
+      <div class="tw-stats">❤️ 982 &nbsp; 🔁 186 &nbsp;
+        💬 36 &nbsp; 🔖 173 &nbsp; 👁 68.2K
+        <a href="https://x.com/rdd147/status/2103572361572426139" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="650" data-time="1790336760">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>中年码农</b>
+            <a href="https://x.com/qtdevlop" target="_blank" class="handle">@qtdevlop</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼37%</span>
+            <span class="kw-score">活跃度 650 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>中年码农</b>
+        <a href="https://x.com/qtdevlop" target="_blank" class="handle">@qtdevlop</a>
+        <span class="score">热度 204</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 09:31 · 1天前</b></div>
+      <div class="tw-text">美债又疯了。
+
+10年期破5.19%，30年期破5.48%。
+
+通胀没死，加息没完，油价还在蓄势待发，发债一堆，AI那边还拼命抢钱。
+
+无风险躺着拿5%以上，谁还愿意去股市里挨刀？
+
+全球资产重新定价。科技股先被锤，房贷也跟着变贵。
+
+现在不是比谁胆大，是比谁扛得住。
+
+别被甩下车了，兄弟们。</div>
+      <div class="tw-stats">❤️ 33 &nbsp; 🔁 2 &nbsp;
+        💬 25 &nbsp; 🔖 8 &nbsp; 👁 11.8K
+        <a href="https://x.com/qtdevlop/status/2103296175457649050" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>中年码农</b>
+        <a href="https://x.com/qtdevlop" target="_blank" class="handle">@qtdevlop</a>
+        <span class="score">热度 153</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 19:46 · 13小时前</b></div>
+      <div class="tw-text">再提醒一次：
+买主动QDII，先看名字，再看持仓。
+
+有的叫「新能源」，前十全是信息科技。
+
+有的叫「海外科技」，一半仓位在木头姐ARK那几只高波动主题里。
+
+有的叫「全球精选」，基金经理随时可能悄悄加A股港股。
+
+名字是营销，持仓才是仓位。
+
+想要纳指底仓，别买错成主题基金。</div>
+      <div class="tw-stats">❤️ 41 &nbsp; 🔁 3 &nbsp;
+        💬 15 &nbsp; 🔖 15 &nbsp; 👁 6.9K
+        <a href="https://x.com/qtdevlop/status/2103450945577193506" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="360" data-time="1790386085">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>Cole Grinde</b>
+            <a href="https://x.com/GrindeOptions" target="_blank" class="handle">@GrindeOptions</a>
+            <span class="kw-score">活跃度 360 · 5 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Cole Grinde</b>
+        <a href="https://x.com/GrindeOptions" target="_blank" class="handle">@GrindeOptions</a>
+        <span class="score">热度 198</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 06:25 · 3小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103611909606138174" onclick="tg('2103611909606138174')">🌐 翻译</button></div><div class="tw-text" id="o2103611909606138174">This is your last chance to buy $TSLA in the $300’s.</div><div class="tw-text tw-trans" id="t2103611909606138174" style="display:none">这是你在300多美元买入$TSLA的最后机会。</div>
+      <div class="tw-stats">❤️ 105 &nbsp; 🔁 2 &nbsp;
+        💬 22 &nbsp; 🔖 5 &nbsp; 👁 4.9K
+        <a href="https://x.com/GrindeOptions/status/2103611909606138174" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Cole Grinde</b>
+        <a href="https://x.com/GrindeOptions" target="_blank" class="handle">@GrindeOptions</a>
+        <span class="score">热度 15</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 09:06 · 33分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103652437026615391" onclick="tg('2103652437026615391')">🌐 翻译</button></div><div class="tw-text" id="o2103652437026615391">$TSLA, $SPCX, $ASST, $SOFI, $HOOD, $AMZN would be my top 6.</div><div class="tw-text tw-trans" id="t2103652437026615391" style="display:none">$TSLA, $SPCX, $ASST, $SOFI, $HOOD, $AMZN 会是我的前六大选择。</div>
+      <div class="tw-stats">❤️ 3 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 0 &nbsp; 👁 1.0K
+        <a href="https://x.com/GrindeOptions/status/2103652437026615391" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="307" data-time="1790360985">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>勃勃OC</b>
+            <a href="https://x.com/bboczeng" target="_blank" class="handle">@bboczeng</a>
+            <span class="kw-score">活跃度 307 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>勃勃OC</b>
+        <a href="https://x.com/bboczeng" target="_blank" class="handle">@bboczeng</a>
+        <span class="score">热度 200</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 23:49 · 9小时前</b></div>
+      <div class="tw-text">MSFT退出所谓Agent OS之后，Meta股价下跌
+
+美股的投机者是不是脑子都有病？
+
+我说的是所有机构们
+
+😅😅😅</div>
+      <div class="tw-stats">❤️ 28 &nbsp; 🔁 0 &nbsp;
+        💬 12 &nbsp; 🔖 5 &nbsp; 👁 14.7K
+        <a href="https://x.com/bboczeng/status/2103512249323450708" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>勃勃OC</b>
+        <a href="https://x.com/bboczeng" target="_blank" class="handle">@bboczeng</a>
+        <span class="score">热度 67</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 02:29 · 7小时前</b></div>
+      <div class="tw-text">其实就是这样，伊朗也是如此
+
+要和谈了就涨
+
+要打仗了就跌
+
+请问这群机构有脑子吗？
+
+很显然没有
+
+现在美股已经没脑子了
+
+只剩下一群玩期权的猴子
+
+我们只需紧盯着国债
+
+看他们还能上蹿下跳几天
+
+😅😅😅</div>
+      <div class="tw-stats">❤️ 13 &nbsp; 🔁 1 &nbsp;
+        💬 7 &nbsp; 🔖 1 &nbsp; 👁 4.1K
+        <a href="https://x.com/bboczeng/status/2103552551807508871" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="295" data-time="1790354734">
+          <div class="kol-head"><span class="rank">#18</span>
+            <b>Joel</b>
+            <a href="https://x.com/growthrapidly" target="_blank" class="handle">@growthrapidly</a>
+            <span class="kw-score">活跃度 295 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Joel</b>
+        <a href="https://x.com/growthrapidly" target="_blank" class="handle">@growthrapidly</a>
+        <span class="score">热度 295</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 00:45 · 8小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103526336161599644" onclick="tg('2103526336161599644')">🌐 翻译</button></div><div class="tw-text" id="o2103526336161599644">What’s your “I don’t care what happens this week, I’m holding for years” stock? 👀</div><div class="tw-text tw-trans" id="t2103526336161599644" style="display:none">你那只会「不管这周发生什么，我都持有几年」的股票是什么？👀</div>
+      <div class="tw-stats">❤️ 50 &nbsp; 🔁 1 &nbsp;
+        💬 69 &nbsp; 🔖 3 &nbsp; 👁 13.1K
+        <a href="https://x.com/growthrapidly/status/2103526336161599644" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="253" data-time="1790359770">
+          <div class="kol-head"><span class="rank">#19</span>
+            <b>Christopher David</b>
+            <a href="https://x.com/Tazerface16" target="_blank" class="handle">@Tazerface16</a>
+            <span class="kw-score">活跃度 253 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Christopher David</b>
+        <a href="https://x.com/Tazerface16" target="_blank" class="handle">@Tazerface16</a>
+        <span class="score">热度 253</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 02:09 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103547457875374344" onclick="tg('2103547457875374344')">🌐 翻译</button></div><div class="tw-text" id="o2103547457875374344">Oracle is Lehman 2026.</div><div class="tw-text tw-trans" id="t2103547457875374344" style="display:none">甲骨文就是2026年的雷曼。</div>
+      <div class="tw-stats">❤️ 153 &nbsp; 🔁 12 &nbsp;
+        💬 11 &nbsp; 🔖 4 &nbsp; 👁 5.2K
+        <a href="https://x.com/Tazerface16/status/2103547457875374344" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="231" data-time="1790353939">
+          <div class="kol-head"><span class="rank">#20</span>
+            <b>WangNextDoor</b>
+            <a href="https://x.com/WangNextDoor2" target="_blank" class="handle">@WangNextDoor2</a>
+            <span class="kw-score">活跃度 231 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>WangNextDoor</b>
+        <a href="https://x.com/WangNextDoor2" target="_blank" class="handle">@WangNextDoor2</a>
+        <span class="score">热度 231</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 00:32 · 9小时前</b></div>
+      <div class="tw-text">贝莱德推出 IQQ：纳指 100 ETF 价格战开打！
+
+贝莱德推出纳指 100 ETF（代码：IQQ），打破了 QQQ 长期垄断的格局：
+极致低费率：IQQ 优惠期净费率低至 0.10%（至 2027 年 7 月），明显低于 QQQ 的 0.15%，大幅节省持仓成本。
+散户友好门槛：单股价格仅约 24 美元，相比 QQQ（$700+）和</div>
+      <div class="tw-stats">❤️ 68 &nbsp; 🔁 7 &nbsp;
+        💬 4 &nbsp; 🔖 54 &nbsp; 👁 8.7K
+        <a href="https://x.com/WangNextDoor2/status/2103522999194587593" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 电动汽车 <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="233713" data-time="1790298434">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>Tesla Semi</b>
+            <a href="https://x.com/tesla_semi" target="_blank" class="handle">@tesla_semi</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲8083%</span>
+            <span class="kw-score">活跃度 233.7K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Tesla Semi</b>
+        <a href="https://x.com/tesla_semi" target="_blank" class="handle">@tesla_semi</a>
+        <span class="score">热度 150.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 09:04 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103289460767203424" onclick="tg('2103289460767203424')">🌐 翻译</button></div><div class="tw-text" id="o2103289460767203424">Semi is here
+
+Today, we&#x27;re launching high volume production</div><div class="tw-text tw-trans" id="t2103289460767203424" style="display:none">Semi来了
+
+今天，我们正式启动量产。</div>
+      <div class="tw-stats">❤️ 44.1K &nbsp; 🔁 4.2K &nbsp;
+        💬 1.1K &nbsp; 🔖 3.8K &nbsp; 👁 9.1M
+        <a href="https://x.com/tesla_semi/status/2103289460767203424" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Tesla Semi</b>
+        <a href="https://x.com/tesla_semi" target="_blank" class="handle">@tesla_semi</a>
+        <span class="score">热度 53.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 09:07 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103290194585964753" onclick="tg('2103290194585964753')">🌐 翻译</button></div><div class="tw-text" id="o2103290194585964753">This is our first factory built for Semi.
+
+– 50,000 units/year
+
+– Every variant built on the same production line (Standard, Long Range, European spec)
+
+– 1.8M sq ft</div><div class="tw-text tw-trans" id="t2103290194585964753" style="display:none">这是专为Semi建造的第一座工厂。
+
+– 年产能5万辆
+– 所有版本（标准版、长续航版、欧洲规格）在同一条生产线制造
+– 面积180万平方英尺</div>
+      <div class="tw-stats">❤️ 6.2K &nbsp; 🔁 661 &nbsp;
+        💬 170 &nbsp; 🔖 451 &nbsp; 👁 4.5M
+        <a href="https://x.com/tesla_semi/status/2103290194585964753" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1747" data-time="1790300039">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>Teslaconomics</b>
+            <a href="https://x.com/Teslaconomics" target="_blank" class="handle">@Teslaconomics</a>
+            <span class="kw-score">活跃度 1.7K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Teslaconomics</b>
+        <a href="https://x.com/Teslaconomics" target="_blank" class="handle">@Teslaconomics</a>
+        <span class="score">热度 1.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 09:33 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103296926741631146" onclick="tg('2103296926741631146')">🌐 翻译</button></div><div class="tw-text" id="o2103296926741631146">Tesla just showed the Megacharger map. 
+
+“Wherever we’re going to put trucks, we will also have chargers.”
+
+By the end of the year there will be: 
+• 30+ Megacharger stations coming online. 
+• 200+ megawatt-capable posts
+• Up to 60% of range back in a 30-minute driver break.
+•</div><div class="tw-text tw-trans" id="t2103296926741631146" style="display:none">特斯拉刚刚展示了Megacharger充电站地图。
+
+「只要有卡车的地方，我们就会有充电站。」
+
+到今年年底将有：
+• 30多座Megacharger充电站上线
+• 200多个兆瓦级充电桩
+• 30分钟司机休息时间内恢复高达60%的续航里程
+•</div>
+      <div class="tw-stats">❤️ 937 &nbsp; 🔁 103 &nbsp;
+        💬 4 &nbsp; 🔖 57 &nbsp; 👁 52.3K
+        <a href="https://x.com/Teslaconomics/status/2103296926741631146" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 国际时政 <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="9815" data-time="1790321126">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>日经中文网/日經中文網</b>
+            <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲43%</span>
+            <span class="kw-score">活跃度 9.8K · 14 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日经中文网/日經中文網</b>
+        <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a>
+        <span class="score">热度 434</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 15:25 · 18小时前</b></div>
+      <div class="tw-text">【习近平在中美晚宴直接点名日本】中国国家主席习近平9月24日在白宫举行的晚宴上发表讲话时提及第二次世界大战，表示：“中美两国人民并肩作战，抗击日本军国主义侵略者”……</div>
+      <div class="tw-stats">❤️ 45 &nbsp; 🔁 4 &nbsp;
+        💬 27 &nbsp; 🔖 5 &nbsp; 👁 33.3K
+        <a href="https://x.com/rijingzhongwen/status/2103385371015033302" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>日经中文网/日經中文網</b>
+        <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a>
+        <span class="score">热度 395</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 10:21 · 23小时前</b></div>
+      <div class="tw-text">【特朗普称“中国是二战时的盟国”，呼应中国历史】特朗普称中国是“第二次世界大战时的盟国”，还提及曾与日军作战的美国志愿兵。中国此前曾要求特朗普聚焦两国共同抗击日本的历史，此次特朗普的表态可能被解读为对中国的呼应……</div>
+      <div class="tw-stats">❤️ 86 &nbsp; 🔁 11 &nbsp;
+        💬 27 &nbsp; 🔖 9 &nbsp; 👁 22.6K
+        <a href="https://x.com/rijingzhongwen/status/2103308954470334794" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="5363" data-time="1790292033">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>日本経済新聞 電子版（日経電子版）</b>
+            <a href="https://x.com/nikkei" target="_blank" class="handle">@nikkei</a>
+            <span class="kw-score">活跃度 5.4K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日本経済新聞 電子版（日経電子版）</b>
+        <a href="https://x.com/nikkei" target="_blank" class="handle">@nikkei</a>
+        <span class="score">热度 5.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 07:20 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103263346627576011" onclick="tg('2103263346627576011')">🌐 翻译</button></div><div class="tw-text" id="o2103263346627576011">トランプ氏｢中国は大戦時の同盟国｣　習氏の抗日歴史観に呼応の危うさ
+
+
+両首脳は会談に先立ちホワイトハウスで演説。トランプ氏は日本と戦った米国人義勇兵にも言及しました。</div><div class="tw-text tw-trans" id="t2103263346627576011" style="display:none">特朗普称「中国是大战时的同盟国」，呼应习氏抗日历史观引发风险
+
+两国首脑在会谈前于白宫发表演讲。特朗普还提及了与日本作战的美国志愿军。</div>
+      <div class="tw-stats">❤️ 685 &nbsp; 🔁 294 &nbsp;
+        💬 133 &nbsp; 🔖 100 &nbsp; 👁 353.1K
+        <a href="https://x.com/nikkei/status/2103263346627576011" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 宏观财经 <span>· 3 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="6707" data-time="1790382723">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>zerohedge</b>
+            <a href="https://x.com/zerohedge" target="_blank" class="handle">@zerohedge</a>
+            <span class="kw-score">活跃度 6.7K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>zerohedge</b>
+        <a href="https://x.com/zerohedge" target="_blank" class="handle">@zerohedge</a>
+        <span class="score">热度 2.9K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 08:32 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103643728674271468" onclick="tg('2103643728674271468')">🌐 翻译</button></div><div class="tw-text" id="o2103643728674271468">Well, market IS closed for the weekend so...
+
+*TRUMP REJECTS IRAN 7-DAY CEASEFIRE PROPOSAL: WSJ
+
+*TRUMP TOLD AIDES HE EXPECTS RESUMED BOMBING AFTER MIDTERMS: WSJ
+
+*US HAS TOLD IRAN THAT TRUMP WON&#x27;T LIFT NAVAL BLOCKADE: WSJ</div><div class="tw-text tw-trans" id="t2103643728674271468" style="display:none">好吧，市场周末确实休市，所以……
+
+「特朗普拒绝伊朗7天停火提议：WSJ」
+
+「特朗普告诉助手，他预计在中期选举后恢复轰炸：WSJ」
+
+「美国已告知伊朗，特朗普不会解除海上封锁：WSJ」</div>
+      <div class="tw-stats">❤️ 1.1K &nbsp; 🔁 159 &nbsp;
+        💬 99 &nbsp; 🔖 83 &nbsp; 👁 115.3K
+        <a href="https://x.com/zerohedge/status/2103643728674271468" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>zerohedge</b>
+        <a href="https://x.com/zerohedge" target="_blank" class="handle">@zerohedge</a>
+        <span class="score">热度 2.9K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 20:12 · 13小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103457670506430966" onclick="tg('2103457670506430966')">🌐 翻译</button></div><div class="tw-text" id="o2103457670506430966">You&#x27;ll never guess who is the only buyer of stocks in Korea in the past two months, singlehandedly propping up the chip/memory trade</div><div class="tw-text tw-trans" id="t2103457670506430966" style="display:none">你绝对猜不到过去两个月韩国股市唯一的买家是谁，它凭一己之力撑起了芯片和存储交易。</div>
+      <div class="tw-stats">❤️ 952 &nbsp; 🔁 87 &nbsp;
+        💬 55 &nbsp; 🔖 186 &nbsp; 👁 148.4K
+        <a href="https://x.com/zerohedge/status/2103457670506430966" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="6101" data-time="1790383015">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>The Kobeissi Letter</b>
+            <a href="https://x.com/KobeissiLetter" target="_blank" class="handle">@KobeissiLetter</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼71%</span>
+            <span class="kw-score">活跃度 6.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>The Kobeissi Letter</b>
+        <a href="https://x.com/KobeissiLetter" target="_blank" class="handle">@KobeissiLetter</a>
+        <span class="score">热度 6.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 08:36 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103644955751088465" onclick="tg('2103644955751088465')">🌐 翻译</button></div><div class="tw-text" id="o2103644955751088465">BREAKING: President Trump has rejected Iran’s proposal for a 7-day ceasefire and has told aides he expects to begin bombing Iran after the November midterms, per WSJ.
+
+Iran’s proposal would have reopened the Strait of Hormuz and resumed nuclear talks in return for the US lifting</div><div class="tw-text tw-trans" id="t2103644955751088465" style="display:none">突发：据WSJ报道，特朗普总统拒绝了伊朗7天停火的提议，并告诉助手他预计在11月中期选举后开始轰炸伊朗。
+
+伊朗的提议本会重新开放霍尔木兹海峡并恢复核谈判，以换取美国解除</div>
+      <div class="tw-stats">❤️ 2.6K &nbsp; 🔁 342 &nbsp;
+        💬 238 &nbsp; 🔖 238 &nbsp; 👁 200.0K
+        <a href="https://x.com/KobeissiLetter/status/2103644955751088465" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1672" data-time="1790354000">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>🐕 l n h l g s n 🐕</b>
+            <a href="https://x.com/DLNHLGSN" target="_blank" class="handle">@DLNHLGSN</a>
+            <span class="kw-score">活跃度 1.7K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>🐕 l n h l g s n 🐕</b>
+        <a href="https://x.com/DLNHLGSN" target="_blank" class="handle">@DLNHLGSN</a>
+        <span class="score">热度 1.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 00:33 · 9小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103523254304489611" onclick="tg('2103523254304489611')">🌐 翻译</button></div><div class="tw-text" id="o2103523254304489611">Holy shit I was quoted 6.25% like eight weeks ago. This is insane. He’s really gonna crash everything</div><div class="tw-text tw-trans" id="t2103523254304489611" style="display:none">我去，八周前我收到的报价还是6.25%。这太疯狂了。他真的要搞崩一切。</div>
+      <div class="tw-stats">❤️ 1.3K &nbsp; 🔁 40 &nbsp;
+        💬 15 &nbsp; 🔖 32 &nbsp; 👁 23.7K
+        <a href="https://x.com/DLNHLGSN/status/2103523254304489611" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 5 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="6265" data-time="1790344025">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>Jumper</b>
+            <a href="https://x.com/jumperapp" target="_blank" class="handle">@jumperapp</a>
+            <span class="kw-score">活跃度 6.3K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jumper</b>
+        <a href="https://x.com/jumperapp" target="_blank" class="handle">@jumperapp</a>
+        <span class="score">热度 6.3K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 21:47 · 11小时前</b></div>
+      <div class="tw-text"></div>
+      <div class="tw-stats">❤️ 2.0K &nbsp; 🔁 278 &nbsp;
+        💬 321 &nbsp; 🔖 338 &nbsp; 👁 235.8K
+        <a href="https://x.com/jumperapp/status/2103481417070203369" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="2213" data-time="1790347811">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>谢家印</b>
+            <a href="https://x.com/xiejiayinBitget" target="_blank" class="handle">@xiejiayinBitget</a>
+            <span class="kw-score">活跃度 2.2K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>谢家印</b>
+        <a href="https://x.com/xiejiayinBitget" target="_blank" class="handle">@xiejiayinBitget</a>
+        <span class="score">热度 2.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 22:50 · 10小时前</b></div>
+      <div class="tw-text">重要更新！#提币时间将于明天中午12点前公布。感谢您的耐心等待。 关于今天安全事件的最新进展，详情如下： 
+
+1、安全团队已精准定位本次黑客攻击路径与攻击手法，并掌握攻击者绕过安全防护的相关细节，距离溯源攻击源头已十分接近。第三方安全团队 Mandiant 和 SlowMist</div>
+      <div class="tw-stats">❤️ 326 &nbsp; 🔁 41 &nbsp;
+        💬 123 &nbsp; 🔖 70 &nbsp; 👁 146.3K
+        <a href="https://x.com/xiejiayinBitget/status/2103497298655547608" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1770" data-time="1790318460">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>WEEX</b>
+            <a href="https://x.com/WEEX_Official" target="_blank" class="handle">@WEEX_Official</a>
+            <span class="kw-score">活跃度 1.8K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>WEEX</b>
+        <a href="https://x.com/WEEX_Official" target="_blank" class="handle">@WEEX_Official</a>
+        <span class="score">热度 1.8K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 14:41 · 18小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103374189293936672" onclick="tg('2103374189293936672')">🌐 翻译</button></div><div class="tw-text" id="o2103374189293936672">Are You Ready? 
+
+🎁 50 USDT / 5 winners
+⚫️ Reply with your #1 stock pick + UID
+⚫️ Quote this post with your reason why
+
+Ends in 5 days 👇</div><div class="tw-text tw-trans" id="t2103374189293936672" style="display:none">准备好了吗？
+
+🎁 50 USDT / 5名中奖者
+⚫️ 回复你的第一股票选择 + UID
+⚫️ 引用此帖并附上你的理由
+
+5天后结束👇</div>
+      <div class="tw-stats">❤️ 318 &nbsp; 🔁 233 &nbsp;
+        💬 268 &nbsp; 🔖 35 &nbsp; 👁 23.9K
+        <a href="https://x.com/WEEX_Official/status/2103374189293936672" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1258" data-time="1790359028">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>lucas.var</b>
+            <a href="https://x.com/variational_lvs" target="_blank" class="handle">@variational_lvs</a>
+            <span class="kw-score">活跃度 1.3K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>lucas.var</b>
+        <a href="https://x.com/variational_lvs" target="_blank" class="handle">@variational_lvs</a>
+        <span class="score">热度 1.3K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 01:57 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103544345869836790" onclick="tg('2103544345869836790')">🌐 翻译</button></div><div class="tw-text" id="o2103544345869836790">A year and a half ago, we launched Omni to bring broker-style trading on-chain. Back then, we got excited about hitting $1M in daily volume. As we relentlessly iterated on our product with UI redesigns, spread improvements, new order types, and more listings, our user base grew</div><div class="tw-text tw-trans" id="t2103544345869836790" style="display:none">一年半前，我们推出了Omni，将券商式交易引入链上。当时，日交易量突破100万美元就让我们兴奋不已。随着我们不断迭代产品，重新设计UI、改善点差、推出新订单类型并增加更多代币上线，我们的用户群增长了</div>
+      <div class="tw-stats">❤️ 526 &nbsp; 🔁 60 &nbsp;
+        💬 108 &nbsp; 🔖 30 &nbsp; 👁 35.0K
+        <a href="https://x.com/variational_lvs/status/2103544345869836790" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="513" data-time="1790379975">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>The Gentleman</b>
+            <a href="https://x.com/byTheGentleman" target="_blank" class="handle">@byTheGentleman</a>
+            <span class="kw-score">活跃度 513 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>The Gentleman</b>
+        <a href="https://x.com/byTheGentleman" target="_blank" class="handle">@byTheGentleman</a>
+        <span class="score">热度 352</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 03:43 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103208840493687266" onclick="tg('2103208840493687266')">🌐 翻译</button></div><div class="tw-text" id="o2103208840493687266">$INDEX Wins If Robinhood Wins.
+
+Most Robinhood plays need their own token to keep winning.
+
+$INDEX can benefit from activity happening around the entire ecosystem.
+
+Every @TheIndexFi trade takes a 3% fee that is used to buy tokenized stocks and distribute them back to holders.</div><div class="tw-text tw-trans" id="t2103208840493687266" style="display:none">如果Robinhood赢了，$INDEX就赢了。
+
+大多数Robinhood相关的项目都需要自己的代币来维持赢面。
+
+$INDEX能从整个生态系统中的活动中受益。
+
+每一笔@TheIndexFi交易都会收取3%的费用，用于购买代币化股票并分配给持有者。</div>
+      <div class="tw-stats">❤️ 129 &nbsp; 🔁 27 &nbsp;
+        💬 6 &nbsp; 🔖 5 &nbsp; 👁 14.3K
+        <a href="https://x.com/byTheGentleman/status/2103208840493687266" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>The Gentleman</b>
+        <a href="https://x.com/byTheGentleman" target="_blank" class="handle">@byTheGentleman</a>
+        <span class="score">热度 94</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 07:46 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103632203552878724" onclick="tg('2103632203552878724')">🌐 翻译</button></div><div class="tw-text" id="o2103632203552878724">$INDEX CAN MAKE MONEY FROM TOKENS IT DIDN&#x27;T CREATE.
+
+Most tokens here need their own volume to win.
+
+$INDEX can make money from everyone else&#x27;s.
+
+The original product already takes trading fees, buys tokenized stocks and distributes them to holders. Around $1.7M worth of stocks</div><div class="tw-text tw-trans" id="t2103632203552878724" style="display:none">$INDEX能从它没有创建的代币中赚钱。
+
+这里的大多数代币需要自己的交易量才能赢。
+
+$INDEX能从别人的交易量中赚钱。
+
+原产品已经收取交易费，购买代币化股票并分配给持有者。价值约170万美元的股票</div>
+      <div class="tw-stats">❤️ 46 &nbsp; 🔁 11 &nbsp;
+        💬 4 &nbsp; 🔖 2 &nbsp; 👁 1.6K
+        <a href="https://x.com/byTheGentleman/status/2103632203552878724" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><a class="trend" href="https://x.com/search?q=Solana%27s%20SOL%20Token%20Hits%20%24120%20High%20After%20Eight%20Months" target="_blank"><span class="rank">#1</span> Solana&#x27;s SOL Token Hits $120 High After Eight Months<span class="meta"></span><span class="tmeta">Solana的SOL代币八个月后触及120美元高点</span></a>
+<a class="trend" href="https://x.com/search?q=Tesla%20Starts%20High-Volume%20Semi%20Truck%20Production%20and%20Deliveries" target="_blank"><span class="rank">#2</span> Tesla Starts High-Volume Semi Truck Production and Deliveries<span class="meta"></span><span class="tmeta">特斯拉开始大量生产并交付Semi半挂卡车</span></a>
+<a class="trend" href="https://x.com/search?q=AI%20Video%20Celebrates%20Western%20Civilization%27s%20Achievements%20from%20Greece%20to%20Stars" target="_blank"><span class="rank">#3</span> AI Video Celebrates Western Civilization&#x27;s Achievements from Greece to Stars<span class="meta"></span><span class="tmeta">AI视频赞颂从希腊到星辰的西方文明成就</span></a>
+<a class="trend" href="https://x.com/search?q=%23BeyondTheGates" target="_blank"><span class="rank">#4</span> #BeyondTheGates<span class="meta"></span><span class="tmeta">#超越之门</span></a>
+<a class="trend" href="https://x.com/search?q=Army" target="_blank"><span class="rank">#5</span> Army<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Showgirl" target="_blank"><span class="rank">#6</span> Showgirl<span class="meta"></span><span class="tmeta">歌舞女郎</span></a>
+<a class="trend" href="https://x.com/search?q=Britney" target="_blank"><span class="rank">#7</span> Britney<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Nick%20Marsh" target="_blank"><span class="rank">#8</span> Nick Marsh<span class="meta"></span><span class="tmeta">尼克·马什</span></a>
+<a class="trend" href="https://x.com/search?q=MNTD" target="_blank"><span class="rank">#9</span> MNTD<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Avengers%20Endgame%3A%20Encore" target="_blank"><span class="rank">#10</span> Avengers Endgame: Encore<span class="meta"></span><span class="tmeta">复仇者联盟4：终局之战重映</span></a>
+<a class="trend" href="https://x.com/search?q=%23SmackDown" target="_blank"><span class="rank">#11</span> #SmackDown<span class="meta"></span><span class="tmeta">#周五夜狂潮</span></a>
+<a class="trend" href="https://x.com/search?q=Northwestern" target="_blank"><span class="rank">#12</span> Northwestern<span class="meta"></span><span class="tmeta">西北大学</span></a>
+<a class="trend" href="https://x.com/search?q=Josh%20Hoover" target="_blank"><span class="rank">#13</span> Josh Hoover<span class="meta"></span><span class="tmeta">乔什·胡佛</span></a>
+<a class="trend" href="https://x.com/search?q=Phillies" target="_blank"><span class="rank">#14</span> Phillies<span class="meta"></span><span class="tmeta">费城人队</span></a>
+<a class="trend" href="https://x.com/search?q=DeGrom" target="_blank"><span class="rank">#15</span> DeGrom<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23OPLive" target="_blank"><span class="rank">#16</span> #OPLive<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Turbo%20Richard" target="_blank"><span class="rank">#17</span> Turbo Richard<span class="meta"></span><span class="tmeta">涡轮理查德</span></a>
+<a class="trend" href="https://x.com/search?q=%23GCWRock" target="_blank"><span class="rank">#18</span> #GCWRock<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=End%201Q" target="_blank"><span class="rank">#19</span> End 1Q<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Chip%20Kelly" target="_blank"><span class="rank">#20</span> Chip Kelly<span class="meta"></span><span class="tmeta">奇普·凯利</span></a>
+<a class="trend" href="https://x.com/search?q=Fatal%20Influence" target="_blank"><span class="rank">#21</span> Fatal Influence<span class="meta"></span><span class="tmeta">致命影响</span></a>
+<a class="trend" href="https://x.com/search?q=%23Dateline" target="_blank"><span class="rank">#22</span> #Dateline<span class="meta"></span><span class="tmeta">#纪实追踪</span></a>
+<a class="trend" href="https://x.com/search?q=End%20of%201st" target="_blank"><span class="rank">#23</span> End of 1st<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Fleetwood%20Mac" target="_blank"><span class="rank">#24</span> Fleetwood Mac<span class="meta"></span><span class="tmeta">弗利特伍德·麦克</span></a>
+<a class="trend" href="https://x.com/search?q=ARCA" target="_blank"><span class="rank">#25</span> ARCA<span class="meta"></span></a>
+</div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>$TSLA</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲2106%</span>
+          <span class="kw-score">总热度 166.9K · 47 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Tesla Semi</b>
+        <a href="https://x.com/tesla_semi" target="_blank" class="handle">@tesla_semi</a>
+        <span class="score">热度 150.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 09:04 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103289460767203424" onclick="tg('2103289460767203424')">🌐 翻译</button></div><div class="tw-text" id="o2103289460767203424">Semi is here
+
+Today, we&#x27;re launching high volume production</div><div class="tw-text tw-trans" id="t2103289460767203424" style="display:none">Semi来了
+
+今天，我们正式启动量产。</div>
+      <div class="tw-stats">❤️ 44.1K &nbsp; 🔁 4.2K &nbsp;
+        💬 1.1K &nbsp; 🔖 3.8K &nbsp; 👁 9.1M
+        <a href="https://x.com/tesla_semi/status/2103289460767203424" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲89%</span>
+          <span class="kw-score">总热度 9.0K · 41 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日本経済新聞 電子版（日経電子版）</b>
+        <a href="https://x.com/nikkei" target="_blank" class="handle">@nikkei</a>
+        <span class="score">热度 5.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 07:20 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103263346627576011" onclick="tg('2103263346627576011')">🌐 翻译</button></div><div class="tw-text" id="o2103263346627576011">トランプ氏｢中国は大戦時の同盟国｣　習氏の抗日歴史観に呼応の危うさ
+
+
+両首脳は会談に先立ちホワイトハウスで演説。トランプ氏は日本と戦った米国人義勇兵にも言及しました。</div><div class="tw-text tw-trans" id="t2103263346627576011" style="display:none">特朗普称「中国是大战时的同盟国」，呼应习氏抗日历史观引发风险
+
+两国首脑在会谈前于白宫发表演讲。特朗普还提及了与日本作战的美国志愿军。</div>
+      <div class="tw-stats">❤️ 685 &nbsp; 🔁 294 &nbsp;
+        💬 133 &nbsp; 🔖 100 &nbsp; 👁 353.1K
+        <a href="https://x.com/nikkei/status/2103263346627576011" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲157%</span>
+          <span class="kw-score">总热度 6.7K · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jumper</b>
+        <a href="https://x.com/jumperapp" target="_blank" class="handle">@jumperapp</a>
+        <span class="score">热度 6.3K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 21:47 · 11小时前</b></div>
+      <div class="tw-text"></div>
+      <div class="tw-stats">❤️ 2.0K &nbsp; 🔁 278 &nbsp;
+        💬 321 &nbsp; 🔖 338 &nbsp; 👁 235.8K
+        <a href="https://x.com/jumperapp/status/2103481417070203369" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼84%</span>
+          <span class="kw-score">总热度 4.5K · 47 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>WEEX</b>
+        <a href="https://x.com/WEEX_Official" target="_blank" class="handle">@WEEX_Official</a>
+        <span class="score">热度 1.8K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 14:41 · 18小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103374189293936672" onclick="tg('2103374189293936672')">🌐 翻译</button></div><div class="tw-text" id="o2103374189293936672">Are You Ready? 
+
+🎁 50 USDT / 5 winners
+⚫️ Reply with your #1 stock pick + UID
+⚫️ Quote this post with your reason why
+
+Ends in 5 days 👇</div><div class="tw-text tw-trans" id="t2103374189293936672" style="display:none">准备好了吗？
+
+🎁 50 USDT / 5名中奖者
+⚫️ 回复你的第一股票选择 + UID
+⚫️ 引用此帖并附上你的理由
+
+5天后结束👇</div>
+      <div class="tw-stats">❤️ 318 &nbsp; 🔁 233 &nbsp;
+        💬 268 &nbsp; 🔖 35 &nbsp; 👁 23.9K
+        <a href="https://x.com/WEEX_Official/status/2103374189293936672" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲616%</span>
+          <span class="kw-score">总热度 3.1K · 44 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>zerohedge</b>
+        <a href="https://x.com/zerohedge" target="_blank" class="handle">@zerohedge</a>
+        <span class="score">热度 2.9K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 20:12 · 13小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103457670506430966" onclick="tg('2103457670506430966')">🌐 翻译</button></div><div class="tw-text" id="o2103457670506430966">You&#x27;ll never guess who is the only buyer of stocks in Korea in the past two months, singlehandedly propping up the chip/memory trade</div><div class="tw-text tw-trans" id="t2103457670506430966" style="display:none">你绝对猜不到过去两个月韩国股市唯一的买家是谁，它凭一己之力撑起了芯片和存储交易。</div>
+      <div class="tw-stats">❤️ 952 &nbsp; 🔁 87 &nbsp;
+        💬 55 &nbsp; 🔖 186 &nbsp; 👁 148.4K
+        <a href="https://x.com/zerohedge/status/2103457670506430966" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲1562%</span>
+          <span class="kw-score">总热度 2.3K · 41 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>谢家印</b>
+        <a href="https://x.com/xiejiayinBitget" target="_blank" class="handle">@xiejiayinBitget</a>
+        <span class="score">热度 2.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 22:50 · 10小时前</b></div>
+      <div class="tw-text">重要更新！#提币时间将于明天中午12点前公布。感谢您的耐心等待。 关于今天安全事件的最新进展，详情如下： 
+
+1、安全团队已精准定位本次黑客攻击路径与攻击手法，并掌握攻击者绕过安全防护的相关细节，距离溯源攻击源头已十分接近。第三方安全团队 Mandiant 和 SlowMist</div>
+      <div class="tw-stats">❤️ 326 &nbsp; 🔁 41 &nbsp;
+        💬 123 &nbsp; 🔖 70 &nbsp; 👁 146.3K
+        <a href="https://x.com/xiejiayinBitget/status/2103497298655547608" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼16%</span>
+          <span class="kw-score">总热度 2.0K · 44 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>lucas.var</b>
+        <a href="https://x.com/variational_lvs" target="_blank" class="handle">@variational_lvs</a>
+        <span class="score">热度 1.3K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 01:57 · 7小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103544345869836790" onclick="tg('2103544345869836790')">🌐 翻译</button></div><div class="tw-text" id="o2103544345869836790">A year and a half ago, we launched Omni to bring broker-style trading on-chain. Back then, we got excited about hitting $1M in daily volume. As we relentlessly iterated on our product with UI redesigns, spread improvements, new order types, and more listings, our user base grew</div><div class="tw-text tw-trans" id="t2103544345869836790" style="display:none">一年半前，我们推出了Omni，将券商式交易引入链上。当时，日交易量突破100万美元就让我们兴奋不已。随着我们不断迭代产品，重新设计UI、改善点差、推出新订单类型并增加更多代币上线，我们的用户群增长了</div>
+      <div class="tw-stats">❤️ 526 &nbsp; 🔁 60 &nbsp;
+        💬 108 &nbsp; 🔖 30 &nbsp; 👁 35.0K
+        <a href="https://x.com/variational_lvs/status/2103544345869836790" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼99%</span>
+          <span class="kw-score">总热度 585 · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>中年码农</b>
+        <a href="https://x.com/qtdevlop" target="_blank" class="handle">@qtdevlop</a>
+        <span class="score">热度 204</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-25 09:31 · 1天前</b></div>
+      <div class="tw-text">美债又疯了。
+
+10年期破5.19%，30年期破5.48%。
+
+通胀没死，加息没完，油价还在蓄势待发，发债一堆，AI那边还拼命抢钱。
+
+无风险躺着拿5%以上，谁还愿意去股市里挨刀？
+
+全球资产重新定价。科技股先被锤，房贷也跟着变贵。
+
+现在不是比谁胆大，是比谁扛得住。
+
+别被甩下车了，兄弟们。</div>
+      <div class="tw-stats">❤️ 33 &nbsp; 🔁 2 &nbsp;
+        💬 25 &nbsp; 🔖 8 &nbsp; 👁 11.8K
+        <a href="https://x.com/qtdevlop/status/2103296175457649050" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
