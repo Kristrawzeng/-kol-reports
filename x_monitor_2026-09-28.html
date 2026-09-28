@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-09-28</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-09-28 · 更新于 09:40</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-09-28.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-09-28.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<p class="empty">未生成观点（Claude 不可用或无数据）</p>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 国际外交 <span>· 6 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="213488" data-time="1790429447">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>高市早苗</b>
+            <a href="https://x.com/takaichi_sanae" target="_blank" class="handle">@takaichi_sanae</a>
+            <span class="kw-score">活跃度 213.5K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>高市早苗</b>
+        <a href="https://x.com/takaichi_sanae" target="_blank" class="handle">@takaichi_sanae</a>
+        <span class="score">热度 213.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 21:30 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103839703808229871" onclick="tg('2103839703808229871')">🌐 翻译</button></div><div class="tw-text" id="o2103839703808229871">先ほど、午後9時から、トランプ大統領と電話会談を行いました。
+
+トランプ大統領からは、習近平国家主席の訪米直後というタイミングで電話をいただき、今般の米中首脳会談について詳細に説明がございました。</div><div class="tw-text tw-trans" id="t2103839703808229871" style="display:none">刚才晚上9点起，我与特朗普总统进行了电话会谈。
+
+特朗普总统在习主席访美刚结束的时机打来电话，详细说明了此次美中首脑会谈的情况。</div>
+      <div class="tw-stats">❤️ 95.3K &nbsp; 🔁 10.9K &nbsp;
+        💬 4.3K &nbsp; 🔖 2.3K &nbsp; 👁 8.4M
+        <a href="https://x.com/takaichi_sanae/status/2103839703808229871" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="6077" data-time="1790420491">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>Eason Mao☢</b>
+            <a href="https://x.com/KELMAND1" target="_blank" class="handle">@KELMAND1</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲41%</span>
+            <span class="kw-score">活跃度 6.1K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Eason Mao☢</b>
+        <a href="https://x.com/KELMAND1" target="_blank" class="handle">@KELMAND1</a>
+        <span class="score">热度 3.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 19:01 · 1天前</b></div>
+      <div class="tw-text">这里面最有共识的就是揍日本
+
+白宫国宴上习近平端起杯子，说80多年前，中美并肩打日本军国主义，开辟驼峰航线，中国军民救了数百名美国飞行员，付出数十万生命代价。
+
+特朗普接话，说飞虎队真令人赞叹，还提了一嘴，美国海军陆战队至今用的“gung ho”，就是从中国工合运动来的，意思是一起干。</div>
+      <div class="tw-stats">❤️ 683 &nbsp; 🔁 51 &nbsp;
+        💬 57 &nbsp; 🔖 80 &nbsp; 👁 202.9K
+        <a href="https://x.com/KELMAND1/status/2103802139067724165" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Eason Mao☢</b>
+        <a href="https://x.com/KELMAND1" target="_blank" class="handle">@KELMAND1</a>
+        <span class="score">热度 2.3K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 16:26 · 1天前</b></div>
+      <div class="tw-text">这次习特会成果覆盖面很广，从外交、经贸、安全、禁毒、AI到熊猫都有。核心信号不是“中美从此好成一家”，而是：能合作的先合作，容易出事的先装护栏，关系先稳住。后面关键看落实，尤其是降税、两军沟通和AI对话这些。</div>
+      <div class="tw-stats">❤️ 82 &nbsp; 🔁 7 &nbsp;
+        💬 34 &nbsp; 🔖 6 &nbsp; 👁 213.9K
+        <a href="https://x.com/KELMAND1/status/2103763170594889832" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="5971" data-time="1790409637">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>TraderS | 缺德道人</b>
+            <a href="https://x.com/TraderS18" target="_blank" class="handle">@TraderS18</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲10%</span>
+            <span class="kw-score">活跃度 6.0K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>TraderS | 缺德道人</b>
+        <a href="https://x.com/TraderS18" target="_blank" class="handle">@TraderS18</a>
+        <span class="score">热度 2.8K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 16:00 · 1天前</b></div>
+      <div class="tw-text">行了，这次访美的8项成果，没等到下周一，习总刚落地北京就公布了：
+
+1. 双方关系加上了“尊重，公平，对等”这三个定语，显示出通过进一步调整更加平等了，跟历史对比，很显然相对来说是中上美下了
+
+2. 基本隐含承认APEC和G20双方会继续见面了
+
+3.</div>
+      <div class="tw-stats">❤️ 113 &nbsp; 🔁 13 &nbsp;
+        💬 34 &nbsp; 🔖 38 &nbsp; 👁 254.9K
+        <a href="https://x.com/TraderS18/status/2103756612599234588" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>TraderS | 缺德道人</b>
+        <a href="https://x.com/TraderS18" target="_blank" class="handle">@TraderS18</a>
+        <span class="score">热度 2.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 15:28 · 1天前</b></div>
+      <div class="tw-text">如前文所说，此次中美元首峰会政治意义大于经济意义，起码目前为止并没有看到中美在农产品，飞机，稀土，霍尔木兹海峡等问题上达成了多大成果。川普中期选举前需要大国外交的画面，中方需要稳定的画面，这次访问更像是各取所需，而不仅仅是单方面的尊重。</div>
+      <div class="tw-stats">❤️ 16 &nbsp; 🔁 1 &nbsp;
+        💬 3 &nbsp; 🔖 4 &nbsp; 👁 238.1K
+        <a href="https://x.com/TraderS18/status/2103748629622337954" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="654" data-time="1790452903">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>⧫ Alan Chen ⧫(alanchentsla.eth）</b>
+            <a href="https://x.com/alanchen" target="_blank" class="handle">@alanchen</a>
+            <span class="kw-score">活跃度 654 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>⧫ Alan Chen ⧫(alanchentsla.eth）</b>
+        <a href="https://x.com/alanchen" target="_blank" class="handle">@alanchen</a>
+        <span class="score">热度 654</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-27 04:01 · 1天前</b></div>
+      <div class="tw-text">高市这条 X，我觉得可以再往博弈层面看一层。
+
+特朗普刚和习近平谈完，马上给高市打电话，而且详细解释习特会内容。
+
+表面上，这是在展示日美同盟有多牢。
+
+但反过来看，也说明东京真正敏感的是什么：
+
+美国和中国一旦开始直接谈，日本最怕的不是两国缓和，而是自己会不会被绕过去。</div>
+      <div class="tw-stats">❤️ 68 &nbsp; 🔁 3 &nbsp;
+        💬 33 &nbsp; 🔖 12 &nbsp; 👁 51.9K
+        <a href="https://x.com/alanchen/status/2103938084362649640" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="108" data-time="1790389220">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>Cindy｜日本观察与服饰商业</b>
+            <a href="https://x.com/cindychoi_26" target="_blank" class="handle">@cindychoi_26</a>
+            <span class="kw-score">活跃度 108 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Cindy｜日本观察与服饰商业</b>
+        <a href="https://x.com/cindychoi_26" target="_blank" class="handle">@cindychoi_26</a>
+        <span class="score">热度 108</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 10:20 · 1天前</b></div>
+      <div class="tw-text">这次中美峰会，《经济学人》和日经社论的两篇文章，都给这次会晤泼了一盆冷水。从中也看出世界的变化 ：相互依赖仍在，长期承诺却很难建立。
+
+两篇文章都要求中美承担大国责任，但日经更直接地追问：中美改善关系时，日本和其他相关方的利益，是否得到尊重？</div>
+      <div class="tw-stats">❤️ 10 &nbsp; 🔁 1 &nbsp;
+        💬 31 &nbsp; 🔖 3 &nbsp; 👁 4.6K
+        <a href="https://x.com/cindychoi_26/status/2103670979063091399" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="55" data-time="1790450221">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>bluesea</b>
+            <a href="https://x.com/TruncateJP" target="_blank" class="handle">@TruncateJP</a>
+            <span class="kw-score">活跃度 55 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>bluesea</b>
+        <a href="https://x.com/TruncateJP" target="_blank" class="handle">@TruncateJP</a>
+        <span class="score">热度 47</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-27 03:17 · 1天前</b></div>
+      <div class="tw-text">@datasuki_intj 日本的聪明人故意在引导什么中华民国说，混淆视听，他们真正怕的，也是昨天日经很隐晦问，如果中美为了各自利益联手，搞背地交易，哪又有谁来制约中美的交易？。聪明人不关心昨天的盟国，恐惧的是正在实现的&quot;同盟&quot;</div>
+      <div class="tw-stats">❤️ 27 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 1 &nbsp; 👁 1.9K
+        <a href="https://x.com/TruncateJP/status/2103926834308190365" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>bluesea</b>
+        <a href="https://x.com/TruncateJP" target="_blank" class="handle">@TruncateJP</a>
+        <span class="score">热度 1</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 16:09 · 1天前</b></div>
+      <div class="tw-text">中美联手，搞背地交易，让日本人的最大噩梦成真，所以很多日本精英都应激了。只有昨天日经社论隐晦的提到这点，毕竟日经面对的是商业老狐狸，或多或少都得说点真话</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 51
+        <a href="https://x.com/TruncateJP/status/2103758735311249882" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 科技AI <span>· 1 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="1543" data-time="1790513437">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>govin.eth | G哥</b>
+            <a href="https://x.com/goan999999" target="_blank" class="handle">@goan999999</a>
+            <span class="kw-score">活跃度 1.5K · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>govin.eth | G哥</b>
+        <a href="https://x.com/goan999999" target="_blank" class="handle">@goan999999</a>
+        <span class="score">热度 750</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-27 15:50 · 17小时前</b></div>
+      <div class="tw-text">Codex 6 必装 Product Hunt 插件，直接让你当老板
+
+我现在很多赚钱想法，都是这样来的，现在公司朋友帮我管着，收益6位数，这个办法我认为最少价值10万
+
+不是坐着硬想项目，也不是问 AI “最近有什么风口”，多总结分析例子很关键，直接让 Codex 6 去 Product Hunt 找</div>
+      <div class="tw-stats">❤️ 175 &nbsp; 🔁 26 &nbsp;
+        💬 29 &nbsp; 🔖 239 &nbsp; 👁 22.9K
+        <a href="https://x.com/goan999999/status/2104116478010437964" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>govin.eth | G哥</b>
+        <a href="https://x.com/goan999999" target="_blank" class="handle">@goan999999</a>
+        <span class="score">热度 266</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 19:18 · 1天前</b></div>
+      <div class="tw-text">卧槽，Claude Opus 5.5 开始“吃掉”3D 建模了，3D设计师又要失业了
+
+最离谱的是黏土动画，直接调用 Blender，把完整动画做出来，效果比Codex 6 好 10倍
+
+想试试的用这段提示词：
+
+“调用 Blender 制作一段 8</div>
+      <div class="tw-stats">❤️ 16 &nbsp; 🔁 0 &nbsp;
+        💬 3 &nbsp; 🔖 22 &nbsp; 👁 21.7K
+        <a href="https://x.com/goan999999/status/2103806491446977006" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 时政评论 <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="1377" data-time="1790425801">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>李老师不是你老师</b>
+            <a href="https://x.com/whyyoutouzhele" target="_blank" class="handle">@whyyoutouzhele</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲35%</span>
+            <span class="kw-score">活跃度 1.4K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>李老师不是你老师</b>
+        <a href="https://x.com/whyyoutouzhele" target="_blank" class="handle">@whyyoutouzhele</a>
+        <span class="score">热度 1.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 20:30 · 1天前</b></div>
+      <div class="tw-text">9月26日，《日经亚洲》发文总结习近平此次访美，称特朗普为习近平安排了机场亲迎、军事仪式、21响礼炮、国宴等高规格礼遇，但三天峰会在贸易、台湾、稀土、投资和科技管制等核心问题上并未出现重大突破，许多争议只是被延后处理。路透社此前也将此次峰会概括为“象征意义浓厚，但实质突破有限”。</div>
+      <div class="tw-stats">❤️ 268 &nbsp; 🔁 17 &nbsp;
+        💬 31 &nbsp; 🔖 35 &nbsp; 👁 99.4K
+        <a href="https://x.com/whyyoutouzhele/status/2103824410360553702" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="28" data-time="1790543783">
+          <div class="kol-head"><span class="rank">#20</span>
+            <b>何岸泉 HeAnquan</b>
+            <a href="https://x.com/heanquan" target="_blank" class="handle">@heanquan</a>
+            <span class="kw-score">活跃度 28 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>何岸泉 HeAnquan</b>
+        <a href="https://x.com/heanquan" target="_blank" class="handle">@heanquan</a>
+        <span class="score">热度 28</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 05:16 · 4小时前</b></div>
+      <div class="tw-text">《反贼的生理周期》
+
+日经：
+1、川粉川黑互搏
+2、反贼粉红互骂
+3、晒拉黑
+
+月经：
+1、习近平病了
+2、习近平被架空
+3、中共政权马上崩溃
+
+年经：
+1、六四图片展
+2、八九回忆杀
+3、发现习明泽</div>
+      <div class="tw-stats">❤️ 11 &nbsp; 🔁 2 &nbsp;
+        💬 0 &nbsp; 🔖 4 &nbsp; 👁 734
+        <a href="https://x.com/heanquan/status/2104319265075564803" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 3 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="1149" data-time="1790485202">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>Axis Robotics</b>
+            <a href="https://x.com/axisrobotics" target="_blank" class="handle">@axisrobotics</a>
+            <span class="kw-score">活跃度 1.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Axis Robotics</b>
+        <a href="https://x.com/axisrobotics" target="_blank" class="handle">@axisrobotics</a>
+        <span class="score">热度 1.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-27 13:00 · 20小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2104073557227799036" onclick="tg('2104073557227799036')">🌐 翻译</button></div><div class="tw-text" id="o2104073557227799036">⏳ $AXIS Community Sale Update: 24 Hours Remaining
+
+1,600+ participants, 1.2x oversubscribed.
+
+The window closes Sept 28, 13:00 SGT. You can still submit or increase. Allocations settle pro-rata across accepted commitments, subject to the sale terms.
+
+🔗</div><div class="tw-text tw-trans" id="t2104073557227799036" style="display:none">⏳ $AXIS 社区发售更新：剩24小时
+
+已有1600多名参与者，超额认购1.2倍。
+
+窗口将于9月28日13:00 SGT关闭。仍可提交或增加认购。分配将按已接受承诺的比例结算，具体以发售条款为准。
+
+🔗</div>
+      <div class="tw-stats">❤️ 327 &nbsp; 🔁 46 &nbsp;
+        💬 80 &nbsp; 🔖 21 &nbsp; 👁 46.5K
+        <a href="https://x.com/axisrobotics/status/2104073557227799036" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="145" data-time="1790559027">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>Jeonlees</b>
+            <a href="https://x.com/jeonleetogether" target="_blank" class="handle">@jeonleetogether</a>
+            <span class="kw-score">活跃度 145 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Jeonlees</b>
+        <a href="https://x.com/jeonleetogether" target="_blank" class="handle">@jeonleetogether</a>
+        <span class="score">热度 126</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 01:13 · 8小时前</b></div>
+      <div class="tw-text">我自己这边是上了3个号，
+一个塞了1k多 另外两个塞了低保
+本来就打算做一个的，但是看大家好像都在博
+我也多上两个 也是买的kyc 
+希望来个惊喜！
+
+如果要认购的，大家注意时间哦 
+还有不到12h了
+
+我重新把 @axisrobotics  这轮 Community Sale 的规则翻了一遍
+
+先看最基本的数字：
+
+$AXIS 售价：$0.10</div>
+      <div class="tw-stats">❤️ 41 &nbsp; 🔁 0 &nbsp;
+        💬 43 &nbsp; 🔖 1 &nbsp; 👁 1.8K
+        <a href="https://x.com/jeonleetogether/status/2104258197699907862" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Jeonlees</b>
+        <a href="https://x.com/jeonleetogether" target="_blank" class="handle">@jeonleetogether</a>
+        <span class="score">热度 0</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 09:30 · 10分钟前</b></div>
+      <div class="tw-text">虽然我最近一直在撸毛
+但是！！港股打新一点没忘哦
+今天 #本末科技 要开始暗盘了
+时间16:15开始
+
+中了的别忘了哈
+这个一手中签率还蛮高的
+认购的也比较少
+我中了100股
+
+希望有肉吃😭
+港股打新 你赚钱效应赶紧给我回来！！！</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 17
+        <a href="https://x.com/jeonleetogether/status/2104383201724739601" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="46" data-time="1790558529">
+          <div class="kol-head"><span class="rank">#18</span>
+            <b>ShowLin</b>
+            <a href="https://x.com/Airdropxiaolin" target="_blank" class="handle">@Airdropxiaolin</a>
+            <span class="kw-score">活跃度 46 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>ShowLin</b>
+        <a href="https://x.com/Airdropxiaolin" target="_blank" class="handle">@Airdropxiaolin</a>
+        <span class="score">热度 46</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 09:22 · 18分钟前</b></div>
+      <div class="tw-text">📌 加密晨报｜9月28日
+
+机构资金流转强，但交易所安全事件、今日解锁和本周非农前的宏观不确定性仍会放大波动；主线是 ETF、监管/RWA、交易所提现修复。
+
+1. 🔴 BTC 现货 ETF 上周净流入约 24 亿美元，近一年最大单周流入，年内累计净流入已转正。
+
+2. 🔴 BTC ETF 单日净流入从周一约 9.99</div>
+      <div class="tw-stats">❤️ 13 &nbsp; 🔁 0 &nbsp;
+        💬 19 &nbsp; 🔖 0 &nbsp; 👁 497
+        <a href="https://x.com/Airdropxiaolin/status/2104381112495792331" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 量化交易 <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="798" data-time="1790557090">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>爱吃折耳根的Ace</b>
+            <a href="https://x.com/_zheergen" target="_blank" class="handle">@_zheergen</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲119%</span>
+            <span class="kw-score">活跃度 798 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>爱吃折耳根的Ace</b>
+        <a href="https://x.com/_zheergen" target="_blank" class="handle">@_zheergen</a>
+        <span class="score">热度 318</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-27 19:03 · 14小时前</b></div>
+      <div class="tw-text">这就舒服了！A股/港股免费实时行情，全市场五档盘口 200 多毫秒拿到
+
+easyquotation，5.4K stars，MIT 开源。新浪 / 腾讯 / 集思录三源，单只 / 多只 / 全市场快照随便取。
+
+现在的新库都在卷 MCP、卷 AI 接入，但很多人忘了一个最简单的需求：实时行情要快、要免费、要有五档盘口。
+
+easyquotation</div>
+      <div class="tw-stats">❤️ 65 &nbsp; 🔁 20 &nbsp;
+        💬 6 &nbsp; 🔖 109 &nbsp; 👁 8.9K
+        <a href="https://x.com/_zheergen/status/2104165028475834375" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>爱吃折耳根的Ace</b>
+        <a href="https://x.com/_zheergen" target="_blank" class="handle">@_zheergen</a>
+        <span class="score">热度 294</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-27 13:39 · 20小时前</b></div>
+      <div class="tw-text">有意思！微软居然把订单级市场仿真引擎开源了
+
+MarS，1.8K stars，回测 / 冲击成本 / 反事实what-if分析神器。
+
+以前想评估策略对市场的影响，要么拿历史数据硬回测（回答不了如果我不交易会怎样），要么上实盘真金白银试错。
+
+MarS 不一样，微软把它做成生成式基础模型（LMM），ICLR 2025</div>
+      <div class="tw-stats">❤️ 54 &nbsp; 🔁 10 &nbsp;
+        💬 1 &nbsp; 🔖 74 &nbsp; 👁 13.9K
+        <a href="https://x.com/_zheergen/status/2104083362654621880" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="266" data-time="1790557522">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>泰德搞薯条 TD</b>
+            <a href="https://x.com/TiedGST" target="_blank" class="handle">@TiedGST</a>
+            <span class="kw-score">活跃度 266 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>泰德搞薯条 TD</b>
+        <a href="https://x.com/TiedGST" target="_blank" class="handle">@TiedGST</a>
+        <span class="score">热度 156</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-27 17:27 · 16小时前</b></div>
+      <div class="tw-text">突破那一下人人都会追，假突破才是专门收割追单的人
+
+真突破还是假突破。刺破前高不等于突破成立，先过验证，再谈追。
+
+核心步骤：
+1. 先看有没有站稳：影线扫过前高不算，收盘站上、下一根不立刻打回区间，才算过了第一关
+
+2.</div>
+      <div class="tw-stats">❤️ 45 &nbsp; 🔁 12 &nbsp;
+        💬 1 &nbsp; 🔖 49 &nbsp; 👁 3.4K
+        <a href="https://x.com/TiedGST/status/2104140740540661835" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>泰德搞薯条 TD</b>
+        <a href="https://x.com/TiedGST" target="_blank" class="handle">@TiedGST</a>
+        <span class="score">热度 46</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-27 09:15 · 1天前</b></div>
+      <div class="tw-text">Agent 最大的问题，不是不会干活，而是每次重启都像“失忆”——Hindsight。
+
+这是一个专门给 AI Agent 做长期记忆的开源项目。
+
+它不只是把历史聊天塞进向量库，而是让 Agent 能把经历慢慢沉淀成事实、经验、观察和长期认知，下一次工作时直接拿出来用。
+
+核心亮点：
+
+1️⃣</div>
+      <div class="tw-stats">❤️ 2 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 2 &nbsp; 👁 3.7K
+        <a href="https://x.com/TiedGST/status/2104016924757647534" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 宏观资讯 <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="141" data-time="1790408430">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>Suu</b>
+            <a href="https://x.com/Suu766" target="_blank" class="handle">@Suu766</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼97%</span>
+            <span class="kw-score">活跃度 141 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Suu</b>
+        <a href="https://x.com/Suu766" target="_blank" class="handle">@Suu766</a>
+        <span class="score">热度 141</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 15:40 · 1天前</b></div>
+      <div class="tw-text">7. Nikkei Asia｜日经亚洲 
+
+
+亚洲商业、科技、供应链和中日韩公司消息</div>
+      <div class="tw-stats">❤️ 5 &nbsp; 🔁 3 &nbsp;
+        💬 1 &nbsp; 🔖 6 &nbsp; 👁 12.2K
+        <a href="https://x.com/Suu766/status/2103751551047372881" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="75" data-time="1790557560">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>日经中文网/日經中文網</b>
+            <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a><span style="color:#f85149;font-size:11px;margin-left:6px">▼98%</span>
+            <span class="kw-score">活跃度 75 · 4 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日经中文网/日經中文網</b>
+        <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a>
+        <span class="score">热度 18</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 08:40 · 1小时前</b></div>
+      <div class="tw-text">【美國年輕人掀起空前創業熱潮】隨著AI普及，商業迎來變革期，與此同時，各大科技巨頭對聘用經驗尚淺的年輕群體趨於謹慎，這進一步助推創業風潮。不過，有數據顯示，能夠成功的初創企業不足一成……</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 1.7K
+        <a href="https://x.com/rijingzhongwen/status/2104370504216064053" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>日经中文网/日經中文網</b>
+        <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a>
+        <span class="score">热度 16</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 08:41 · 59分钟前</b></div>
+      <div class="tw-text">【美国年轻人掀起空前创业热潮】随着AI普及，商业迎来变革期，与此同时，各大科技巨头对聘用经验尚浅的年轻群体趋于谨慎，这进一步助推创业风潮。不过，有数据显示，能够成功的初创企业不足一成……</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 0 &nbsp; 👁 1.3K
+        <a href="https://x.com/rijingzhongwen/status/2104370755895230748" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 事实核查 <span>· 1 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="79" data-time="1790472918">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>Checkingdog</b>
+            <a href="https://x.com/CheckingDog" target="_blank" class="handle">@CheckingDog</a>
+            <span class="kw-score">活跃度 79 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Checkingdog</b>
+        <a href="https://x.com/CheckingDog" target="_blank" class="handle">@CheckingDog</a>
+        <span class="score">热度 29</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 21:09 · 1天前</b></div>
+      <div class="tw-text">@WadeYang1984 🤖 deepseek-v4-pro
+判定：属实，但带有明显的主观解读色彩。
+
+原帖列出的八点内容与新华社2026年9月26日发布的官方新闻稿基本吻合——你附的图片里那张新浪财经快讯截图就是新华社通稿的原文转录。所以核心事实没问题。</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 2.9K
+        <a href="https://x.com/CheckingDog/status/2103834250923720972" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Checkingdog</b>
+        <a href="https://x.com/CheckingDog" target="_blank" class="handle">@CheckingDog</a>
+        <span class="score">热度 18</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 21:25 · 1天前</b></div>
+      <div class="tw-text">@WadeYang1984 🤖 claude-sonnet-5
+核查结论：部分属实。国宴上习近平提及&quot;抗击日本军国主义&quot;、特朗普接话提到&quot;gung</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 1.7K
+        <a href="https://x.com/CheckingDog/status/2103838325790617895" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 日本股市 <span>· 1 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="72" data-time="1790547910">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>🌸てん_株式投資</b>
+            <a href="https://x.com/earlyfield2023" target="_blank" class="handle">@earlyfield2023</a>
+            <span class="kw-score">活跃度 72 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>🌸てん_株式投資</b>
+        <a href="https://x.com/earlyfield2023" target="_blank" class="handle">@earlyfield2023</a>
+        <span class="score">热度 72</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 06:25 · 3小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2104336573684965454" onclick="tg('2104336573684965454')">🌐 翻译</button></div><div class="tw-text" id="o2104336573684965454">本日の日本株見通し（9/28）</div><div class="tw-text tw-trans" id="t2104336573684965454" style="display:none">今日日股展望（9/28）</div>
+      <div class="tw-stats">❤️ 34 &nbsp; 🔁 1 &nbsp;
+        💬 3 &nbsp; 🔖 1 &nbsp; 👁 2.8K
+        <a href="https://x.com/earlyfield2023/status/2104336573684965454" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 宏观财经 <span>· 1 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="69" data-time="1790554482">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>KZG 口罩哥</b>
+            <a href="https://x.com/KZG6886" target="_blank" class="handle">@KZG6886</a>
+            <span class="kw-score">活跃度 69 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>KZG 口罩哥</b>
+        <a href="https://x.com/KZG6886" target="_blank" class="handle">@KZG6886</a>
+        <span class="score">热度 69</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 08:14 · 1小时前</b></div>
+      <div class="tw-text">周五有点怪，纳指涨了，中概金龙指数却跌了0.64%，恒指跌了1%
+
+中美八点共识、英伟达新卡可能对国内放行，都是收盘以后的事
+
+今天A股港股一开盘，就是第一次给这两件事定价。先看恒科能不能把周五那一下收回来吧</div>
+      <div class="tw-stats">❤️ 12 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 1 &nbsp; 👁 5.3K
+        <a href="https://x.com/KZG6886/status/2104364137673630014" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 股市投资 <span>· 1 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="29" data-time="1790558804">
+          <div class="kol-head"><span class="rank">#19</span>
+            <b>爱玩股票AiWanGuPiao</b>
+            <a href="https://x.com/aiwangupiao" target="_blank" class="handle">@aiwangupiao</a>
+            <span class="kw-score">活跃度 29 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>爱玩股票AiWanGuPiao</b>
+        <a href="https://x.com/aiwangupiao" target="_blank" class="handle">@aiwangupiao</a>
+        <span class="score">热度 22</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 07:19 · 2小时前</b></div>
+      <div class="tw-text">周五（中秋节）港股生物医药板块走出逆势行情，金斯瑞生物科技大涨超8%，凯莱英涨幅接近4%，药明生物、药明康德上涨超2%，药明合联小幅走高。海外方面，减肥药龙头诺和诺德与Nanexa达成最高11.65亿欧元药物技术合作，拿下原子层沉积（ALD）药物递送平台全球独家授权，用于肥胖、2型糖尿病多肽新药研发</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 1 &nbsp;
+        💬 1 &nbsp; 🔖 1 &nbsp; 👁 1.7K
+        <a href="https://x.com/aiwangupiao/status/2104350205927977334" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>爱玩股票AiWanGuPiao</b>
+        <a href="https://x.com/aiwangupiao" target="_blank" class="handle">@aiwangupiao</a>
+        <span class="score">热度 3</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 09:26 · 14分钟前</b></div>
+      <div class="tw-text">中美达成八点成果共识 向世界释放哪些信号？
+第一、两国同意不得对国际水道收费。这个主要针对霍尔木兹海峡，作为原油进口大国，不得对国际水道征收通行费对我们很重要！对美国也很重要，可以化解老美的通胀，压低美联储加息的压力。</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 0 &nbsp; 👁 314
+        <a href="https://x.com/aiwangupiao/status/2104382264708895177" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><p class="empty">未抓到趋势数据</p></div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲1491%</span>
+          <span class="kw-score">总热度 226.6K · 35 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>高市早苗</b>
+        <a href="https://x.com/takaichi_sanae" target="_blank" class="handle">@takaichi_sanae</a>
+        <span class="score">热度 213.5K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-26 21:30 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2103839703808229871" onclick="tg('2103839703808229871')">🌐 翻译</button></div><div class="tw-text" id="o2103839703808229871">先ほど、午後9時から、トランプ大統領と電話会談を行いました。
+
+トランプ大統領からは、習近平国家主席の訪米直後というタイミングで電話をいただき、今般の米中首脳会談について詳細に説明がございました。</div><div class="tw-text tw-trans" id="t2103839703808229871" style="display:none">刚才晚上9点起，我与特朗普总统进行了电话会谈。
+
+特朗普总统在习主席访美刚结束的时机打来电话，详细说明了此次美中首脑会谈的情况。</div>
+      <div class="tw-stats">❤️ 95.3K &nbsp; 🔁 10.9K &nbsp;
+        💬 4.3K &nbsp; 🔖 2.3K &nbsp; 👁 8.4M
+        <a href="https://x.com/takaichi_sanae/status/2103839703808229871" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲245%</span>
+          <span class="kw-score">总热度 3.5K · 48 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Axis Robotics</b>
+        <a href="https://x.com/axisrobotics" target="_blank" class="handle">@axisrobotics</a>
+        <span class="score">热度 1.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-27 13:00 · 20小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2104073557227799036" onclick="tg('2104073557227799036')">🌐 翻译</button></div><div class="tw-text" id="o2104073557227799036">⏳ $AXIS Community Sale Update: 24 Hours Remaining
+
+1,600+ participants, 1.2x oversubscribed.
+
+The window closes Sept 28, 13:00 SGT. You can still submit or increase. Allocations settle pro-rata across accepted commitments, subject to the sale terms.
+
+🔗</div><div class="tw-text tw-trans" id="t2104073557227799036" style="display:none">⏳ $AXIS 社区发售更新：剩24小时
+
+已有1600多名参与者，超额认购1.2倍。
+
+窗口将于9月28日13:00 SGT关闭。仍可提交或增加认购。分配将按已接受承诺的比例结算，具体以发售条款为准。
+
+🔗</div>
+      <div class="tw-stats">❤️ 327 &nbsp; 🔁 46 &nbsp;
+        💬 80 &nbsp; 🔖 21 &nbsp; 👁 46.5K
+        <a href="https://x.com/axisrobotics/status/2104073557227799036" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲59%</span>
+          <span class="kw-score">总热度 73 · 20 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>ShowLin</b>
+        <a href="https://x.com/Airdropxiaolin" target="_blank" class="handle">@Airdropxiaolin</a>
+        <span class="score">热度 46</span></div>
+      <div class="tw-time">🕐 发布于 <b>09-28 09:22 · 18分钟前</b></div>
+      <div class="tw-text">📌 加密晨报｜9月28日
+
+机构资金流转强，但交易所安全事件、今日解锁和本周非农前的宏观不确定性仍会放大波动；主线是 ETF、监管/RWA、交易所提现修复。
+
+1. 🔴 BTC 现货 ETF 上周净流入约 24 亿美元，近一年最大单周流入，年内累计净流入已转正。
+
+2. 🔴 BTC ETF 单日净流入从周一约 9.99</div>
+      <div class="tw-stats">❤️ 13 &nbsp; 🔁 0 &nbsp;
+        💬 19 &nbsp; 🔖 0 &nbsp; 👁 497
+        <a href="https://x.com/Airdropxiaolin/status/2104381112495792331" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div>
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div>
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div>
+        <div class="kw"><div class="kw-head"><b>$TSLA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div>
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 0 · 0 条</span></div>
+          <p class="empty">无数据</p></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
