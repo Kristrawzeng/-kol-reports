@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X 讨论热度监测 · 2026-10-07</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f4f8ff;color:#1f2d3d;font-family:-apple-system,'PingFang SC',sans-serif;padding:22px 26px;max-width:1640px;margin:0 auto;line-height:1.5}
+.layout{display:flex;gap:22px;align-items:flex-start}
+.sidebar{flex:0 0 178px;position:sticky;top:22px}
+.sidebar h1{font-size:18px;margin-bottom:2px;color:#0b3d91}
+.brand-sub{font-size:11px;color:#8a98a8;margin-bottom:14px}
+.snav{display:flex;flex-direction:column;gap:8px}
+.snav .tab{display:block;font-size:14px;font-weight:600;color:#0b3d91;text-decoration:none;padding:10px 14px;border:1px solid #c3dafc;border-radius:10px;background:#fff}
+.snav .tab.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+.snav .tab:hover{background:#e3eeff}
+.snav .tab.on:hover{background:#0b3d91}
+.main{flex:1;min-width:0}
+.sub{color:#6b7a8d;font-size:12px;margin-bottom:14px}
+@media(max-width:760px){.layout{flex-direction:column;gap:12px}.sidebar{position:static;flex:0 0 auto}.snav{flex-direction:row;flex-wrap:wrap}}
+h2{font-size:16px;margin:26px 0 12px;padding-bottom:6px;color:#0b3d91;border-bottom:3px solid #ffcf33}
+.grid-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:14px;align-items:start}
+.grid-trends{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:7px;align-items:start}
+.cat-h{font-size:14px;font-weight:700;color:#0b3d91;margin:18px 0 9px;padding:4px 12px;background:#eaf2ff;border-left:4px solid #ffcf33;border-radius:6px}
+.cat-h span{color:#8a98a8;font-weight:400;font-size:12px}
+.summary{background:#eaf2ff;border:1px solid #c3dafc;border-left:4px solid #ffcf33;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.summary p{margin-top:6px;font-size:13px;color:#3a4a5c}
+.vp-row{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 12px;scroll-snap-type:x proximity}
+.vp-row::-webkit-scrollbar{height:7px}
+.vp-row::-webkit-scrollbar-thumb{background:#cfe0ff;border-radius:4px}
+.vp-card{flex:0 0 250px;scroll-snap-align:start;background:#fff;border:1px solid #dce6f2;border-top:3px solid #1d6fe0;border-radius:8px;padding:11px 13px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.vp-p{font-size:13px;font-weight:600;color:#16314f;line-height:1.45}
+.vp-q{font-size:12px;color:#7a8aa0;font-style:italic;margin:6px 0}
+.vp-h .hold{display:inline-block;background:#e3eeff;color:#1456c4;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;text-decoration:none}
+.vp-h .hold:hover{background:#cfe0ff}
+.trend{display:block;color:inherit;text-decoration:none;background:#fff;border:1px solid #dce6f2;border-radius:8px;padding:9px 12px;font-size:14px;box-shadow:0 1px 2px rgba(11,61,145,.05)}
+a.trend:hover{border-color:#1d6fe0;background:#f3f8ff}
+.trend .meta{color:#8a98a8;font-size:12px}
+.trend .tmeta{display:block;color:#1d6fe0;font-size:12px;margin-top:2px}
+.rank{display:inline-block;color:#f5a623;font-weight:800;margin-right:8px}
+.kw,.kol{background:#fbfdff;border:1px solid #dce6f2;border-radius:10px;padding:12px 14px;box-shadow:0 1px 3px rgba(11,61,145,.06)}
+.kw-head,.kol-head{font-size:15px;margin-bottom:8px;color:#16314f}
+.kw-score{float:right;color:#8a98a8;font-size:12px;font-weight:400}
+.bio{font-size:12px;color:#6b7a8d;margin:-2px 0 6px}
+.tw{background:#fff;border:1px solid #e6edf6;border-radius:8px;padding:10px 12px;margin-top:8px}
+.tw-head{font-size:13px;margin-bottom:5px;color:#16314f}
+.handle{color:#8a98a8;margin-left:6px;text-decoration:none}
+.score{float:right;color:#1d6fe0;font-weight:700}
+.tw-text{font-size:13px;color:#26323f;white-space:pre-wrap;word-break:break-word}
+.tw-time{font-size:11px;color:#8a98a8;margin:4px 0 0}
+.tw-time b{color:#1d6fe0;font-weight:600}
+.tw-stats{font-size:11px;color:#8a98a8;margin-top:7px}
+.link{color:#1d6fe0;margin-left:10px;text-decoration:none}
+.link:hover,a.handle:hover{text-decoration:underline}
+.empty{color:#aab4c0;font-size:13px;padding:6px 0}
+.tbar{text-align:right;line-height:1;margin-bottom:3px}
+.tbtn{display:inline-block;background:#fff3cc;color:#8a6d1a;border:1px solid #ffe08a;border-radius:6px;font-size:11px;padding:2px 9px;cursor:pointer}
+.tbtn:hover{background:#ffe9a8}
+.tw-trans{color:#0b3d91}
+.sublbl{font-size:12px;font-weight:700;color:#0b3d91;margin:9px 0 2px}
+.sortbar{font-size:12px;color:#6b7a8d;margin:-2px 0 12px}
+.sbtn{background:#fff;color:#0b3d91;border:1px solid #c3dafc;border-radius:14px;font-size:12px;padding:4px 12px;cursor:pointer;margin-left:6px}
+.sbtn.on{background:#0b3d91;color:#fff;border-color:#0b3d91}
+</style></head><body>
+<div class="layout">
+  <aside class="sidebar">
+    <h1>📡 X 监测</h1>
+    <div class="brand-sub">2026-10-07 · 更新于 09:40</div>
+    <nav class="snav"><a class="tab on" href="x_monitor_2026-10-07.html">🔥 热点广场</a><a class="tab " href="x_focus_2026-10-07.html">⭐ 重点人物动态</a></nav>
+  </aside>
+  <main class="main">
+    <div class="sub">热点广场：活跃的人 + 发文 + 观点集合 · Powered by Claude</div>
+    <h2>🧠 观点集合</h2>
+<div class="summary">🧠 <b>今日讨论总览</b><p>今日主线围绕中美AI硬件军备竞赛与亚太市场分化。Anduril建船厂、SpaceX狂买N卡、华人新贵租算力凸显AI与国防硬实力重塑；日韩台股火热与A股疲软形成鲜明对比；OKX大额融资、众安跨境理财通亦受热切关注。</p></div><div class="vp-row">
+            <div class="vp-card">
+              <div class="vp-p">Anduril重金建全美最大二战后船厂，重振美国造船与国防硬实力</div>
+              <div class="vp-q">「Anduril is building America&#x27;s largest shipyard since WWII.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/PalmerLuckey" target="_blank">@PalmerLuckey</a> <a class="hold" href="https://x.com/anduriltech" target="_blank">@anduriltech</a> <a class="hold" href="https://x.com/jiahanjimliu" target="_blank">@jiahanjimliu</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">SpaceX拟融400亿美元买N卡扩充算力，凸显AI算力军备竞赛白热化</div>
+              <div class="vp-q">「$SPCX is looking to raise $40B of debt to buy $NVDA chips as it scales AI compute.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/unusual_whales" target="_blank">@unusual_whales</a> <a class="hold" href="https://x.com/StockSavvyShay" target="_blank">@StockSavvyShay</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">美国降息门槛更高，本轮资产估值修复弱且分化大，普涨经验失效</div>
+              <div class="vp-q">「过去「停止加息后普涨」的经验，本轮需要打折扣。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/macrotradecn" target="_blank">@macrotradecn</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">日韩台股市火爆新高，与A股低迷形成反差，引发国内投资者反思</div>
+              <div class="vp-q">「当初日经你爱答不理，现在的日经你高攀不起！」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/qtdevlop" target="_blank">@qtdevlop</a> <a class="hold" href="https://x.com/Polymarket" target="_blank">@Polymarket</a> <a class="hold" href="https://x.com/vinodsrinivasan" target="_blank">@vinodsrinivasan</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">年轻华人精英在硅谷创企融巨资做大算力租赁，展现强劲掘金能力</div>
+              <div class="vp-q">「99年小伙...租了128张H200提供算力，现在月收入$3M」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/jessyshen" target="_blank">@jessyshen</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">中国家电深陷价格战K型分化，美的等靠海外自有品牌转型实现利润增</div>
+              <div class="vp-q">「中国K型经济（中）家电陷入价格战...背景是在海外市场从OEM向OBM转型」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/rijingzhongwen" target="_blank">@rijingzhongwen</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">华为全方位布局AI，5G专利反超高通并加速GPU及2nm半导体自研</div>
+              <div class="vp-q">「华为的GPU相关专利申请量增加到了原来的10倍，超过了美国英伟达和英特尔」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/rijingzhongwen" target="_blank">@rijingzhongwen</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">OKX获渣打及Circle等战略投资估值达250亿，押注平台人与生态价值</div>
+              <div class="vp-q">「投资公司，就是投资人。这句话的含金量还在上升。」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/okxchinese" target="_blank">@okxchinese</a> <a class="hold" href="https://x.com/misaENFP" target="_blank">@misaENFP</a> <a class="hold" href="https://x.com/Jiajia_OKX" target="_blank">@Jiajia_OKX</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">众安跨境理财通南向通提供合法合规的人民币换汇出境新渠道</div>
+              <div class="vp-q">「原来众安可以开立「跨境理财通南向通」投资专户...全程线上办理」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/VentLane" target="_blank">@VentLane</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">航空机场类股票面临风险，无论套牢与否均应尽早离场止损</div>
+              <div class="vp-q">「如果手头上有航空、机场等底仓票，尽早离场。哪怕是套牢盘也要及时做好止损」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/OldK_Gillis" target="_blank">@OldK_Gillis</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">日本家电产销一体化败退，白色家电主导权彻底转移至量贩店</div>
+              <div class="vp-q">「围绕家电价格主导权...最终转移到了量贩店一方」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/rijingzhongwen" target="_blank">@rijingzhongwen</a></div>
+            </div>
+            <div class="vp-card">
+              <div class="vp-p">特斯拉欧洲销量爆发，英国9月同比大增99%且Model 3夺销亚</div>
+              <div class="vp-q">「英国...9月等록 15,875대. 전년 9월보다 99% 증가.」</div>
+              <div class="vp-h"><a class="hold" href="https://x.com/travel_invest" target="_blank">@travel_invest</a></div>
+            </div></div>
+<h2>🧑‍💻 活跃人物榜</h2>
+<div class="sortbar">排序：<button class="sbtn on" onclick="sortCards(this,'score')">🔥 热度</button><button class="sbtn" onclick="sortCards(this,'time')">🕐 时间</button></div>
+<div class="cat-h">🏷 美股与个人理财 <span>· 9 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="17673" data-time="1791189999">
+          <div class="kol-head"><span class="rank">#3</span>
+            <b>Agustin Lebron</b>
+            <a href="https://x.com/AgustinLebron3" target="_blank" class="handle">@AgustinLebron3</a>
+            <span class="kw-score">活跃度 17.7K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Agustin Lebron</b>
+        <a href="https://x.com/AgustinLebron3" target="_blank" class="handle">@AgustinLebron3</a>
+        <span class="score">热度 17.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-05 16:46 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107029688212451586" onclick="tg('2107029688212451586')">🌐 翻译</button></div><div class="tw-text" id="o2107029688212451586">Excited to announce Options 101!
+
+It&#x27;s a site that provides free, no-ads, no-shill education on financial options (calls + puts).
+
+The first course is one I&#x27;m now teaching this fall at Charles University in Prague. Lecture notes, videos, assignments.</div><div class="tw-text tw-trans" id="t2107029688212451586" style="display:none">很高兴宣布「期权101」上线！
+
+这是一个提供免费、无广告、不带货的金融期权（看涨和看跌）教育网站。
+
+第一门课程是我今年秋季在布拉格查理大学讲授的内容，包含讲义、视频和作业。</div>
+      <div class="tw-stats">❤️ 3.9K &nbsp; 🔁 456 &nbsp;
+        💬 79 &nbsp; 🔖 8.6K &nbsp; 👁 406.2K
+        <a href="https://x.com/AgustinLebron3/status/2107029688212451586" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="2551" data-time="1791212635">
+          <div class="kol-head"><span class="rank">#5</span>
+            <b>Coinbase 🛡️</b>
+            <a href="https://x.com/coinbase" target="_blank" class="handle">@coinbase</a>
+            <span class="kw-score">活跃度 2.6K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Coinbase 🛡️</b>
+        <a href="https://x.com/coinbase" target="_blank" class="handle">@coinbase</a>
+        <span class="score">热度 2.6K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-05 23:03 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107124633636098343" onclick="tg('2107124633636098343')">🌐 翻译</button></div><div class="tw-text" id="o2107124633636098343">Stock options starter pack:
+
+✅ Calls
+✅ Puts
+✅ Defined risk before you trade
+✅ Same app you already have open
+❌ Commissions
+
+More everything, in one place.
+
+Now live on Coinbase.</div><div class="tw-text tw-trans" id="t2107124633636098343" style="display:none">股票期权新手包：
+
+✅ 看涨
+✅ 看跌
+✅ 交易前风险明确
+✅ 用你现有的App即可
+❌ 无手续费
+
+更多功能，尽在一处。
+
+现已在Coinbase上线。</div>
+      <div class="tw-stats">❤️ 413 &nbsp; 🔁 84 &nbsp;
+        💬 156 &nbsp; 🔖 9 &nbsp; 👁 170.5K
+        <a href="https://x.com/coinbase/status/2107124633636098343" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="2472" data-time="1791326437">
+          <div class="kol-head"><span class="rank">#6</span>
+            <b>Shay Boloor</b>
+            <a href="https://x.com/StockSavvyShay" target="_blank" class="handle">@StockSavvyShay</a>
+            <span class="kw-score">活跃度 2.5K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Shay Boloor</b>
+        <a href="https://x.com/StockSavvyShay" target="_blank" class="handle">@StockSavvyShay</a>
+        <span class="score">热度 1.3K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 06:40 · 3小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107601953438191947" onclick="tg('2107601953438191947')">🌐 翻译</button></div><div class="tw-text" id="o2107601953438191947">$SPCX is looking to raise $40B of debt to buy $NVDA chips as it scales AI compute without issuing more stock.
+
+If that capacity rents anywhere near ~$50 per watt then SpaceX can use debt to fund another cash generating layer across launch, power, connectivity &amp;amp; compute.</div><div class="tw-text tw-trans" id="t2107601953438191947" style="display:none">$SPCX计划融资400亿美元债务购买$NVDA芯片，在不增发股票的情况下扩展AI算力。
+
+如果该算力产能租金接近每瓦50美元左右，SpaceX就能用债务为发射、电力、连接和算力再添一层现金生成业务。</div>
+      <div class="tw-stats">❤️ 627 &nbsp; 🔁 62 &nbsp;
+        💬 59 &nbsp; 🔖 24 &nbsp; 👁 40.9K
+        <a href="https://x.com/StockSavvyShay/status/2107601953438191947" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Shay Boloor</b>
+        <a href="https://x.com/StockSavvyShay" target="_blank" class="handle">@StockSavvyShay</a>
+        <span class="score">热度 860</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 22:03 · 11小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107471806055743711" onclick="tg('2107471806055743711')">🌐 翻译</button></div><div class="tw-text" id="o2107471806055743711">$CRWD just surpassed its 2021 COVID bubble valuation  😳</div><div class="tw-text tw-trans" id="t2107471806055743711" style="display:none">$CRWD刚超越了2021年新冠疫情泡沫期的估值😳</div>
+      <div class="tw-stats">❤️ 270 &nbsp; 🔁 14 &nbsp;
+        💬 17 &nbsp; 🔖 10 &nbsp; 👁 50.6K
+        <a href="https://x.com/StockSavvyShay/status/2107471806055743711" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="2075" data-time="1791334451">
+          <div class="kol-head"><span class="rank">#7</span>
+            <b>Christopher Dungeon</b>
+            <a href="https://x.com/ChrisDungeon" target="_blank" class="handle">@ChrisDungeon</a>
+            <span class="kw-score">活跃度 2.1K · 4 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Christopher Dungeon</b>
+        <a href="https://x.com/ChrisDungeon" target="_blank" class="handle">@ChrisDungeon</a>
+        <span class="score">热度 1.2K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 07:53 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107257861206327421" onclick="tg('2107257861206327421')">🌐 翻译</button></div><div class="tw-text" id="o2107257861206327421">How long have you held $TSLA?
+
+Drop your year.
+
+Pre-2020 OGs, I see you.
+
+The spring is being loaded.</div><div class="tw-text tw-trans" id="t2107257861206327421" style="display:none">你持有$TSLA多久了？
+
+留下你的年份。
+
+2020年以前的老手，我看到你们了。
+
+蓄势待发。</div>
+      <div class="tw-stats">❤️ 345 &nbsp; 🔁 5 &nbsp;
+        💬 367 &nbsp; 🔖 5 &nbsp; 👁 26.2K
+        <a href="https://x.com/ChrisDungeon/status/2107257861206327421" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Christopher Dungeon</b>
+        <a href="https://x.com/ChrisDungeon" target="_blank" class="handle">@ChrisDungeon</a>
+        <span class="score">热度 209</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 08:04 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107622974048309424" onclick="tg('2107622974048309424')">🌐 翻译</button></div><div class="tw-text" id="o2107622974048309424">What’s your $TSLA cost basis?
+
+Don’t flex. Just drop the number.</div><div class="tw-text tw-trans" id="t2107622974048309424" style="display:none">你的$TSLA成本价是多少？
+
+别炫耀，只留数字。</div>
+      <div class="tw-stats">❤️ 27 &nbsp; 🔁 0 &nbsp;
+        💬 69 &nbsp; 🔖 0 &nbsp; 👁 7.6K
+        <a href="https://x.com/ChrisDungeon/status/2107622974048309424" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1631" data-time="1791334920">
+          <div class="kol-head"><span class="rank">#8</span>
+            <b>水Lane💧</b>
+            <a href="https://x.com/VentLane" target="_blank" class="handle">@VentLane</a>
+            <span class="kw-score">活跃度 1.6K · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>水Lane💧</b>
+        <a href="https://x.com/VentLane" target="_blank" class="handle">@VentLane</a>
+        <span class="score">热度 1.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 20:28 · 13小时前</b></div>
+      <div class="tw-text">我靠。
+
+发现了。
+
+可以在境内大额「人民币变成港币」的合规合法路径了！
+
+原来众安可以开立「跨境理财通南向通」投资专户。
+
+个人最高投资额度300W。
+
+这个不就是合法合规的「人民币变成港币」出境渠道了吗？！
+
+且全程线上办理。无需亲临香港。
+
+开户指南直接看下图片！</div>
+      <div class="tw-stats">❤️ 265 &nbsp; 🔁 45 &nbsp;
+        💬 19 &nbsp; 🔖 419 &nbsp; 👁 60.3K
+        <a href="https://x.com/VentLane/status/2107447993389527317" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>水Lane💧</b>
+        <a href="https://x.com/VentLane" target="_blank" class="handle">@VentLane</a>
+        <span class="score">热度 7</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 09:02 · 38分钟前</b></div>
+      <div class="tw-text">普通人大额资金出境太难了。
+
+后面我详细了解了规则。
+这个众安投资专户。
+是资金闭环使用的。
+不能转到其他账户。
+也就是兴业银行的钱只能转到众安特设的专户那里。
+
+只能特定的产品。</div>
+      <div class="tw-stats">❤️ 2 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 1 &nbsp; 👁 422
+        <a href="https://x.com/VentLane/status/2107637531944898822" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="273" data-time="1791282230">
+          <div class="kol-head"><span class="rank">#13</span>
+            <b>中年码农</b>
+            <a href="https://x.com/qtdevlop" target="_blank" class="handle">@qtdevlop</a>
+            <span class="kw-score">活跃度 273 · 3 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>中年码农</b>
+        <a href="https://x.com/qtdevlop" target="_blank" class="handle">@qtdevlop</a>
+        <span class="score">热度 121</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 09:30 · 1天前</b></div>
+      <div class="tw-text">天天看日经这走势，
+我都替大A感到脸红。
+人家休息完一开盘就往上冲，
+年内快涨了40%。
+大A休市，外围天天新高。
+以前总觉得买日经是退而求其次，
+现在发现小丑竟是我自己。🤡</div>
+      <div class="tw-stats">❤️ 21 &nbsp; 🔁 1 &nbsp;
+        💬 19 &nbsp; 🔖 0 &nbsp; 👁 6.7K
+        <a href="https://x.com/qtdevlop/status/2107282191843495978" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>中年码农</b>
+        <a href="https://x.com/qtdevlop" target="_blank" class="handle">@qtdevlop</a>
+        <span class="score">热度 86</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 18:01 · 15小时前</b></div>
+      <div class="tw-text">当初日经你爱答不理，现在的日经你高攀不起！
+
+前几年全网都在嘲笑日本失去的三十年，谁敢买日经都会被当成异类。
+结果人家闷声发大财，
+今年直接把全球主要指数按在地上摩擦。
+
+什么时候A公子能学习一下？</div>
+      <div class="tw-stats">❤️ 17 &nbsp; 🔁 1 &nbsp;
+        💬 16 &nbsp; 🔖 3 &nbsp; 👁 4.0K
+        <a href="https://x.com/qtdevlop/status/2107410787954544747" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="183" data-time="1791310522">
+          <div class="kol-head"><span class="rank">#16</span>
+            <b>哈芝咪经济</b>
+            <a href="https://x.com/OldK_Gillis" target="_blank" class="handle">@OldK_Gillis</a>
+            <span class="kw-score">活跃度 183 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>哈芝咪经济</b>
+        <a href="https://x.com/OldK_Gillis" target="_blank" class="handle">@OldK_Gillis</a>
+        <span class="score">热度 183</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 02:15 · 7小时前</b></div>
+      <div class="tw-text">无论港股、美股还是即将开市的A股，如果手头上有航空、机场等底仓票，尽早离场。
+哪怕是套牢盘也要及时做好止损</div>
+      <div class="tw-stats">❤️ 21 &nbsp; 🔁 0 &nbsp;
+        💬 4 &nbsp; 🔖 9 &nbsp; 👁 14.7K
+        <a href="https://x.com/OldK_Gillis/status/2107535201723379915" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="167" data-time="1791333686">
+          <div class="kol-head"><span class="rank">#17</span>
+            <b>RUNA｜ドル円＆ゴールド＆個別株</b>
+            <a href="https://x.com/runa_stock" target="_blank" class="handle">@runa_stock</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲1%</span>
+            <span class="kw-score">活跃度 167 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>RUNA｜ドル円＆ゴールド＆個別株</b>
+        <a href="https://x.com/runa_stock" target="_blank" class="handle">@runa_stock</a>
+        <span class="score">热度 167</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 08:41 · 59分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107632357255864418" onclick="tg('2107632357255864418')">🌐 翻译</button></div><div class="tw-text" id="o2107632357255864418">おはようございます。今日のゴールド分析置いておきます。
+
+現在は4167ドル付近。昨日はSell zone①からTP③の4105ドルまで綺麗に取れましたが、今日は少し慎重に見ています。
+
+大きな目線はまだ下。ただ、短期の流れは昨日と変わってきました。</div><div class="tw-text tw-trans" id="t2107632357255864418" style="display:none">早安。附上今日黄金分析。
+
+目前在4167美元附近。昨天从卖出区①顺利止盈至4105美元，但今天我持谨慎看法。
+
+大方向仍偏空。不过短期走势已与昨日不同。</div>
+      <div class="tw-stats">❤️ 61 &nbsp; 🔁 0 &nbsp;
+        💬 3 &nbsp; 🔖 54 &nbsp; 👁 2.7K
+        <a href="https://x.com/runa_stock/status/2107632357255864418" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="124" data-time="1791333630">
+          <div class="kol-head"><span class="rank">#19</span>
+            <b>えち@AEGIS v2.1🃏｜買い場加重PF｜米国株🇺🇸BTC🪙</b>
+            <a href="https://x.com/hm_emememem" target="_blank" class="handle">@hm_emememem</a>
+            <span class="kw-score">活跃度 124 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>えち@AEGIS v2.1🃏｜買い場加重PF｜米国株🇺🇸BTC🪙</b>
+        <a href="https://x.com/hm_emememem" target="_blank" class="handle">@hm_emememem</a>
+        <span class="score">热度 95</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 00:10 · 9小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107503768279642252" onclick="tg('2107503768279642252')">🌐 翻译</button></div><div class="tw-text" id="o2107503768279642252">KOSPI これがメモリの動きの基点
+あまり言及されないけど $MU は所詮3番手
+
+①EMA20/50/100の乖離は0.87%で束。今年最小水準
+②高値7,200は3度跳ね返され安値は切り上げ
+
+タイトアクションの教科書
+上か下へぶっ飛ぶ形
+指数を握るのはサムスンとSHハイニックス</div><div class="tw-text tw-trans" id="t2107503768279642252" style="display:none">KOSPI 这是存储芯片走势的基点
+虽然鲜少被提及，但$MU终究只是三把手
+
+①EMA20/50/100乖离率仅0.87%且收敛，为今年最小水平
+②高点7200被三次阻回，低点不断抬升
+
+窄幅震荡的教科书范例
+即将向上或向下突破
+掌控指数的是三星和SK海力士</div>
+      <div class="tw-stats">❤️ 44 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 13 &nbsp; 👁 3.6K
+        <a href="https://x.com/hm_emememem/status/2107503768279642252" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>えち@AEGIS v2.1🃏｜買い場加重PF｜米国株🇺🇸BTC🪙</b>
+        <a href="https://x.com/hm_emememem" target="_blank" class="handle">@hm_emememem</a>
+        <span class="score">热度 13</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 08:40 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107632120365797763" onclick="tg('2107632120365797763')">🌐 翻译</button></div><div class="tw-text" id="o2107632120365797763">$KOSPI  いいぞ。メモリ反転の狼煙になるか</div><div class="tw-text tw-trans" id="t2107632120365797763" style="display:none">$KOSPI 不错。或将成为存储芯片反转的信号弹</div>
+      <div class="tw-stats">❤️ 8 &nbsp; 🔁 0 &nbsp;
+        💬 0 &nbsp; 🔖 1 &nbsp; 👁 447
+        <a href="https://x.com/hm_emememem/status/2107632120365797763" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 科技与AI <span>· 2 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="37086" data-time="1791323911">
+          <div class="kol-head"><span class="rank">#1</span>
+            <b>Palmer Luckey</b>
+            <a href="https://x.com/PalmerLuckey" target="_blank" class="handle">@PalmerLuckey</a>
+            <span class="kw-score">活跃度 37.1K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Palmer Luckey</b>
+        <a href="https://x.com/PalmerLuckey" target="_blank" class="handle">@PalmerLuckey</a>
+        <span class="score">热度 37.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 05:58 · 3小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107591357456122018" onclick="tg('2107591357456122018')">🌐 翻译</button></div><div class="tw-text" id="o2107591357456122018">Anduril is building America&#x27;s largest shipyard since WWII.  This space needs bold investment and decisive action.
+
+In the 1790s, Baltimoore clippers were the fastest and most advanced sailing ships of their time.  King George III didn&#x27;t stand a chance. Time to run the same play.</div><div class="tw-text tw-trans" id="t2107591357456122018" style="display:none">Anduril正在建造二战以来美国最大的造船厂。这一领域需要大胆的投资和果断的行动。
+
+1790年代，巴尔的摩飞剪船是当时最快最先进的帆船。英王乔治三世毫无胜算。是时候故技重施了。</div>
+      <div class="tw-stats">❤️ 25.0K &nbsp; 🔁 1.8K &nbsp;
+        💬 660 &nbsp; 🔖 1.7K &nbsp; 👁 544.5K
+        <a href="https://x.com/PalmerLuckey/status/2107591357456122018" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="37046" data-time="1791317736">
+          <div class="kol-head"><span class="rank">#2</span>
+            <b>Anduril Industries</b>
+            <a href="https://x.com/anduriltech" target="_blank" class="handle">@anduriltech</a>
+            <span class="kw-score">活跃度 37.0K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Anduril Industries</b>
+        <a href="https://x.com/anduriltech" target="_blank" class="handle">@anduriltech</a>
+        <span class="score">热度 37.0K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 04:15 · 5小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107565456571904031" onclick="tg('2107565456571904031')">🌐 翻译</button></div><div class="tw-text" id="o2107565456571904031">Anduril is investing $3.7B into Arsenal-2. 
+The next great American Shipyard.</div><div class="tw-text tw-trans" id="t2107565456571904031" style="display:none">Anduril向Arsenal-2投资37亿美元。
+下一个伟大的美国造船厂。</div>
+      <div class="tw-stats">❤️ 17.2K &nbsp; 🔁 1.5K &nbsp;
+        💬 345 &nbsp; 🔖 1.8K &nbsp; 👁 1.4M
+        <a href="https://x.com/anduriltech/status/2107565456571904031" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 宏观财经 <span>· 5 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="3061" data-time="1791336505">
+          <div class="kol-head"><span class="rank">#4</span>
+            <b>日经中文网/日經中文網</b>
+            <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a><span style="color:#3fb950;font-size:11px;margin-left:6px">▲822%</span>
+            <span class="kw-score">活跃度 3.1K · 12 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日经中文网/日經中文網</b>
+        <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a>
+        <span class="score">热度 304</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 08:14 · 1天前</b></div>
+      <div class="tw-text">【中国K型经济（中）家电陷入价格战】日经汇总了中国大型家电企业中1～6月销售额排名前7的企业数据。实现利润增长的是美的、长虹以和海信。美的实现利润增长，背景是在海外市场从OEM向OBM转型……</div>
+      <div class="tw-stats">❤️ 10 &nbsp; 🔁 3 &nbsp;
+        💬 1 &nbsp; 🔖 1 &nbsp; 👁 28.4K
+        <a href="https://x.com/rijingzhongwen/status/2107263064102052191" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>日经中文网/日經中文網</b>
+        <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a>
+        <span class="score">热度 273</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 14:01 · 19小时前</b></div>
+      <div class="tw-text">【华为与高通达成专利许可协议，5G领域首次】华为与高通就5G相关专利等签署了为期数年的交叉许可协议，双方可相互使用对方的知识产权。根据此次协议，高通向华为支付的专利许可费将超过华为向高通支付的许可费……</div>
+      <div class="tw-stats">❤️ 25 &nbsp; 🔁 4 &nbsp;
+        💬 4 &nbsp; 🔖 7 &nbsp; 👁 22.5K
+        <a href="https://x.com/rijingzhongwen/status/2107350389733368263" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="1438" data-time="1791333637">
+          <div class="kol-head"><span class="rank">#9</span>
+            <b>unusual_whales</b>
+            <a href="https://x.com/unusual_whales" target="_blank" class="handle">@unusual_whales</a>
+            <span class="kw-score">活跃度 1.4K · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>unusual_whales</b>
+        <a href="https://x.com/unusual_whales" target="_blank" class="handle">@unusual_whales</a>
+        <span class="score">热度 1.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 08:40 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107632150866800643" onclick="tg('2107632150866800643')">🌐 翻译</button></div><div class="tw-text" id="o2107632150866800643">JUST IN: SpaceX looks to raise $40 billion to buy Nvidia chips in financing led by Apollo, per FT</div><div class="tw-text tw-trans" id="t2107632150866800643" style="display:none">突发：据《金融时报》报道，SpaceX在由阿波罗牵头的融资中计划筹集400亿美元以购买英伟达芯片</div>
+      <div class="tw-stats">❤️ 398 &nbsp; 🔁 39 &nbsp;
+        💬 58 &nbsp; 🔖 13 &nbsp; 👁 84.8K
+        <a href="https://x.com/unusual_whales/status/2107632150866800643" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="897" data-time="1791307132">
+          <div class="kol-head"><span class="rank">#10</span>
+            <b>沈彤</b>
+            <a href="https://x.com/jessyshen" target="_blank" class="handle">@jessyshen</a>
+            <span class="kw-score">活跃度 897 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>沈彤</b>
+        <a href="https://x.com/jessyshen" target="_blank" class="handle">@jessyshen</a>
+        <span class="score">热度 897</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 01:18 · 8小时前</b></div>
+      <div class="tw-text">大早上和一个客户开会
+
+99年小伙子， 我北京Intel上司的儿子， 12岁和父母移民美国， 伯克利，先做量化赚了第一桶金
+
+投资$10M起步， 租了128张H200提供算力， 现在月收入$3M
+
+刚刚在硅谷融了8000万美元， 准备找我们租2MW1024张B300
+
+与有荣焉， 故旧之子闯出了名堂， 我们这些老登也要努力了</div>
+      <div class="tw-stats">❤️ 254 &nbsp; 🔁 16 &nbsp;
+        💬 19 &nbsp; 🔖 118 &nbsp; 👁 46.2K
+        <a href="https://x.com/jessyshen/status/2107520980033896805" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="309" data-time="1791336081">
+          <div class="kol-head"><span class="rank">#12</span>
+            <b>Polymarket</b>
+            <a href="https://x.com/Polymarket" target="_blank" class="handle">@Polymarket</a>
+            <span class="kw-score">活跃度 309 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Polymarket</b>
+        <a href="https://x.com/Polymarket" target="_blank" class="handle">@Polymarket</a>
+        <span class="score">热度 228</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 09:20 · 20分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107642190688125273" onclick="tg('2107642190688125273')">🌐 翻译</button></div><div class="tw-text" id="o2107642190688125273">BREAKING: Taiwan dethrones South Korea as the world’s best-performing major stock market this year, with the Taiex soaring +72%.</div><div class="tw-text tw-trans" id="t2107642190688125273" style="display:none">突发：台湾股市暴涨72%，超越韩国成为今年全球表现最佳的主要股票市场。</div>
+      <div class="tw-stats">❤️ 45 &nbsp; 🔁 7 &nbsp;
+        💬 12 &nbsp; 🔖 0 &nbsp; 👁 14.5K
+        <a href="https://x.com/Polymarket/status/2107642190688125273" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Polymarket</b>
+        <a href="https://x.com/Polymarket" target="_blank" class="handle">@Polymarket</a>
+        <span class="score">热度 41</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 09:21 · 19分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107642401787449357" onclick="tg('2107642401787449357')">🌐 翻译</button></div><div class="tw-text" id="o2107642401787449357">47% chance South Korea&#x27;s KOSPI hits an all-time high by end of year.</div><div class="tw-text tw-trans" id="t2107642401787449357" style="display:none">韩国KOSPI年底创下历史新高的概率为47%。</div>
+      <div class="tw-stats">❤️ 2 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 0 &nbsp; 👁 3.7K
+        <a href="https://x.com/Polymarket/status/2107642401787449357" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="103" data-time="1791334802">
+          <div class="kol-head"><span class="rank">#20</span>
+            <b>李老师不是你老师</b>
+            <a href="https://x.com/whyyoutouzhele" target="_blank" class="handle">@whyyoutouzhele</a>
+            <span class="kw-score">活跃度 103 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>李老师不是你老师</b>
+        <a href="https://x.com/whyyoutouzhele" target="_blank" class="handle">@whyyoutouzhele</a>
+        <span class="score">热度 103</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 09:00 · 40分钟前</b></div>
+      <div class="tw-text">日媒咨询22名经济学家：预计中国三季度经济增长4.4%
+
+一项由《日本经济新闻》和日经快讯开展的经济学家调查显示，中国经济今年第三季度预计同比增长4.4%，较第二季度4.3%的增速仅提高0.1%，连续第二个季度低于政府4.5%至5%的全年增长目标区间。22名受访经济学家预计，第三季度环比增长1.1%。</div>
+      <div class="tw-stats">❤️ 19 &nbsp; 🔁 4 &nbsp;
+        💬 7 &nbsp; 🔖 2 &nbsp; 👁 6.3K
+        <a href="https://x.com/whyyoutouzhele/status/2107637036534645060" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div><div class="cat-h">🏷 加密货币 <span>· 4 人</span></div><div class="grid-cards sortable">
+        <div class="kol" data-score="827" data-time="1791291914">
+          <div class="kol-head"><span class="rank">#11</span>
+            <b>OKX中文</b>
+            <a href="https://x.com/okxchinese" target="_blank" class="handle">@okxchinese</a>
+            <span class="kw-score">活跃度 827 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>OKX中文</b>
+        <a href="https://x.com/okxchinese" target="_blank" class="handle">@okxchinese</a>
+        <span class="score">热度 827</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 21:05 · 12小时前</b></div>
+      <div class="tw-text">很高兴宣布，我们已完成由 Circle 、Qube Research &amp;amp; Technologies（QRT）、Ripple 及渣打银行旗下 SC Ventures 参与的战略投资，投前估值达 250 亿美元。
+
+继今年 3 月获 ICE 战略投资后，新一轮融资将持续为我们发展和推动 RWA 提供资金支持。
+
+交易所只是起点，我们正迈向下一代全球金融科技平台！</div>
+      <div class="tw-stats">❤️ 134 &nbsp; 🔁 17 &nbsp;
+        💬 39 &nbsp; 🔖 9 &nbsp; 👁 55.6K
+        <a href="https://x.com/okxchinese/status/2107457151912550671" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="252" data-time="1791335733">
+          <div class="kol-head"><span class="rank">#14</span>
+            <b>Misa_OKX💚</b>
+            <a href="https://x.com/misaENFP" target="_blank" class="handle">@misaENFP</a>
+            <span class="kw-score">活跃度 252 · 2 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Misa_OKX💚</b>
+        <a href="https://x.com/misaENFP" target="_blank" class="handle">@misaENFP</a>
+        <span class="score">热度 178</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 21:32 · 12小时前</b></div>
+      <div class="tw-text">“投资公司，就是投资人。”这句话的含金量还在上升。 
+
+我们很高兴的宣布，我们已完成由 Circle 、Qube Research &amp;amp; Technologies（QRT）、Ripple 及渣打银行旗下 SC Ventures 参与的战略投资🖤
+
+选择一家平台，也是在看背后的人：他如何理解这个行业，如何对待用户，又准备把公司带向哪里。</div>
+      <div class="tw-stats">❤️ 68 &nbsp; 🔁 2 &nbsp;
+        💬 37 &nbsp; 🔖 1 &nbsp; 👁 4.4K
+        <a href="https://x.com/misaENFP/status/2107464036489265404" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>Misa_OKX💚</b>
+        <a href="https://x.com/misaENFP" target="_blank" class="handle">@misaENFP</a>
+        <span class="score">热度 41</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 09:15 · 25分钟前</b></div>
+      <div class="tw-text">大酱焖蚝！
+Misa已经工作两个小时啦～ 
+
+我在Token 2049的现场等你们
+
+5楼本次最大的主舞台就是我们OKX的哦
+
+有Star总@star_okx  Haider @Haider 还有迈凯轮车手兰多 @LandoNorris⁠ 的演讲，还有很多大咖哦。
+
+五楼展台上还给大家准备了精美的周边～</div>
+      <div class="tw-stats">❤️ 19 &nbsp; 🔁 0 &nbsp;
+        💬 10 &nbsp; 🔖 1 &nbsp; 👁 355
+        <a href="https://x.com/misaENFP/status/2107640942195089818" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="195" data-time="1791334221">
+          <div class="kol-head"><span class="rank">#15</span>
+            <b>oAth</b>
+            <a href="https://x.com/fillipsxn" target="_blank" class="handle">@fillipsxn</a>
+            <span class="kw-score">活跃度 195 · 14 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>oAth</b>
+        <a href="https://x.com/fillipsxn" target="_blank" class="handle">@fillipsxn</a>
+        <span class="score">热度 11</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 07:58 · 1小时前</b></div>
+      <div class="tw-text">达尔文告诉我们，存活下来的不是最强壮的物种，而是最能适应变化的物种。TRONDAO的持续进化能力，正是其在行业竞争中存活并繁荣的核心秘密
+
+从不同角度观察TRONDAO当前的生态格局，可以发现以下几条清晰的价值脉络：
+
+去中心化预测市场在TRONDAO生态内的兴起，为链上信息博弈提供了全新的价值发现机制</div>
+      <div class="tw-stats">❤️ 0 &nbsp; 🔁 0 &nbsp;
+        💬 5 &nbsp; 🔖 0 &nbsp; 👁 106
+        <a href="https://x.com/fillipsxn/status/2107621525302190098" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+    <div class="tw">
+      <div class="tw-head"><b>oAth</b>
+        <a href="https://x.com/fillipsxn" target="_blank" class="handle">@fillipsxn</a>
+        <span class="score">热度 10</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 07:11 · 2小时前</b></div>
+      <div class="tw-text">北极星之所以被水手信赖，是因为它的位置永恒不变。TRONDAO在公链赛道中扮演的，正是这颗为Web3建设者指引方向的北极星
+
+解读TRONDAO的长期竞争逻辑，以下几个相互支撑的核心能力不可忽视：
+
+链上休眠资产的智能化识别与处理机制，正在为生态流动性的提升做出贡献</div>
+      <div class="tw-stats">❤️ 1 &nbsp; 🔁 0 &nbsp;
+        💬 3 &nbsp; 🔖 0 &nbsp; 👁 212
+        <a href="https://x.com/fillipsxn/status/2107609775928492435" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div>
+        <div class="kol" data-score="161" data-time="1791293583">
+          <div class="kol-head"><span class="rank">#18</span>
+            <b>佳佳 OKX</b>
+            <a href="https://x.com/Jiajia_OKX" target="_blank" class="handle">@Jiajia_OKX</a>
+            <span class="kw-score">活跃度 161 · 1 帖</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>佳佳 OKX</b>
+        <a href="https://x.com/Jiajia_OKX" target="_blank" class="handle">@Jiajia_OKX</a>
+        <span class="score">热度 161</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 21:33 · 12小时前</b></div>
+      <div class="tw-text">再次见证大事发生！！🧨
+继 3 月我们OKX 获得纽交所母公司ICE 投资，
+今天，我们正式宣布，Circle、Ripple、渣打银行的投资部，再加上伦敦量化基金 QRC，也一起进了 OKX 的股东名单！！
+
+很开心作为员工的一份子见证历史时刻！
+再次祝我司蒸蒸日上，无限进步～🎉</div>
+      <div class="tw-stats">❤️ 69 &nbsp; 🔁 2 &nbsp;
+        💬 26 &nbsp; 🔖 1 &nbsp; 👁 4.4K
+        <a href="https://x.com/Jiajia_OKX/status/2107464154605097076" target="_blank" class="link">原帖 ↗</a></div>
+    </div>
+        </div></div>
+<h2>🔥 热门趋势榜</h2>
+<div class="grid-trends"><a class="trend" href="https://x.com/search?q=Nasdaq%20Hits%20Record%20High%20Led%20by%20Nvidia%27s%20Surge" target="_blank"><span class="rank">#1</span> Nasdaq Hits Record High Led by Nvidia&#x27;s Surge<span class="meta"></span><span class="tmeta">英伟达领涨，纳斯达克创历史新高</span></a>
+<a class="trend" href="https://x.com/search?q=Massive%20Fire%20Hits%20Oil%20Tanker%20Off%20Sochi%20After%20Unmanned%20Boat%20Attack" target="_blank"><span class="rank">#2</span> Massive Fire Hits Oil Tanker Off Sochi After Unmanned Boat Attack<span class="meta"></span><span class="tmeta">无人艇袭击后索契近海油轮发生大火</span></a>
+<a class="trend" href="https://x.com/search?q=SpaceX%20Pushes%20Satellite%20Safety%20Sharing%20and%20Reveals%20Starship%20V3%20Deployments" target="_blank"><span class="rank">#3</span> SpaceX Pushes Satellite Safety Sharing and Reveals Starship V3 Deployments<span class="meta"></span><span class="tmeta">SpaceX推动卫星安全共享并公布星舰V3部署</span></a>
+<a class="trend" href="https://x.com/search?q=%23dwts" target="_blank"><span class="rank">#4</span> #dwts<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=The%20S%26P%20500" target="_blank"><span class="rank">#5</span> The S&amp;P 500<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Ohtani" target="_blank"><span class="rank">#6</span> Ohtani<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23AEWGrandSlam" target="_blank"><span class="rank">#7</span> #AEWGrandSlam<span class="meta"></span><span class="tmeta">AEW大满贯</span></a>
+<a class="trend" href="https://x.com/search?q=%231000lbSisters" target="_blank"><span class="rank">#8</span> #1000lbSisters<span class="meta"></span><span class="tmeta">千磅姐妹</span></a>
+<a class="trend" href="https://x.com/search?q=Rylee" target="_blank"><span class="rank">#9</span> Rylee<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Grok%20Bot%20is%20now%20proactive" target="_blank"><span class="rank">#10</span> Grok Bot is now proactive<span class="meta"></span><span class="tmeta">Grok机器人主动出击</span></a>
+<a class="trend" href="https://x.com/search?q=Messi" target="_blank"><span class="rank">#11</span> Messi<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Dodgers" target="_blank"><span class="rank">#12</span> Dodgers<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Edwin%20Diaz" target="_blank"><span class="rank">#13</span> Edwin Diaz<span class="meta"></span><span class="tmeta">埃德温·迪亚兹</span></a>
+<a class="trend" href="https://x.com/search?q=Yamamoto" target="_blank"><span class="rank">#14</span> Yamamoto<span class="meta"></span><span class="tmeta">山本</span></a>
+<a class="trend" href="https://x.com/search?q=Acuna" target="_blank"><span class="rank">#15</span> Acuna<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23WWENXT" target="_blank"><span class="rank">#16</span> #WWENXT<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23DWCS" target="_blank"><span class="rank">#17</span> #DWCS<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Jenna" target="_blank"><span class="rank">#18</span> Jenna<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=Tanner%20Scott" target="_blank"><span class="rank">#19</span> Tanner Scott<span class="meta"></span><span class="tmeta">坦纳·斯科特</span></a>
+<a class="trend" href="https://x.com/search?q=Nico%20Paz" target="_blank"><span class="rank">#20</span> Nico Paz<span class="meta"></span></a>
+<a class="trend" href="https://x.com/search?q=%23ElUltimoTango" target="_blank"><span class="rank">#21</span> #ElUltimoTango<span class="meta"></span><span class="tmeta">最后的探戈</span></a>
+<a class="trend" href="https://x.com/search?q=Eva%20Marie%20Saint" target="_blank"><span class="rank">#22</span> Eva Marie Saint<span class="meta"></span><span class="tmeta">伊娃·玛丽·森特</span></a>
+<a class="trend" href="https://x.com/search?q=Julianne" target="_blank"><span class="rank">#23</span> Julianne<span class="meta"></span><span class="tmeta">朱丽安</span></a>
+<a class="trend" href="https://x.com/search?q=Lane%20Johnson" target="_blank"><span class="rank">#24</span> Lane Johnson<span class="meta"></span><span class="tmeta">莱恩·约翰逊</span></a>
+<a class="trend" href="https://x.com/search?q=Bandido" target="_blank"><span class="rank">#25</span> Bandido<span class="meta"></span></a>
+</div>
+<h2>🔑 关键词热度榜</h2>
+<div class="grid-cards">
+        <div class="kw"><div class="kw-head"><b>$TSLA</b>
+          <span class="kw-score">总热度 75.9K · 45 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Palmer Luckey</b>
+        <a href="https://x.com/PalmerLuckey" target="_blank" class="handle">@PalmerLuckey</a>
+        <span class="score">热度 37.1K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 05:58 · 3小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107591357456122018" onclick="tg('2107591357456122018')">🌐 翻译</button></div><div class="tw-text" id="o2107591357456122018">Anduril is building America&#x27;s largest shipyard since WWII.  This space needs bold investment and decisive action.
+
+In the 1790s, Baltimoore clippers were the fastest and most advanced sailing ships of their time.  King George III didn&#x27;t stand a chance. Time to run the same play.</div><div class="tw-text tw-trans" id="t2107591357456122018" style="display:none">Anduril正在建造二战以来美国最大的造船厂。这一领域需要大胆的投资和果断的行动。
+
+1790年代，巴尔的摩飞剪船是当时最快最先进的帆船。英王乔治三世毫无胜算。是时候故技重施了。</div>
+      <div class="tw-stats">❤️ 25.0K &nbsp; 🔁 1.8K &nbsp;
+        💬 660 &nbsp; 🔖 1.7K &nbsp; 👁 544.5K
+        <a href="https://x.com/PalmerLuckey/status/2107591357456122018" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>期权</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲238%</span>
+          <span class="kw-score">总热度 21.5K · 62 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Agustin Lebron</b>
+        <a href="https://x.com/AgustinLebron3" target="_blank" class="handle">@AgustinLebron3</a>
+        <span class="score">热度 17.7K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-05 16:46 · 1天前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107029688212451586" onclick="tg('2107029688212451586')">🌐 翻译</button></div><div class="tw-text" id="o2107029688212451586">Excited to announce Options 101!
+
+It&#x27;s a site that provides free, no-ads, no-shill education on financial options (calls + puts).
+
+The first course is one I&#x27;m now teaching this fall at Charles University in Prague. Lecture notes, videos, assignments.</div><div class="tw-text tw-trans" id="t2107029688212451586" style="display:none">很高兴宣布「期权101」上线！
+
+这是一个提供免费、无广告、不带货的金融期权（看涨和看跌）教育网站。
+
+第一门课程是我今年秋季在布拉格查理大学讲授的内容，包含讲义、视频和作业。</div>
+      <div class="tw-stats">❤️ 3.9K &nbsp; 🔁 456 &nbsp;
+        💬 79 &nbsp; 🔖 8.6K &nbsp; 👁 406.2K
+        <a href="https://x.com/AgustinLebron3/status/2107029688212451586" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>$NVDA</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲575%</span>
+          <span class="kw-score">总热度 3.7K · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>unusual_whales</b>
+        <a href="https://x.com/unusual_whales" target="_blank" class="handle">@unusual_whales</a>
+        <span class="score">热度 1.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 08:40 · 1小时前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107632150866800643" onclick="tg('2107632150866800643')">🌐 翻译</button></div><div class="tw-text" id="o2107632150866800643">JUST IN: SpaceX looks to raise $40 billion to buy Nvidia chips in financing led by Apollo, per FT</div><div class="tw-text tw-trans" id="t2107632150866800643" style="display:none">突发：据《金融时报》报道，SpaceX在由阿波罗牵头的融资中计划筹集400亿美元以购买英伟达芯片</div>
+      <div class="tw-stats">❤️ 398 &nbsp; 🔁 39 &nbsp;
+        💬 58 &nbsp; 🔖 13 &nbsp; 👁 84.8K
+        <a href="https://x.com/unusual_whales/status/2107632150866800643" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>港股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲1995%</span>
+          <span class="kw-score">总热度 1.8K · 42 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>水Lane💧</b>
+        <a href="https://x.com/VentLane" target="_blank" class="handle">@VentLane</a>
+        <span class="score">热度 1.4K</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 20:28 · 13小时前</b></div>
+      <div class="tw-text">我靠。
+
+发现了。
+
+可以在境内大额「人民币变成港币」的合规合法路径了！
+
+原来众安可以开立「跨境理财通南向通」投资专户。
+
+个人最高投资额度300W。
+
+这个不就是合法合规的「人民币变成港币」出境渠道了吗？！
+
+且全程线上办理。无需亲临香港。
+
+开户指南直接看下图片！</div>
+      <div class="tw-stats">❤️ 265 &nbsp; 🔁 45 &nbsp;
+        💬 19 &nbsp; 🔖 419 &nbsp; 👁 60.3K
+        <a href="https://x.com/VentLane/status/2107447993389527317" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>日经</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼94%</span>
+          <span class="kw-score">总热度 1.7K · 44 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>日经中文网/日經中文網</b>
+        <a href="https://x.com/rijingzhongwen" target="_blank" class="handle">@rijingzhongwen</a>
+        <span class="score">热度 304</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 08:14 · 1天前</b></div>
+      <div class="tw-text">【中国K型经济（中）家电陷入价格战】日经汇总了中国大型家电企业中1～6月销售额排名前7的企业数据。实现利润增长的是美的、长虹以和海信。美的实现利润增长，背景是在海外市场从OEM向OBM转型……</div>
+      <div class="tw-stats">❤️ 10 &nbsp; 🔁 3 &nbsp;
+        💬 1 &nbsp; 🔖 1 &nbsp; 👁 28.4K
+        <a href="https://x.com/rijingzhongwen/status/2107263064102052191" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>美股</b><span style="color:#3fb950;font-size:11px;margin-left:6px">▲5050%</span>
+          <span class="kw-score">总热度 1.2K · 25 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>OKX中文</b>
+        <a href="https://x.com/okxchinese" target="_blank" class="handle">@okxchinese</a>
+        <span class="score">热度 827</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-06 21:05 · 12小时前</b></div>
+      <div class="tw-text">很高兴宣布，我们已完成由 Circle 、Qube Research &amp;amp; Technologies（QRT）、Ripple 及渣打银行旗下 SC Ventures 参与的战略投资，投前估值达 250 亿美元。
+
+继今年 3 月获 ICE 战略投资后，新一轮融资将持续为我们发展和推动 RWA 提供资金支持。
+
+交易所只是起点，我们正迈向下一代全球金融科技平台！</div>
+      <div class="tw-stats">❤️ 134 &nbsp; 🔁 17 &nbsp;
+        💬 39 &nbsp; 🔖 9 &nbsp; 👁 55.6K
+        <a href="https://x.com/okxchinese/status/2107457151912550671" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>KOSPI</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼16%</span>
+          <span class="kw-score">总热度 909 · 43 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>Polymarket</b>
+        <a href="https://x.com/Polymarket" target="_blank" class="handle">@Polymarket</a>
+        <span class="score">热度 228</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 09:20 · 20分钟前</b></div>
+      <div class="tbar"><button class="tbtn" id="b2107642190688125273" onclick="tg('2107642190688125273')">🌐 翻译</button></div><div class="tw-text" id="o2107642190688125273">BREAKING: Taiwan dethrones South Korea as the world’s best-performing major stock market this year, with the Taiex soaring +72%.</div><div class="tw-text tw-trans" id="t2107642190688125273" style="display:none">突发：台湾股市暴涨72%，超越韩国成为今年全球表现最佳的主要股票市场。</div>
+      <div class="tw-stats">❤️ 45 &nbsp; 🔁 7 &nbsp;
+        💬 12 &nbsp; 🔖 0 &nbsp; 👁 14.5K
+        <a href="https://x.com/Polymarket/status/2107642190688125273" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div>
+        <div class="kw"><div class="kw-head"><b>降息</b><span style="color:#f85149;font-size:11px;margin-left:6px">▼100%</span>
+          <span class="kw-score">总热度 240 · 40 条</span></div>
+          
+    <div class="tw">
+      <div class="tw-head"><b>杰克船长宏观策略</b>
+        <a href="https://x.com/macrotradecn" target="_blank" class="handle">@macrotradecn</a>
+        <span class="score">热度 51</span></div>
+      <div class="tw-time">🕐 发布于 <b>10-07 01:30 · 8小时前</b></div>
+      <div class="tw-text">美国本轮通胀起点更高，降息门槛也更高，因此利率水平维持高位的时间更长，长期利率下行的幅度更小。
+这直接改变了两件事：
+第一，估值修复的力度会弱于历史平均；
+第二，资产之间的分化会大于整体方向。
+过去&quot;停止加息后普涨&quot;的经验，本轮需要打折扣。</div>
+      <div class="tw-stats">❤️ 5 &nbsp; 🔁 0 &nbsp;
+        💬 1 &nbsp; 🔖 4 &nbsp; 👁 4.1K
+        <a href="https://x.com/macrotradecn/status/2107523975534497912" target="_blank" class="link">原帖 ↗</a></div>
+    </div></div></div>
+  </main>
+</div>
+<script>
+function tg(id){
+  var o=document.getElementById('o'+id),t=document.getElementById('t'+id),b=document.getElementById('b'+id);
+  if(!o||!t)return;
+  var show=(t.style.display==='none');
+  t.style.display=show?'block':'none';
+  o.style.display=show?'none':'block';
+  b.textContent=show?'↩ 看原文':'🌐 翻译';
+}
+function sortCards(btn,by){
+  var bar=btn.parentNode; bar.querySelectorAll('.sbtn').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.querySelectorAll('.grid-cards.sortable').forEach(function(g){
+    var items=[].slice.call(g.children);
+    items.sort(function(a,b){return (parseFloat(b.dataset[by])||0)-(parseFloat(a.dataset[by])||0)});
+    items.forEach(function(it){g.appendChild(it)});
+  });
+}
+</script>
+</body></html>
